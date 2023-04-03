@@ -1,0 +1,41 @@
+/*
+ * style.css - used with pandoc generation of markdown files to html
+ */
+
+#TOC {
+    background-color: #ffffcc;
+    border: thick solid gray;
+    padding: .5em;
+    margin: .5em;
+}
+
+
+/*
+removed from pre:
+    color: #444444;
+    background-color: #ffffcc;
+ */
+
+pre {
+    font-family: fixed;
+    border: 1px solid;
+    padding: 10px;
+    box-shadow: 2px 6px #888888;
+}
+
+table, th, td {
+    border: 1px solid LightGray;
+}
+tr {
+    width: 100%;
+}
+
+h2 {
+    border-bottom: 1px solid LightGray;
+}
+
+/*code > span.cf { color: #000000; }*/ /* ControlFlow */
+
+/*
+    color: DarkGray;
+*/
