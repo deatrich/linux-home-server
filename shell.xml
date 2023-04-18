@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<!--
+Adapted from:
+https://stackoverflow.com/questions/55172153/it-is-possible-to-generate-console-highlighting-for-markdown-with-pandoc
+-->
+<language name="Shell" version="1" kateversion="2.4" section="Other" extensions="*.shell" mimetype="" author="Tim Hutt (tdhutt@gmail.com)" license="MIT">
+  <highlighting>
+    <contexts>
+      <context attribute="Output" name="Output" lineEndContext="#stay" >
+        <DetectChar char="$" attribute="Command" context="Command" firstNonSpace="true"/>
+        <DetectChar char="#" attribute="OtherCommand" context="OtherCommand" firstNonSpace="true"/>
+        <Detect2Chars attribute="Comment" context="Comment" char="/" char1="/" firstNonSpace="true"/>
+      </context>
+      <context attribute="Command" name="Command" lineEndContext="#pop" />
+      <context attribute="OtherCommand" name="OtherCommand" lineEndContext="#pop" />
+      <context attribute="Comment" name="Comment" lineEndContext="#pop" />
+    </contexts>
+    <itemDatas>
+      <itemData name="Output" defStyleNum="dsNormal"/>
+      <itemData name="Command" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="OtherCommand" defStyleNum="dsFunction" bold="true"/>
+      <itemData name="Comment" defStyleNum="dsComment"/>
+    </itemDatas>
+  </highlighting>
+</language>
+
+
