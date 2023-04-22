@@ -1,17 +1,19 @@
 ---
 title: Creating a Linux Home Server
 author: Denice Deatrich
+lastupdate: 20 April 2023
+date: March 2023
 colorlinks: true
 linkcolor: Magenta
 urlcolor: ForestGreen
 toccolor: Magenta
-date: March 2023
-lastupdate: 20 April 2023
 ---
 
+<!--
 <style>
 div.sourceCode { box-shadow: 2px 6px #888888; }
 </style>
+-->
 
 <!-- Introduction -->
 ## Overview {#overview}
@@ -46,10 +48,12 @@ You should look into assigning a permanent network IP address for your server
 in your home network so that you can easily connect to it from any of your
 devices.  Your home network router/WiFi modem should have the
 option to enable you to reserve an IP address for any device.  You only need
-to know the hardware MAC address of your future server.  There will be a
-label on the SBC with 2 different MAC addresses - one for hardwired ethernet
-and one for wireless.  You can reserve both interfaces until you decide which
-way you will connect your server to your router.
+to know the hardware MAC address of your future server.  There will be 2
+MAC addresses - one for hardwired ethernet and one for wireless.
+You can reserve both interfaces until you decide which way you will connect
+your server to your router.
+
+<!-- mention in document somewhere about getting MAC addrs early -->
 
 ### About this Document {#doc}
 
@@ -84,7 +88,7 @@ in [my documentation projects area][mygithub].
 [md]: https://www.markdownguide.org/getting-started/
 [pandoc]: https://pandoc.org/
 [github]: https://github.com/
-[mygithub]: https://github.com/deatrich
+[mygithub]: https://github.com/deatrich/linux-home-server
 
 ## Picking the OS (Operating System) and the Window Manager {#environment}
 
@@ -113,8 +117,8 @@ At the time of writing this guide I used version 22.04 of Ubuntu LTS
 (also known as **Jammy Jellyfish**). It was first released in April 2022.
 
 I also opt to use an installation image which uses the
-[MATE desktop system](https://mate-desktop.org/).  At the bottom of the
-mentioned website is a note about why it is called MATE (pronounced mat-ay).
+[MATE desktop system](https://mate-desktop.org/).  At the bottom of that
+linked website is a note about why it is called MATE (pronounced mat-ay).
 The MATE window manager is intuitive, efficient, skinny, dependable and
 popular. It is widely available on most flavours of Linux.
 
@@ -195,7 +199,7 @@ exercise for a later time in your Linux adventure.
 
 [ubuntu-mate]: https://ubuntu-mate.org/raspberry-pi/
 [download]: https://ubuntu-mate.org/raspberry-pi/download/
-[toms]: https://www.tomshardware.com/
+[toms]: https://www.tomshardware.com/best-picks/raspberry-pi-microsd-cards
 
 ## Installation and First Experience
 
@@ -267,10 +271,10 @@ logged in */var/log/auth.log*).
 #### System Management Basics
 
 Here are a informational links about a couple of system management tools
-mentioned in this guide
+used in this guide:
 
-  * [Linux Package Management (for installing, updating and removing software)][md]
-  * [Systemd Tools (for an explanation about task management with systemctl)][systemd]
+  * [Linux Package Management][pkg] (for installing, updating and removing software)
+  * [Systemd Tools][systemd] (for an explanation about task management with systemctl)
 
 [pkg]: https://www.digitalocean.com/community/tutorials/package-management-basics-apt-yum-dnf-pkg
 [systemd]: https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
@@ -325,7 +329,7 @@ Try [some command-line examples](#eg-cmds) in the appendix.  Note that
 the up/down arrow keys can be used to recall your previous commands.
 You can edit an entry in your previous commands using the left/right arrow keys.
 
-You will find that the 'TAB' key is very useful for command-line completion.
+You will find that the 'TAB' key (shown below as *<TAB>*) is very useful for command-line completion.
 Suppose you are going to use the command 'timedatectl'.  You start by typing
 the word 'time' and then hit the TAB key once, then again when you do not get a
 response.  You will see 4 possible commands as shown below.  Then to complete
@@ -383,12 +387,11 @@ We set the access permissions using chmod[^chmod] and chown[^chown].
     $ sudo chmod g+ws shared
 ~~~~
 
-Here are 3 example directories to create for differing purposes; other
-examples might be 'Videos' and 'Pictures':
- 'Music', 'Protected' and 'Test'.
+Here are 3 example directories to create for differing purposes:\
+ 'Music', 'Protected' and 'Test'\
+other examples might be 'Videos' and 'Pictures':
 
-You will be able to create directories from your devices as well as you 
-use Samba services.
+You will be able to create directories from your devices as well.
 
 ~~~~ {.shell}
     $ cd /data/shared
@@ -408,10 +411,11 @@ that I manage without using Samba tools.
 I use the Test area initially for testing from various devices; that is,
 create and delete files in the test directory.
 
-I would put my old Music files in 'Music' so that it can be accessed from
-various devices 24x7. You can either keep the permissions as nobody:nogroup
-so that other people in your home network can help manage the collection,
-or you can change ownership so that only you manage them from your desktop:
+As an example I put my old Music files in 'Music' so that it could be
+accessed from various devices 24x7. You can either keep the permissions
+as *nobody:nogroup*, allowing other people in your home network to help
+manage the collection, or you can change ownership so that only you manage
+them locally.  In this example my login name is 'myname' with group 'mygroup':
 
 ~~~~ {.shell}
     $ du -sh /data/shared/Music/
@@ -488,14 +492,17 @@ Here are the specifics:
        module options that allow Apple SMB clients to interact with the server
     3. we add a logging option to increase some logging for debugging
        purposes
-  * Our 'share' section
+  * Our 'share' section named *home*
 
-The [modified smb.conf file]{#smb-conf} is in the appendix.
+The [modified smb.conf file](smb-conf) is github.
 
 ~~~~ {.shell}
 $ cd /etc/samba
 $ sudo cp -p smb.conf smb.conf.orig
 $ sudo nano smb.conf
+// The 'diff' command shows differences in snippets with the line numbers
+// A more elegant way to see the differences would be side-by-side:
+//   diff --color=always -y smb.conf smb.conf.orig | less -r 
 $ diff smb.conf smb.conf.orig
 29,30c29
 < #   workgroup = WORKGROUP
@@ -524,18 +531,19 @@ $ diff smb.conf smb.conf.orig
 ~~~~
 
 [vfs]: https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html
+[smb-conf]: https://raw.githubusercontent.com/deatrich/linux-home-server/main/examples/smb.conf
 
 ### Start the Service and Run Some Tests
 
 ~~~~ {.shell}
+// enable the samba daemons
 $ sudo systemctl enable smbd nmbd
 $ sudo systemctl restart smbd nmbd
-$ systemctl  status smbd | grep Status:
+$ systemctl status smbd | grep Status:
      Status: "smbd: ready to serve connections..."
 
 $ systemctl  status nmbd | grep Status:
      Status: "nmbd: ready to serve connections..."
-
 ~~~~
 
 Testing will depend on your device and client.
@@ -545,7 +553,7 @@ Linux device.  Open a file browser:
 
   Applications -> Accessories -> Files
 
-The the File menu has an option: *Connect to Server*.  If you have an
+The Files browser File menu has an option: *Connect to Server*.  If you have an
 older version of Mate then find the help option and search for
  'Connect to Server'.
 
@@ -559,7 +567,8 @@ want one anyway; so give it the password 'guest'.
 At this point an application named [seahorse][seahorse] might pop up.  It is
 the GNOME encryption interface, and you can store passwords and keys in it.
 I don't use it, but you might want to for this Samba share.
-You can always cancel the seahorse window.
+You can always cancel the seahorse window.  However it will reappear the next
+time you connect to the share.
 
 For the connection request, fill in this data:
 
@@ -567,12 +576,12 @@ For the connection request, fill in this data:
   * Select 'Type' Windows share
   * Enter the share name:  home
   * Clear the Folder option
-  * Enter the domain name: LINUX
+  * Enter the domain name: LINUX (or whatever name you chose)
   * User name: guest
   * Password: guest (and select the option to remember it for seahorse)
   * tick 'add bookmark' and give it a name
 
-and connect.
+and finally connect.
 
 *Suppose you have an Android phone*.  Download the App:
  [Cx File Explorer][cx] from your App Store.  Under its *Network* tab
@@ -584,7 +593,7 @@ the IP address and select 'Anonymous' instead of user/pass.
 Tests to run to validate functionality include the following:
 
    1. Create a folder for your personal use
-   2. Enter the Test folder
+   2. Browse to the Test folder
    3. Copy and Paste a file from your device here
    4. Create a folder here too, and copy your file into that folder
    5. Delete all files and folders inside the Test folder
@@ -633,9 +642,9 @@ You can always circle back here in the future and try them.
 
 ### Remove **anacron** Service
 
-UNIX has a mechanism called *cron* allowing you to run commands at
-specific times and days.  Once personal computers arrived they were
-not up and running all the time.  So operating systems like Linux 
+UNIX and Linux has a mechanism called *cron* allowing servers to run
+commands at specific times and days.  However personal and mobile computing is
+typically not powered on all the time.  So operating systems like Linux 
 have another mechanism called *anacron* which trys to run periodic 
 cron-configured commands while the computer is still running.  Since we 
 are creating a 24x7 server we do not also need anacron -- delete it:
@@ -652,6 +661,9 @@ If you won't be using it on your server then turn Bluetooth off.
 The Pi does not have a BIOS like personal computers do; instead configuration
 changes to enable or disable devices are managed in the configuration file
 *config.txt* in */boot/firmware/*
+
+<!-- at some point discuss the lack of a RTC and its effect
+on logging, etc. on SBC devices -->
 
 You will need to reboot the server once you have make this change.  If
 you also disable WiFi then wait until you have finished the next task.
@@ -686,7 +698,7 @@ latency is usually better to wired devices.  But if you prefer it on wireless
 then skip this task.
 
 You will need to reboot the server once you have make this change, but 
-remember to connect the Pi via an ethernet cable to your home router first.
+**remember to connect the ethernet cable** on the Pi to your home router first.
 
 ~~~~ {.shell}
 // List wireless devices - after making this change you will not see this
@@ -752,7 +764,7 @@ $ sudo systemctl stop display-manager
 
 // If you do have a mouse and a screen attached then you can still make 
 // the mouse work in a text console login -- it can be useful.  At work
-// I have sometimes used the mouse at a text console to quickly copy and
+// I have sometimes used the mouse at a console switch to quickly copy and
 // paste process numbers for the kill command.
 
 $ sudo apt install gpm
@@ -791,6 +803,7 @@ $ sudo /bin/bash
 
 // disable secureboot-db
 // UEFI Secure boot
+// (!! add notes)
 
 // disable whoopsie and kerneloops if you don't want to be sending
 // information to outside entities
@@ -798,6 +811,8 @@ $ sudo /bin/bash
 # systemctl disable kerneloops
 # systemctl stop whoopsie
 # systemctl disable whoopsie
+# apt remove whoopsie kerneloops
+# apt purge whoopsie kerneloops
 ~~~~
 
 ### Enabling the Secure Shell Daemon
@@ -941,11 +956,17 @@ columns you are interested in -- try *lsblk \-\-help* to see other options.
       5.1 %      95.2 MiB / 404.4 MiB = 0.235    35 MiB/s     0:11   3 min 40 s
       ...
       100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             
+~~~~
 
-    // Now find the microSd and dd the image to it
+    Now plug in the microSD card,
+    [identify the microSD card device name](#find-device), and then
+    use the *dd* command to write the image to it.  Safely remove the
+    device when you are done with the *eject* command.  In this example
+    the device name */dev/sdX* is a place-holder for the real device name:
+~~~~ {.shell}
     $ img="ubuntu-mate-22.04-desktop-arm64+raspi.img"
-    $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync
-
+    $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
+    $ sudo eject /dev/sdX
 ~~~~
 
 ### Modify the Partitioning of the Installation Image {#mod-partition}
@@ -961,11 +982,10 @@ with a USB card reader and an inserted 256 GB microSD card.
 
 There is a good graphical tool named *gparted* which is easy to use.
 Beginners should certainly use it, and it is great when
-managing a handful of servers (it is a different story if
-you are managing dozens or thousands of servers).  When you create the
-new partition 
+managing a handful of servers (it is a different story if you are managing
+dozens or thousands of servers).
 
-A few gparted notes:
+A few gparted notes:\
 : You will need to first install it with *sudo apt install gparted*
 : If you opt for this tool then it is all you need
 : It is intuitive, and there are many [tutorials][gparted] on the web
@@ -974,9 +994,10 @@ A few gparted notes:
 : Also use the tool to create an *ext4* file system on the third partition
   once you have created it
 
-As always, I show the command-line example. As a bonus it shows a common
-problem of dealing with partition alignment when manually editing partitions.
-Skip the rest of this section if you have opted for gparted.
+As always, I show the command-line example in this section. As a bonus
+it shows a common problem of dealing with partition alignment when
+manually editing partitions.  Skip the rest of this section if you
+have opted for gparted.
 
 Here are some common command-line tools to help us:
 
@@ -995,10 +1016,10 @@ parted
 mkfs.ext4
 : You should create an ext4 file system on the new partition
 
-utilities used to find disk information
-:lshw -C disk
-:hdparm -I /dev/sdX (where X is a block device letter)
-:smartctl -a  /dev/sdX (needs *smartmontools* to be installed)
+Utilities used to find disk information:\
+: lshw -C disk
+: hdparm -I /dev/sdX (where X is a block device letter)
+: smartctl -a  /dev/sdX (needs *smartmontools* to be installed)
 
 [gparted]: https://www.dedoimedo.com/computers/gparted.html#mozTocId133810
 
@@ -1123,7 +1144,7 @@ data structures are better aligned, and disk performance is enhanced.
 ~~~~
 
 Though we have now a bit of wasted space between partition 2 and 3, we can
-extend partition 2 to use the space.  We need to resize its ext4 file system
+extend partition 2 to use that space.  We need to resize its ext4 file system
 after:
 
 ~~~~ {.shell}
@@ -1183,7 +1204,7 @@ new data partition:
     Writing superblocks and filesystem accounting information: done
 ~~~~
 
-By default, the generations of the *ext* filesystem reserve 5% of the 
+By default, the generations of the [*ext* filesystem][ext] reserve 5% of the 
 available space for the *root* user.  On a data partition where most
 files created will belong to ordinary users this reservation is not necessary.
 5% of 200 GB is 10 GB - that is a lot of space.  So it is a good idea
@@ -1210,6 +1231,7 @@ the filesystem in the future.  We will use the label *PI-DATA*:
     $ sudo tune2fs -L PI-DATA /dev/sde3
     tune2fs 1.46.5 (30-Dec-2021)
 ~~~~
+[ext]: https://en.wikipedia.org/wiki/Extended_file_system
 
 ### Setting Up a Data Area {#data-area}
 
@@ -1303,7 +1325,7 @@ mkdir -\-help         Shows help on using the mkdir command
 
 rmdir thisdir        Removes the directory named 'thisdir'
 
-cd                   Takes you back to your home directory
+cd                   Without an argument, it takes you back to your home
 
 file .bash\*         Shows what kind of files whose names start with '.bash'
 
@@ -1312,16 +1334,12 @@ echo $SHELL          Shows what shell you use
 env | sort | less    Shows your environment variables, sorted (q to quit)
 -----------------------------------------------------------------------------
 
-
-### Example Samba Configuration file {#smb-conf}
-
-(this will become a link instead into github)
-
 ### A MATE Configuration Exercise {#mate-exercise}
 
 Here are a series of exercises you can try on a fresh installation of the
 MATE desktop:
 
+<!-- to be properly expanded -->
 I always delete the bottom panel and reconfigure the top panel (right-click on
 the top panel and add an applet).  I prefer the 'Classic Menu' setup which
 splits menus into applications, places and system options.  You can change

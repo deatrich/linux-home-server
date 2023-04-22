@@ -5,47 +5,51 @@
 #
 #***************************************************************************
 
-
 #***************************************************************************
-
-TARG	= linux-server.md
-
 .SUFFIXES : .md .html .pdf
-
 #.SILENT :
 
 #***************************************************************************
 ## get object file names from source file names
 
+TARG		= linux-server.md
+GENDIR		= "generated/"
 MDFILE		= $(TARG)
 HTMLOBJECT	= $(MDFILE:.md=.html)
 PDFOBJECT	= $(MDFILE:.md=.pdf)
 PDFVIEWER	= evince
 HTMLVIEWER	= firefox
 
-
 #***************************************************************************
 PRINTOPT	= 
-PANDOC_OPTS	= -c style.css --toc --toc-depth=3 --syntax-definition=shell.xml
+PANDOC_OPTS	= -c style.css --toc --toc-depth=3 --syntax-definition=shell.xml --highlight-style=custom-highlight.theme
 PANDOC_HTML_OPTS = --template template.htm
-PANDOC_PDF_OPTS	= --template=template.latex --highlight-style=custom-highlight.theme -V geometry:margin=2cm --pdf-engine=xelatex
+PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm --pdf-engine=xelatex
 
 #***************************************************************************
-## GENERAL RULES
+## DEFAULT GOAL
 
 all:	$(HTMLOBJECT) $(PDFOBJECT)
 
-pdf:	$(PDFOBJECT) template.latex shell.xml custom-highlight.theme style.css
-	$(MAKE) $(PDFOBJECT)
+#***************************************************************************
+## DEPENDENCIES
 
-html:	$(HTMLOBJECT) template.htm shell.xml style.css
-	$(MAKE) $(HTMLOBJECT)
+$(PDFOBJECT): $(MDFILE) template.latex shell.xml custom-highlight.theme
+
+$(HTMLOBJECT): $(MDFILE) template.htm shell.xml custom-highlight.theme style.css
+
+#***************************************************************************
+## GENERAL RULES
 
 showhtml: $(HTMLOBJECT)
 	$(HTMLVIEWER) $(HTMLOBJECT)
 
 showpdf: $(PDFOBJECT)
 	$(PDFVIEWER) $(PDFOBJECT)
+
+copies: $(PDFOBJECT) $(HTMLOBJECT)
+	cp -p $(PDFOBJECT) $(GENDIR)$(PDFOBJECT) 
+	cp -p $(HTMLOBJECT) $(GENDIR)$(HTMLOBJECT) 
 
 help:	
 	@echo ""
