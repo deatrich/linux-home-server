@@ -1351,15 +1351,75 @@ showing configuration sessions.  Also add some custom panel buttons.
 
 #### System Backups
 
-There are many ways to do backups - this is just one example.
+There are many ways to do backups - this is just one example.  
+An [example script][backup-script] can do local system backups; but it
+can also do external backups to a removable drive, such as an attached
+USB drive.  If you do only local backups without creating a copy elsewhere
+then you run the risk of losing your data because of a major failure
+(like losing or overwriting the local disk) when you don't have another copy.
 
-First make the top directory with sufficient space to hold one week's
-worth of backups.  The files will be compressed so it requires only a few
-hundred megabytes per day for each day of the week:
+The example script requires a few configuration entries into a file
+named [*/etc/system-backup.conf*][backup-conf].  You need a designated local
+directory; the files will be compressed so it requires only a few hundred
+megabytes per day for each day of the week.  The provided example
+script also keeps the last week of each month for one year.  If you use 
+the external backup feature of the script then you simply need to provide
+the partition on the drive to use for backups, as well as the mounted
+name of the directory where the files will be copied.
+
+The missing part of this backup scheme is backing up any large data
+partitions, such as Samba or NFS data.  I will provide examples later for this.
+
+In order to automate your backup script, you also need to create a *cronjob*
+which will automatically run your script in the time slot you pick.  In
+the example below you:
+
+    * create the necessary local directory
+    * copy the configuration file and the script into place
+    * edit the configuration file
+    * create/edit the cronjob to run the local backup at 1 in the early morning
 
 ~~~~ {.shell}
-    # mkdir /var/local-backups
+    $ sudo mkdir /var/local-backups
+    $ sudo cp /path/to/system-backup.conf /etc
+    $ sudo mkdir /root/bin
+    $ sudo cp /path/to/system-backup.sh /root/bin
+    // the script must be marked as 'executable'; the chmod command will do that
+    $ sudo chmod 755 /root/bin/system-backup.sh
+    // edit the configuration file for the backups
+    $ sudo nano /etc/system-backup.conf
+
+    // create the cronjob and ask cron to list what that job is:
+    $ EDITOR=/bin/nano sudo crontab -e
+    $ sudo crontab -l | tail -3
+
+    0 1 * * * /root/bin/system-backup.sh -Y
+
+    // Run the script in debug mode from the command line to make sure
+    // that everything is correctly configured:
+    $ sudo /root/bin/system-backup.sh -D -Y
 ~~~~
 
-(this will become a link instead into github)
+If you have inserted a USB drive, then make a folder at the root of the
+filesystem on the USB drive for backups.  You should edit the configuration
+file with the correct USB partition and mount path; and then edit the
+crontab again and add '-X' to the list of options for external drive
+backups.
 
+In case your USB drive is formated for Windows then it should be okay.
+The script might issue some warnings about trying to preserve LINUX
+permissions on the USB drive, but should otherwise work.  I need to verify
+this case.
+
+Test it with:
+
+~~~~ {.shell}
+    $ sudo /root/bin/system-backup.sh -D -Y -X
+~~~~
+
+If you ever need to restore files from your backups then you should unpack the
+*tarballs* (compressed 'tar' files) on a Linux system and copy the needed
+files into place on the filesystem.
+
+[backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
+[backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.cons
