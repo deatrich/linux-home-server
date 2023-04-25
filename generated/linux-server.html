@@ -1011,10 +1011,38 @@ the device name */dev/sdX* is a place-holder for the real device name:</code></p
 <p>I always delete the bottom panel and reconfigure the top panel (right-click on the top panel and add an applet). I prefer the ‘Classic Menu’ setup which splits menus into applications, places and system options. You can change the look and feel; you can remove the password request on the screensaver configuration; you can change the background, etc. Search online for videos showing configuration sessions. Also add some custom panel buttons.</p>
 <h3 id="backups">An Example Process and Script for Backups</h3>
 <h4 id="system-backups">System Backups</h4>
-<p>There are many ways to do backups - this is just one example.</p>
-<p>First make the top directory with sufficient space to hold one week’s worth of backups. The files will be compressed so it requires only a few hundred megabytes per day for each day of the week:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>    <span class="fu"># mkdir /var/local-backups</span></span></code></pre></div>
-<p>(this will become a link instead into github)</p>
+<p>There are many ways to do backups - this is just one example.<br />
+An <a href="https://github.com/deatrich/tools/blob/main/system-backup.sh">example script</a> can do local system backups; but it can also do external backups to a removable drive, such as an attached USB drive. If you do only local backups without creating a copy elsewhere then you run the risk of losing your data because of a major failure (like losing or overwriting the local disk) when you don’t have another copy.</p>
+<p>The example script requires a few configuration entries into a file named <a href="https://github.com/deatrich/tools/blob/main/etc/system-backup.conf"><em>/etc/system-backup.conf</em></a>. You need a designated local directory; the files will be compressed so it requires only a few hundred megabytes per day for each day of the week. The provided example script also keeps the last week of each month for one year. If you use the external backup feature of the script then you simply need to provide the partition on the drive to use for backups, as well as the mounted name of the directory where the files will be copied.</p>
+<p>The missing part of this backup scheme is backing up any large data partitions, such as Samba or NFS data. I will provide examples later for this.</p>
+<p>In order to automate your backup script, you also need to create a <em>cronjob</em> which will automatically run your script in the time slot you pick. In the example below you:</p>
+<pre><code>* create the necessary local directory
+* copy the configuration file and the script into place
+* edit the configuration file
+* create/edit the cronjob to run the local backup at 1 in the early morning</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /var/local-backups</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true"></a>    <span class="fu">$ sudo cp /path/to/system-backup.conf /etc</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /root/bin</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true"></a>    <span class="fu">$ sudo cp /path/to/system-backup.sh /root/bin</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true"></a>    <span class="co">// the script must be marked as &#39;executable&#39;; the chmod command will do that</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true"></a>    <span class="fu">$ sudo chmod 755 /root/bin/system-backup.sh</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true"></a>    <span class="co">// edit the configuration file for the backups</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true"></a>    <span class="fu">$ sudo nano /etc/system-backup.conf</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true"></a>    <span class="co">// create the cronjob and ask cron to list what that job is:</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true"></a>    <span class="fu">$ EDITOR=/bin/nano sudo crontab -e</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true"></a>    <span class="fu">$ sudo crontab -l | tail -3</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true"></a>    0 1 * * * /root/bin/system-backup.sh -Y</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true"></a></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true"></a>    <span class="co">// Run the script in debug mode from the command line to make sure</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true"></a>    <span class="co">// that everything is correctly configured:</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true"></a>    <span class="fu">$ sudo /root/bin/system-backup.sh -D -Y</span></span></code></pre></div>
+<p>If you have inserted a USB drive, then make a folder at the root of the filesystem on the USB drive for backups. You should edit the configuration file with the correct USB partition and mount path; and then edit the crontab again and add ‘-X’ to the list of options for external drive backups.</p>
+<p>In case your USB drive is formated for Windows then it should be okay. The script might issue some warnings about trying to preserve LINUX permissions on the USB drive, but should otherwise work. I need to verify this case.</p>
+<p>Test it with:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a>    <span class="fu">$ sudo /root/bin/system-backup.sh -D -Y -X</span></span></code></pre></div>
+<p>If you ever need to restore files from your backups then you should unpack the <em>tarballs</em> (compressed ‘tar’ files) on a Linux system and copy the needed files into place on the filesystem.</p>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
