@@ -1422,4 +1422,4 @@ If you ever need to restore files from your backups then you should unpack the
 files into place on the filesystem.
 
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
-[backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.cons
+[backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
