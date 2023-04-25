@@ -16,3 +16,24 @@ is always available as well.
 This is a work in progress, so expect more sections of the guide to be
 fleshed out in coming days.
 
+## Task lists for main document ##
+** done? **   ** Task completed **
+- [x] Initial document for installation
+- [x] Add some getting-started-with-Linux notes
+- [x] Configure Samba
+- [x] Add backup notes
+- [ ] Reinstall Pi to verify process 
+- [ ] General server customization
+- [ ] Remote desktop configuration
+- [ ] Configure NFS service
+- [ ] Create a web site
+- [ ] Add a database service
+- [ ] Create a git service
+
+## Task lists for appendix ##
+- [x] Block device details and partitioning before installation
+- [x] add 
+- [ ] MATE configuration exercise
+- [x] Backup configuration
+- [ ] SSH notes
+- [ ] add more notes as needed
