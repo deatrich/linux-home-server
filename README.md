@@ -16,7 +16,7 @@ is always available as well.
 This is a work in progress, so expect more sections of the guide to be
 fleshed out in coming days.
 
-## Task lists for main document ##
+## Task lists for main document
 ** done? **   ** Task completed **
 - [x] Initial document for installation
 - [x] Add some getting-started-with-Linux notes
