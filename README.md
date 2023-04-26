@@ -17,22 +17,26 @@ This is a work in progress, so expect more sections of the guide to be
 fleshed out in coming days.
 
 ## Task lists for main document
-- [x] Initial document for installation
+- [x] Document the installation 
 - [x] Add some getting-started-with-Linux notes
 - [x] Configure Samba
 - [x] Add backup notes
-- [ ] Reinstall Pi to verify process 
-- [ ] General server customization
-- [ ] Remote desktop configuration
-- [ ] Configure NFS service
+- [ ] Reinstall Pi to verify the process 
+- [ ] Address general server customization
+- [ ] Add remote desktop configuration notes
+- [ ] Configure an NFS service
 - [ ] Create a web site
 - [ ] Add a database service
 - [ ] Create a git service
+- [ ] Configure a KVM virtualization service
+- [ ] Configure a targeted Ansible service for local configuration
+- [ ] Document some desktop client topics such as Pandoc
 
 ## Task lists for appendix ##
 - [x] Block device details and partitioning before installation
-- [x] add 
+- [x] Expand on some Linux introductory topics
 - [ ] MATE configuration exercise
 - [x] Backup configuration
 - [ ] SSH notes
 - [ ] add more notes as needed
+
