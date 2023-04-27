@@ -35,7 +35,7 @@ fleshed out in coming days.
 ## Task lists for appendix ##
 - [x] Block device details and partitioning before installation
 - [x] Expand on some Linux introductory topics
-- [ ] MATE configuration exercise
+- [x] MATE configuration exercise
 - [x] Backup configuration
 - [ ] SSH notes
 - [ ] add more notes as needed
