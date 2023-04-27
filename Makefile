@@ -58,6 +58,7 @@ help:
 	@echo "make pdf          -- update the pdf file"
 	@echo "make showhtml     -- show the html file"
 	@echo "make showpdf      -- show the pdf file"
+	@echo "make copies       -- push html and pdf copies to generated area"
 	@echo "make clean        -- clean up generated files"
 
 .md.html :
