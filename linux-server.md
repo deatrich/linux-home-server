@@ -1,19 +1,13 @@
 ---
 title: Creating a Linux Home Server
 author: Denice Deatrich
-lastupdate: 20 April 2023
+lastupdate: 24 April 2023
 date: March 2023
 colorlinks: true
 linkcolor: Magenta
 urlcolor: ForestGreen
 toccolor: Magenta
 ---
-
-<!--
-<style>
-div.sourceCode { box-shadow: 2px 6px #888888; }
-</style>
--->
 
 <!-- Introduction -->
 ## Overview {#overview}
@@ -26,9 +20,10 @@ This guide has been tested on a Raspberry Pi 400, which is very similar
 to a Raspberry Pi 4b.  The main difference it that the RP 400 board
 is embedded in a small keyboard.
 
-I also have another SBC, an [ODROID][odroid], and I will document
-it as well.  I am not sure yet whether I will document it here, or as
-another mini-document.  For now I am focusing on the Raspberry Pi.
+I also have another SBC, an [ODROID][odroid] still running Ubuntu LTS 16.04,
+and I will document it as well as I update it.  I am not sure yet whether
+I will document it here, or as another mini-document.  For now I am
+focusing on the Raspberry Pi.
 
 One of my goals is to promote using the command-line to do most of the work.
 If you are interested in expanding your horizons and understanding
@@ -82,13 +77,11 @@ Also, command output is sometimes long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)
 
 If you discover issues with instructions in this document, or have other
-comments or suggestions then you can contact me on [github][github]
-in [my documentation projects area][mygithub].
+comments or suggestions then you can contact me on [github][mygithub].
 
 [md]: https://www.markdownguide.org/getting-started/
 [pandoc]: https://pandoc.org/
-[github]: https://github.com/
-[mygithub]: https://github.com/deatrich/linux-home-server
+[mygithub]: https://github.com/deatrich/
 
 ## Picking the OS (Operating System) and the Window Manager {#environment}
 
@@ -300,6 +293,7 @@ data.
 |/usr      | Here we have programs, shared files, documentation, system libraries and programming files |
 |/var      | Varying files are here - log files, cache files, database files, web files, and others (like databases) |
 |/dev      | Special device files reside here |
+|/tmp      | Temporary files for any user |
 
 [^sudo-ts]: It is possible to add a *timestamp_timeout* factor in minutes to the
 */etc/sudoers* file to allow you to run other sudo commands for some minutes
@@ -317,7 +311,6 @@ popular editor named *nano* is the best place to start if you don't want to
 try text editors with a learning curve.  When you invoke nano immediately
 enter ^G (meaning hold the CONTROL key while pressing the **g** key) to get
 some help.
-
 
 ### Getting Going with the Command-Line
 
@@ -640,20 +633,6 @@ The main objective here is to show you some options that reduce
 complexity and memory consumption, and might improve security and reliability.
 You can always circle back here in the future and try them.
 
-### Remove **anacron** Service
-
-UNIX and Linux has a mechanism called *cron* allowing servers to run
-commands at specific times and days.  However personal and mobile computing is
-typically not powered on all the time.  So operating systems like Linux 
-have another mechanism called *anacron* which trys to run periodic 
-cron-configured commands while the computer is still running.  Since we 
-are creating a 24x7 server we do not also need anacron -- delete it:
-
-~~~~ {.shell}
-$ sudo apt remove anacron
-$ sudo apt purge anacron
-~~~~
-
 ### Turn Off Bluetooth
 
 If you won't be using it on your server then turn Bluetooth off.
@@ -815,6 +794,20 @@ $ sudo /bin/bash
 # apt purge whoopsie kerneloops
 ~~~~
 
+### Remove **anacron** Service
+
+UNIX and Linux has a mechanism called *cron* allowing servers to run
+commands at specific times and days.  However personal and mobile computing is
+typically not powered on all the time.  So operating systems like Linux 
+have another mechanism called *anacron* which trys to run periodic 
+cron-configured commands while the computer is still running.  Since we 
+are creating a 24x7 server we do not also need anacron -- delete it:
+
+~~~~ {.shell}
+$ sudo apt remove anacron
+$ sudo apt purge anacron
+~~~~
+
 ### Enabling the Secure Shell Daemon
 
 describe enabling, configuring and creating a key pair.
@@ -848,9 +841,9 @@ description here - eg, MySQL, PHP, ...
 <!--  -->
 
 <!-- Appendix -->
-## Appendix {#appendix}
+# Appendix {#appendix}
 
-### Identifying Device Names for Storage Devices {#find-device}
+## Identifying Device Names for Storage Devices {#find-device}
 
 In a Linux system it is important to correctly identify storage devices,
 especially when you want to repartition or reformat them.  If you pick
@@ -933,7 +926,7 @@ columns you are interested in -- try *lsblk \-\-help* to see other options.
 ~~~~
 
 
-### Installation Disk Creation from the Command-line {#image-cmds}
+## Installation Disk Creation from the Command-line {#image-cmds}
 
 ~~~~ {.shell}
     // create a directory for downloaded images
@@ -969,7 +962,7 @@ columns you are interested in -- try *lsblk \-\-help* to see other options.
     $ sudo eject /dev/sdX
 ~~~~
 
-### Modify the Partitioning of the Installation Image {#mod-partition}
+## Modify the Partitioning of the Installation Image {#mod-partition}
 
 If you modify the microSD's partioning *before* you start the installation
 then you can reserve a portion of the disk for
@@ -1023,13 +1016,13 @@ Utilities used to find disk information:\
 
 [gparted]: https://www.dedoimedo.com/computers/gparted.html#mozTocId133810
 
-#### Identify the Main Linux Partition on the microSD
+### Identify the Main Linux Partition on the microSD
 
 First we need to [identify the device name](#find-device), and then we use that
 device name in the partitioning tool.  In my test situation I am using
 */dev/sde* and I am targeting the main Linux (second) partition: */dev/sde2*.
 
-#### Expand the Main Linux Partition on the microSD
+### Expand the Main Linux Partition on the microSD
 
 40 GB is lots of space for future system needs, so I decide to expand the
 second partition from 6 up to 40 GB.
@@ -1073,7 +1066,7 @@ adjusts the size of the underlying ext4 filesystem.
     The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.
 ~~~~
 
-#### Create a New Data Partition
+### Create a New Data Partition
 
 Now we want to create a third large partition.  We run into the problem
 of partition alignment because I chose 40 GB for the second partition 
@@ -1184,7 +1177,7 @@ after:
     The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.
 ~~~~
 
-#### Create a Filesystem on the New Data Partition
+### Create a Filesystem on the New Data Partition
 
 Ubuntu uses the *ext4* filesystem, so let's create that filesystem on the
 new data partition:
@@ -1233,7 +1226,7 @@ the filesystem in the future.  We will use the label *PI-DATA*:
 ~~~~
 [ext]: https://en.wikipedia.org/wiki/Extended_file_system
 
-### Setting Up a Data Area {#data-area}
+## Setting Up a Data Area {#data-area}
 
 If you did not [modify the initial partitioning](#mod-partition) of your
 microSD card then you will simply make a directory in the root of
@@ -1282,7 +1275,7 @@ we create an entry in the filesystem table, the */etc/fstab* file:
     /dev/sde3       191G   28K  189G   1% /data (!! put correct dev here)
 ~~~~
 
-### Some Command-line Utilities and Their Purpose {#eg-cmds}
+## Some Command-line Utilities and Their Purpose {#eg-cmds}
 
 -----------------------------------------------------------------------------
 Command              Purpose
@@ -1334,29 +1327,120 @@ echo $SHELL          Shows what shell you use
 env | sort | less    Shows your environment variables, sorted (q to quit)
 -----------------------------------------------------------------------------
 
-### A MATE Configuration Exercise {#mate-exercise}
+## A MATE Configuration Exercise {#mate-exercise}
 
 Here are a series of exercises you can try on a fresh installation of the
-MATE desktop:
+MATE desktop.  By default, the initial mate configuration has 2 panels
+(taskbars):
 
-<!-- to be properly expanded -->
-I always delete the bottom panel and reconfigure the top panel (right-click on
-the top panel and add an applet).  I prefer the 'Classic Menu' setup which
-splits menus into applications, places and system options.  You can change
-the look and feel; you can remove the password request on the screensaver
-configuration; you can change the background, etc.  Search online for videos
-showing configuration sessions.  Also add some custom panel buttons.
+ - the top panel has:
+   - a global menu button on the left
+   - on the right is a group of icons that represent the state of things,
+     known as 'Indicator Applet Complete' 
 
-### An Example Process and Script for Backups {#backups}
+ - the bottom panel has:
+   - on the left, a 'show desktop' button
+   - on the left, a window list area, where current open windows as shown
+   - on the right, a workspace area with 4 workspaces
+   - a trash can button
 
-#### System Backups
+You may like this setup; but here is a small exercise to give you a quick
+start in making modifications.
+
+### Modify the Top Panel
+
+ 1. Get rid of the bottom panel:
+      - Right click on it and selecting 'Delete This Panel'.  We will add
+        some of its contents to the top panel.
+ 2. On the top panel try a different menu presentation:
+      - Right-click over the menu button on the top panel, and unlock its
+        status.  Then right-click and select 'Remove from Panel'.
+      - Now right-click and select 'Add to Panel'.  A list of applets mostly
+        in alphabetical order will appear in a new window.  Select 
+        'Classic Menu' and click on 'Add' and it will appear on the panel.
+        Right-click on it and move it completely to the left.  Then
+        right-click on it again and select 'Lock to Panel'.  Leave the
+        'Add to Panel' window on your screen to continue adding applets.
+ 3. Add a couple of separators:
+      - Scroll down to find 'Separator' and add it to the panel. Then
+        right-click on it, move it against the menu, and lock it to the panel.
+        (Locked items cannot be accidentally moved; it is a mystery why it
+        does not always prevent deletion of some applet buttons...)
+      - Add another separator, and move it about an inch to the right
+        of the first separator and lock it.
+ 4. Add a window lister:
+      - Scroll down to find 'Window Selector' and add it to the panel to 
+        the right of the second separator. It is a bit tricky to select
+        it to lock it.  Right-click just to the right of the second separator
+        line.  If you see 'System Monitor' at  the top of the menu list then
+        lock it to the panel.  Right click on it again and select
+        'Preferences'.  In the 'Window Grouping' options select
+        'Group windows when space is limited' and then close that window.
+ 5. Add a workspace switcher:
+      - scroll down to find 'Workspace Switcher' and add it to the panel. 
+        Then right-click on it and select 'Preferences'.  Reduce the number
+        of workspaces to 2, and name them - for example rename one to 'Home'
+        and the other to 'Projects'.
+      - Now right-click and move it as far right as you can, and lock it.
+ 6. Finally add a few of your own 'Launchers':
+      - Add a firefox button:
+         - right-click between the 2 separators and add to the panel:
+           'Application Launcher'.  That will bring up a further selection.
+           Click on Internet, then 'Firefox Web Browser' and add it.
+           Again, right-click on the firefox button and move it to the left
+           and lock it.
+      - Add a terminal button:
+         - right-click between the 2 separators and add to the panel:
+           'MATE Terminal' and again move and lock it.
+
+I add some custom application launchers related to the use of secure
+shell as well.  If you are interested look at the secure shell example
+further in the appendix.
+ 
+
+## Other Changes Done From the Control Center
+
+ 1. Find the Control Center in the System Menu.
+ 2. Under the 'Look and Feel' section select 'Screensaver':
+      - Chanage the theme to 'Cosmos'.
+      - Disable the 'lock screen' option if you wish.
+ 3. Under the 'Look and Feel' section select 'Windows':
+      - Change the 'Titlebar Action' to 'Roll up'
+ 4. Under the 'Look and Feel' section select 'Appearance':
+      - Try different themes
+      - Try different backgrounds
+ 5. Under the 'Personal' section select 'Startup Applications':
+      - Disable 'Blueman Applet' and 'Power Manager'
+      - Select 'Show hidden' and look at what is lurking underneath,
+        disable things that clearly are not important to you.
+
+## Here are a Few Notes About Window Actions:
+
+The 'Maximize Window' button (between the 'Minimize Window' button and
+the 'Close Window' on the right of each window) has difference actions
+depending on which mouse-click you use:
+
+  - a right-mouse-button-click over the maximize button maximizes the window
+    horizontally.  Another right-mouse-button-click will return it to the
+    previous size.
+  - a middle-mouse-button-click over the maximize button maximizes the window
+    vertically.  Another middle-mouse-button-click will return it to the
+    previous size.
+  - a left-mouse-button-click over the maximize button maximizes the window
+    completely.  Another left-mouse-button-click will return it to the
+    previous size.
+
+<!-- end   -->
+
+## An Example Process and Script for Backups {#backups}
 
 There are many ways to do backups - this is just one example.  
-An [example script][backup-script] can do local system backups; but it
-can also do external backups to a removable drive, such as an attached
-USB drive.  If you do only local backups without creating a copy elsewhere
-then you run the risk of losing your data because of a major failure
-(like losing or overwriting the local disk) when you don't have another copy.
+An [example script][backup-script] in my github area can do both
+local system backups; it can also do external backups to a removable drive,
+such as an attached USB drive.  If you do only local backups without creating
+a copy elsewhere then you run the risk of losing your data because of a
+major failure (like losing or overwriting the local disk) when you don't
+have another copy.
 
 The example script requires a few configuration entries into a file
 named [*/etc/system-backup.conf*][backup-conf].  You need a designated local
@@ -1423,3 +1507,65 @@ files into place on the filesystem.
 
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
+
+## Secure Shell Topics
+
+<!--
+  1. Add a start-up custom launcher asking for the ssh passphrases for
+     the day's work:
+      - From the Control Center select 'Startup Applications'
+      - Click on '+Add' and a small window pops up.
+      - Input a name for it, input the full path to your shell script
+        and add it.
+~~~~ .shell
+  // I run an xterm window in the background, executing inside the
+  // xterm a script that sets up the environment file where other
+  // applications can find my ssh agent process.
+  // 
+  $ tail /home/mylogin/bin/ssh-prime.sh
+  PATH=/usr/bin
+
+  exec xterm +vb -u8 -e /home/mylogin/bin/ssh_prime & 2>/dev/null
+  exit 0
+
+  // I must enter the passphrase for each ssh key-pair that I list
+  // in the script below.  The agent is valid until I log out,
+  // or reboot, or kill the agent.
+  // 
+  $ cat /home/mylogin/bin/ssh_prime
+  PATH=/bin:/usr/bin
+  ssh_info_file=$HOME/.ssh-agent-info-`hostname`
+  ssh-agent >$ssh_info_file
+  chmod 600 $ssh_info_file
+  source $ssh_info_file
+  ssh-add ~/.ssh/id_rsa ~/.ssh/id_some_other_key 
+
+  $ cat /home/mylogin/.ssh-agent-info-myhostname
+  SSH_AUTH_SOCK=/tmp/ssh-1Z893wPnDPpL/agent.2842; export SSH_AUTH_SOCK;
+  SSH_AGENT_PID=2850; export SSH_AGENT_PID;
+
+~~~~
+
+  2. Secure-shell to a remove server:
+      - Select 'Custom Application Launcher', with Type: 'Application',
+        give it a name, select an icon, and then set the command to an
+        existing shell script which connects to the remote server:
+
+~~~~ .shell
+  $ cat ~/bin/remote-work.sh
+  ...
+  PATH=/usr/bin
+
+  cmd=`basename $0`
+  if [ "$DISPLAY" = "" ] ; then
+    echo "DISPLAY is not set.  This isn't going to work"
+    exit 1
+  fi
+
+  . ~/.bash_cron
+
+  exec xterm +vb -u8 -bg '#ffe5e5' -fn 8x13 -e ssh -A -Y remote.server.org & 2>/dev/null
+  exit 0
+~~~~
+   -->
+
