@@ -10,7 +10,7 @@ toccolor: Magenta
 ---
 
 <!-- Introduction -->
-## Overview {#overview}
+# Overview {#overview}
 
 Single-board computers (SBC) are both inexpensive and reliable; they
 are also very small.  As such they make excellent 24x7 home servers.
@@ -37,7 +37,7 @@ sections of this guide.
 
 [odroid]: https://www.hardkernel.com/
 
-### A Few Issues Before You Begin
+## A Few Issues Before You Begin
 
 You should look into assigning a permanent network IP address for your server
 in your home network so that you can easily connect to it from any of your
@@ -50,7 +50,7 @@ your server to your router.
 
 <!-- mention in document somewhere about getting MAC addrs early -->
 
-### About this Document {#doc}
+## About this Document {#doc}
 
 This guide was created in the [*Markdown*][md] markup language (the
 Pandoc flavour of markdown).  Markdown is wonderfully simple.  Then,
@@ -76,14 +76,18 @@ The root superuser:\
 Also, command output is sometimes long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)
 
+Sometimes I add a double-exclamation (**!!**) mark -- that is only a
+reminder for myself to fix an issue at that point in the documentation.
+
 If you discover issues with instructions in this document, or have other
-comments or suggestions then you can contact me on [github][mygithub].
+comments or suggestions then you can contact me on
+[my github project page][mygithub].
 
 [md]: https://www.markdownguide.org/getting-started/
 [pandoc]: https://pandoc.org/
 [mygithub]: https://github.com/deatrich/
 
-## Picking the OS (Operating System) and the Window Manager {#environment}
+# Picking the OS (Operating System) and the Window Manager {#environment}
 
 Though many Raspberry Pi owners run the Raspberry Pi OS (Raspian), in
 this guide I chose to use Ubuntu.  [Ubuntu LTS](https://releases.ubuntu.com/), 
@@ -107,7 +111,8 @@ Generally you should think about updating your server OS every few
 years so that you stay in touch with current technologies.
 
 At the time of writing this guide I used version 22.04 of Ubuntu LTS
-(also known as **Jammy Jellyfish**). It was first released in April 2022.
+(also known as **Jammy Jellyfish**). It was first released in April 2022,
+as indicated by the release number.
 
 I also opt to use an installation image which uses the
 [MATE desktop system](https://mate-desktop.org/).  At the bottom of that
@@ -123,10 +128,10 @@ environment from other devices.  Accessing the desktop remotely is also
 documented in this guide.
 
 [advantage]: https://ubuntu.com/pro/tutorial
-[^pro]: Ubuntu Advantage is also known as **Ubuntu Pro**.  It is free
+[^pro]: Ubuntu Advantage is also known as **Ubuntu Pro**.  It is *free*
 of charge for personal use on up to 5 machines.
 
-## Creating the Installation Disk {#image}
+# Creating the Installation Disk {#image}
 
 You will need a new or repurposed microSD card with a capacity of at
 least 32 GB -- since this is a server we might want to store lots of photos
@@ -194,11 +199,11 @@ exercise for a later time in your Linux adventure.
 [download]: https://ubuntu-mate.org/raspberry-pi/download/
 [toms]: https://www.tomshardware.com/best-picks/raspberry-pi-microsd-cards
 
-## Installation and First Experience
+# Installation and First Experience
 
 Once you have prepared your microSD card then insert it in your Raspberry Pi.
 Note that the card pushes in easily.  It will only go in one way.
-To eject it gently push in on it once and it will pop out enough to handle it.
+To eject it gently push *in* on it once and it will pop out enough to handle it.
 There is no need to pull on it to remove it because it essentially pops out.
 
 Turn the power on with the Pi connected to a monitor, USB keyboard and mouse.
@@ -216,7 +221,7 @@ entertain you while it installs.  Eventually it will reboot and present you
 with the login screen.  Once you login you will see the default MATE
 desktop configuration.
 
-### Experimenting With the Graphical Environment
+## Experimenting With the Graphical Environment
 
 If you are not overly familiar with Linux environments then this is a
 good time to take a few days and play with the installation while it presents
@@ -226,19 +231,19 @@ Linux desktop environment remotely.  As well, you can still invoke on demand a
 graphical presentation locally by logging into the text console and running
 the *startx* command.
 
-Remember that you can always reinstall the server by re-imaging the microSD
+Remember that you can always *reinstall* the server by re-imaging the microSD
 card to start over.  It does not take much time.
 
 If you are not comfortable with the command-line, why not take a few 
 days and play with the login environment and experiment with the settings?
 There is a [MATE exercise](#mate-exercise) in the appendix that you can try.
 
-### Some Linux Basics
+## Some Linux Basics
 
 Here are a few general but important concepts to review for people less
 familiar with Linux.
 
-#### Privileges
+### Privileges
 
 The privileged account on a Linux system is the superuser whose login name 
 is 'root'.  You should never log into a graphical environment as root.
@@ -261,7 +266,7 @@ command you will be asked for your password to verify your identity [^sudo-ts].
 As well, all the commands you run under sudo are logged (on Ubuntu they are
 logged in */var/log/auth.log*).
 
-#### System Management Basics
+### System Management Basics
 
 Here are a informational links about a couple of system management tools
 used in this guide:
@@ -272,7 +277,7 @@ used in this guide:
 [pkg]: https://www.digitalocean.com/community/tutorials/package-management-basics-apt-yum-dnf-pkg
 [systemd]: https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
 
-#### Directory Structure
+### Directory Structure
 
 In Linux and UNIX based systems the file system begins at the symbol known
 as a forward slash: */*
@@ -299,7 +304,7 @@ data.
 */etc/sudoers* file to allow you to run other sudo commands for some minutes
 without entering your password.
 
-#### Editing Text Configuration Files
+### Editing Text Configuration Files
 
 The classic UNIX editor for system administrators is *vi*.  The associated 
 Linux version is *vim*.  If you do not know vim then you should consider
@@ -312,6 +317,27 @@ try text editors with a learning curve.  When you invoke nano immediately
 enter ^G (meaning hold the CONTROL key while pressing the **g** key) to get
 some help.
 
+Since *vi* is a traditional editor for UNIX-like systems, then some commands
+automatically invoke that editor unless you indicate otherwise.  Some example
+commands are:
+
+  * crontab -e
+  * visudo
+  * vipw
+
+You can control which editor is invoked by setting the **EDITOR** shell
+variable in your $HOME/.bashrc shell configuration file, or you can pass
+it on the command-line:
+
+    $ EDITOR=nano crontab -e
+
+Note that there are various ways to specify a path to something in your
+home directory:
+
+  * $HOME/.bashrc
+  * ~/.bashrc
+  * /home/yourlogin/.bashrc
+
 ### Getting Going with the Command-Line
 
 For people without much command-line experience it is important to get going
@@ -320,9 +346,11 @@ window by selecting Application -> System Tools -> MATE Terminal.
 
 Try [some command-line examples](#eg-cmds) in the appendix.  Note that
 the up/down arrow keys can be used to recall your previous commands.
-You can edit an entry in your previous commands using the left/right arrow keys.
+You can edit and reuse an entry in your previous commands using
+the left/right arrow keys.
 
-You will find that the 'TAB' key (shown below as *<TAB>*) is very useful for command-line completion.
+You will find that the 'TAB' key (shown below as *<TAB>*) is very useful
+for command-line completion.
 Suppose you are going to use the command 'timedatectl'.  You start by typing
 the word 'time' and then hit the TAB key once, then again when you do not get a
 response.  You will see 4 possible commands as shown below.  Then to complete
@@ -343,7 +371,7 @@ search for:
     Linux "command line" tutorial for beginners
 ~~~~ 
 
-## Creating a Samba File Sharing Service
+# Creating a Samba File Sharing Service
 
 We are going to create a Samba file sharing service on our server.  Other
 devices like mobile phones, tablets, laptops and desktops running a variety
@@ -354,13 +382,13 @@ We are not going to be really secure, in that we are allowing guest access.
 Presumably if you let your family and your guests connect to your network,
 then you would allow them to connect to your Samba server.
 
-But as always, your internal home network should be protected with at least
-a strong password for your wireless SSID connections.
+But as always, your internal home network should be well protected with at
+least a strong password for your wireless SSID connections.
 
-### Create the data space and assign appropriate permissions.
+## Create the data space and assign appropriate permissions.
 
-First, visit [Setting Up a Data Area](#data-area) in the appendix so that
-you create a data area.
+First, visit [Setting Up a Data Area](#data-area) in the appendix to find
+out how to create your data area.
 
 Always use a sub-directory inside the data area to begin any new project.
 One of the advantages is that the [lost+found][lAf] directory does not become
@@ -384,25 +412,29 @@ Here are 3 example directories to create for differing purposes:\
  'Music', 'Protected' and 'Test'\
 other examples might be 'Videos' and 'Pictures':
 
-You will be able to create directories from your devices as well.
+You will be able to create directories inside the shared area using
+your other devices as well.
+
+I use the Test area initially for testing from various devices; that is,
+create and delete files in the test directory.
 
 ~~~~ {.shell}
     $ cd /data/shared
-    $ sudo mkdir Music Test
-    $ sudo chown nobody:nogroup Music Test
-    $ sudo chmod g+ws shared Music Protected
-
-    $ sudo mkdir Protected
-    $ sudo chown myname:mygroup Protected
-    $ sudo chmod g+ws Protected
+    $ sudo mkdir Test
+    $ sudo chown nobody:nogroup Test
+    $ sudo chmod g+ws Test
 ~~~~
 
 I like having a general 'Protected' area that others can access but
 cannot change.  I use secure-shell access to that area for dumping files
 that I manage without using Samba tools.
 
-I use the Test area initially for testing from various devices; that is,
-create and delete files in the test directory.
+~~~~ {.shell}
+    $ cd /data/shared
+    $ sudo mkdir Protected
+    $ sudo chown myname:mygroup Protected
+    $ sudo chmod g+ws Protected
+~~~~
 
 As an example I put my old Music files in 'Music' so that it could be
 accessed from various devices 24x7. You can either keep the permissions
@@ -436,20 +468,7 @@ them locally.  In this example my login name is 'myname' with group 'mygroup':
 [^chown]: changes the owner of a file or directory; with a colon it also
            changes the group ownership.
 
-<!--
-    // planning for: 'shared' for Samba, 'nfs' for NFS, 'scratch' for junk
-    $ sudo mkdir shared nfs scratch
-
-    // scratch will be just like /var/tmp and /tmp, but ordinary users
-    // can put large files (like cdrom images) here, for later deletion
-    $ sudo chmod 777 scratch
-    $ sudo chmod +t scratch
-
-~~~~ {.shell}
-~~~~
--->
-
-### Install the Samba software
+## Install the Samba software
 
 Simply install the *samba* package; *apt* will pull in any dependencies:
 
@@ -463,7 +482,7 @@ Do you want to continue? [Y/n]
 ...
 ~~~~
 
-### Modify the Samba configuration file
+## Modify the Samba configuration file
 
 The main configuration file is:\
  */etc/samba/smb.conf*
@@ -487,7 +506,7 @@ Here are the specifics:
        purposes
   * Our 'share' section named *home*
 
-The [modified smb.conf file](smb-conf) is github.
+The [modified smb.conf file](smb-conf) is in github.
 
 ~~~~ {.shell}
 $ cd /etc/samba
@@ -526,7 +545,7 @@ $ diff smb.conf smb.conf.orig
 [vfs]: https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html
 [smb-conf]: https://raw.githubusercontent.com/deatrich/linux-home-server/main/examples/smb.conf
 
-### Start the Service and Run Some Tests
+## Start the Service and Run Some Tests
 
 ~~~~ {.shell}
 // enable the samba daemons
@@ -541,7 +560,7 @@ $ systemctl  status nmbd | grep Status:
 
 Testing will depend on your device and client.
 
-*Suppose you have a MATE desktop session* with your Pi server or another
+*Suppose you have a MATE desktop session* on your Pi server or on another
 Linux device.  Open a file browser:
 
   Applications -> Accessories -> Files
@@ -555,13 +574,12 @@ options that allow the file browser to remember your entries, and also
 create a bookmark.
 
 There is no Samba password for 'guest', but the connection window will
-want one anyway; so give it the password 'guest'.
+want one anyway; so give it the password 'guest' to make it happy.
 
 At this point an application named [seahorse][seahorse] might pop up.  It is
 the GNOME encryption interface, and you can store passwords and keys in it.
 I don't use it, but you might want to for this Samba share.
-You can always cancel the seahorse window.  However it will reappear the next
-time you connect to the share.
+You can always cancel the seahorse window.
 
 For the connection request, fill in this data:
 
@@ -569,7 +587,7 @@ For the connection request, fill in this data:
   * Select 'Type' Windows share
   * Enter the share name:  home
   * Clear the Folder option
-  * Enter the domain name: LINUX (or whatever name you chose)
+  * Enter the domain name: LINUX (or whatever name you chose in smb.conf)
   * User name: guest
   * Password: guest (and select the option to remember it for seahorse)
   * tick 'add bookmark' and give it a name
@@ -581,7 +599,7 @@ and finally connect.
 you can open a 'remote' Samba share in your home network.  You enter in
 the IP address and select 'Anonymous' instead of user/pass.
 
-(!! get an example from windows and from an iphone)
+(!! get an example from Windows and from an iphone)
 
 Tests to run to validate functionality include the following:
 
@@ -594,7 +612,7 @@ Tests to run to validate functionality include the following:
 [cx]: https://cxfileexplorer.com/
 [seahorse]: https://wiki.gnome.org/Apps/Seahorse GNOME encryption interface
 
-## Backing up Your Server
+# Backing up Your Server
 
 Always, always, do some kind of backups on your server.  For
 system backups, very little actually needs to be backed up, yet it is
@@ -615,14 +633,14 @@ reconfigure.  This is my favourite list of system directories to back up:
   * /var/www -- if you have a web server then it's data files are usually here
 
 If you are playing with database services then you need to inform yourself
-what directories and/or data exports should be used during backups.
+which directories and/or data exports should be added and/or used for backups.
 Note that when you have create a Samba or an NFS server you will have other
 data directories to back up, and these directories might be large.
 
-An [example backup script and process]{#backups} is in the appendix.  We look
-at backing up both system and data directories.
+A [backup process and a link to an example backup script]{#backups} is
+in the appendix.  We look at backing up both system and data directories.
 
-## Server Customization
+# Server Customization
 
 Here is a list of tasks you can apply to your server for 24x7 service.
 Ubuntu installations are more common on laptops and desktops which
@@ -633,7 +651,7 @@ The main objective here is to show you some options that reduce
 complexity and memory consumption, and might improve security and reliability.
 You can always circle back here in the future and try them.
 
-### Turn Off Bluetooth
+## Turn Off Bluetooth
 
 If you won't be using it on your server then turn Bluetooth off.
 
@@ -644,8 +662,8 @@ changes to enable or disable devices are managed in the configuration file
 <!-- at some point discuss the lack of a RTC and its effect
 on logging, etc. on SBC devices -->
 
-You will need to reboot the server once you have make this change.  If
-you also disable WiFi then wait until you have finished the next task.
+You will need to eventually reboot the server once you have make this change.
+If you also disable WiFi then wait until you have finished the next task.
 
 ~~~~ {.shell}
 // List bluetooth devices:
@@ -668,7 +686,7 @@ dtoverlay=disable-bt
 
 ~~~~
 
-### Turn Off Wireless
+## Turn Off Wireless
 
 If you will use the built-in ethernet interface for networking on your server
 then turn WiFi off.  I prefer wired connections for servers, especially since
@@ -707,14 +725,14 @@ $ sudo nano config.txt
 dtoverlay=disable-bt
 dtoverlay=disable-wifi
 
-// After rebooting the Pi disable the wireless connection and authentication
-// service
+// After rebooting the Pi disable the wireless authentication service
 $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
-
 ~~~~
 
-### Enable Boot-up Console Messages
+<!-- verify order -->
+
+## Enable Boot-up Console Messages
 
 Maybe like me you like seeing informational messages as a computer boots up.
 In that case you need to edit */boot/firmware/cmdline.txt* and remove
@@ -730,7 +748,7 @@ $ sudo nano cmdline.txt
 
 ~~~~
 
-### Disable the Graphical Login Interface
+## Disable the Graphical Login Interface
 
 Simpler is better for a server.  Normally 24x7 servers are headless, mouseless,
 keyboardless, and sit in the semi-darkness.  A graphics-based console
@@ -750,16 +768,16 @@ $ sudo apt install gpm
 $ sudo systemctl enable gpm
 ~~~~
 
-### Disabling Various Unused Services
+## Disabling Various Unused Services
 
 Here are some services which normally can be disabled.  Of course, if any
 of these services are interesting to you then keep them.  Note that server
 processes are sometimes called *daemons*.
 
-You can handle multiple services at a time, but doing them individually
-allows you to watch for any feedback.  You can also simply disable
-these services without stopping them.  They will not run on the next
-reboot.
+The *systemctl* command can handle multiple services at the same time, but
+doing them individually allows you to watch for any feedback.  You can also
+simply disable these services without stopping them.  They will not run
+on the next reboot.
 
 ~~~~ {.shell}
 // If you want to run a series of commands as root you can sudo to the bash
@@ -794,7 +812,7 @@ $ sudo /bin/bash
 # apt purge whoopsie kerneloops
 ~~~~
 
-### Remove **anacron** Service
+## Remove **anacron** Service
 
 UNIX and Linux has a mechanism called *cron* allowing servers to run
 commands at specific times and days.  However personal and mobile computing is
@@ -808,34 +826,35 @@ $ sudo apt remove anacron
 $ sudo apt purge anacron
 ~~~~
 
-### Enabling the Secure Shell Daemon
+#### Enabling the Secure Shell Daemon
 
 describe enabling, configuring and creating a key pair.
 
 <!-- -->
 
-## Enabling Remote Desktop Services
+#### Enabling Remote Desktop Services
 
 description here for startx, x2go and xrdp.
 
-## Creating a Web Site on the Server
+#### Creating a Web Site on the Server
 
 description here.
 
 
-## Enabling a Git Service and Browsing It on Your Web Site
+#### Enabling a Git Service and Browsing It on Your Web Site
 
 description here.
 
 
-## Starting Up an NFS Service for Other Linux Devices
+#### Starting Up an NFS Service for Other Linux Devices
 
 description here.
 
 
-## Other Possible Services
+#### Other Possible Services 
 
-description here - eg, MySQL, PHP, ...
+Other services will be added to this document in the future
+- examples: MySQL, KVM, Ansible, ...
 
 
 <!--  -->
@@ -852,7 +871,7 @@ the wrong device you might wipe out its data.
 Start with *lsblk* to list all current block (storage) devices.  Note
 that a microSD card in a microSD slot will be identified with a name
 starting with */dev/mmcblk*.  But if you insert the microSD card into
-a multi-slot card reader then the Linux kernel will identify any kind 
+a multi-slot USB-based card reader then the Linux kernel will identify any kind 
 of inserted card in the reader as a generic 'scsi disk' type and it will
 appear with a name which starts with */dev/sd*.
 
@@ -928,6 +947,9 @@ columns you are interested in -- try *lsblk \-\-help* to see other options.
 
 ## Installation Disk Creation from the Command-line {#image-cmds}
 
+This is a generic approach to creating an installation image on removable
+media; it generally works for various Linux distributions.
+
 ~~~~ {.shell}
     // create a directory for downloaded images
     $ mkdir raspberry-pi-images
@@ -951,11 +973,13 @@ columns you are interested in -- try *lsblk \-\-help* to see other options.
       100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             
 ~~~~
 
-    Now plug in the microSD card,
-    [identify the microSD card device name](#find-device), and then
-    use the *dd* command to write the image to it.  Safely remove the
-    device when you are done with the *eject* command.  In this example
-    the device name */dev/sdX* is a place-holder for the real device name:
+Now plug in the microSD card,
+[identify the microSD card device name](#find-device), and then
+use the *dd* command to write the image to it.  Safely remove the
+device when you are done with the *eject* command.  In this example
+the device name */dev/sdX* is not real; it is a place-holder for your
+real device name:
+
 ~~~~ {.shell}
     $ img="ubuntu-mate-22.04-desktop-arm64+raspi.img"
     $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
@@ -978,14 +1002,14 @@ Beginners should certainly use it, and it is great when
 managing a handful of servers (it is a different story if you are managing
 dozens or thousands of servers).
 
-A few gparted notes:\
-: You will need to first install it with *sudo apt install gparted*
-: If you opt for this tool then it is all you need
-: It is intuitive, and there are many [tutorials][gparted] on the web
-: Be careful to pick the correct disk from the drop-down list
-: Expand the second partition, then create the third (data) partition
-: Also use the tool to create an *ext4* file system on the third partition
-  once you have created it
+Here are a few gparted notes:
+  * You will need to first install it with *sudo apt install gparted*
+  * If you opt for this tool then it is all you need
+  * It is intuitive, and there are many [tutorials][gparted] on the web
+  * Be careful to pick the correct disk from the drop-down list
+  * Expand the second partition, then create the third (data) partition
+  * Also use the tool to create an *ext4* file system on the third partition
+    once you have created it
 
 As always, I show the command-line example in this section. As a bonus
 it shows a common problem of dealing with partition alignment when
@@ -1009,10 +1033,11 @@ parted
 mkfs.ext4
 : You should create an ext4 file system on the new partition
 
-Utilities used to find disk information:\
-: lshw -C disk
-: hdparm -I /dev/sdX (where X is a block device letter)
-: smartctl -a  /dev/sdX (needs *smartmontools* to be installed)
+Here are some utilities used to find disk information:
+
+  * *lshw -C disk*
+  * *hdparm -I /dev/sdX*  (where X is a block device letter)
+  * *smartctl -a /dev/sdX*  (needs *smartmontools* to be installed)
 
 [gparted]: https://www.dedoimedo.com/computers/gparted.html#mozTocId133810
 
@@ -1197,7 +1222,7 @@ new data partition:
     Writing superblocks and filesystem accounting information: done
 ~~~~
 
-By default, the generations of the [*ext* filesystem][ext] reserve 5% of the 
+By default, the generations of the [*ext* filesystems][ext] reserve 5% of the 
 available space for the *root* user.  On a data partition where most
 files created will belong to ordinary users this reservation is not necessary.
 5% of 200 GB is 10 GB - that is a lot of space.  So it is a good idea
@@ -1231,9 +1256,11 @@ the filesystem in the future.  We will use the label *PI-DATA*:
 If you did not [modify the initial partitioning](#mod-partition) of your
 microSD card then you will simply make a directory in the root of
 your filesystem where we will store any data associated with a Samba
-service or with an NFS service.  In case you did make a data partition
-on the microSD card then we *still* need to make a directory in the root
-of the filesystem to mount that data partition: 
+service or with an NFS service -- that is all.
+
+In case you did make a data partition on the microSD card then
+we *still* need to make a directory in the root of the filesystem
+to mount that data partition: 
 
 Let's call the directory */data*:
 
@@ -1241,12 +1268,12 @@ Let's call the directory */data*:
     $ sudo mkdir /data
 ~~~~
 
-For the case where you created the third (data) partition then we need
+For the case with the third (data) partition then we need
 to mount it and make the mount action permanent on reboots.  For this
 we create an entry in the filesystem table, the */etc/fstab* file:
 
 ~~~~ {.shell}
-    // make a copy first
+    // make a backup copy first
     $ sudo cp -p /etc/fstab /etc/fstab.orig
 
     // There are 6 fields in an fstab entry:
@@ -1327,6 +1354,20 @@ echo $SHELL          Shows what shell you use
 env | sort | less    Shows your environment variables, sorted (q to quit)
 -----------------------------------------------------------------------------
 
+The last example in the above list:
+
+  env|sort|less
+
+is actually 3 different commands *piped* together:
+  - env  - output the environment variables in your shell
+  - sort - sort the incoming text, by default alphabetically
+  - less - show the output a page at a time
+
+A pipe, represented by a vertical line, sends the output from one command
+as the input for the next command.  It is a hallmark of the UNIX way of
+doing things - create small programs that do one thing well, and string
+the commands together to accomplish a larger task.
+
 ## A MATE Configuration Exercise {#mate-exercise}
 
 Here are a series of exercises you can try on a fresh installation of the
@@ -1339,10 +1380,10 @@ MATE desktop.  By default, the initial mate configuration has 2 panels
      known as 'Indicator Applet Complete' 
 
  - the bottom panel has:
-   - on the left, a 'show desktop' button
-   - on the left, a window list area, where current open windows as shown
-   - on the right, a workspace area with 4 workspaces
-   - a trash can button
+   - on the left: a 'show desktop' button
+   - on the left: a window list area, where current open windows as shown
+   - on the right: a workspace area with 4 workspaces
+   - on the right: a trash can button
 
 You may like this setup; but here is a small exercise to give you a quick
 start in making modifications.
@@ -1368,7 +1409,7 @@ start in making modifications.
         does not always prevent deletion of some applet buttons...)
       - Add another separator, and move it about an inch to the right
         of the first separator and lock it.
- 4. Add a window lister:
+ 4. Add an active-window list:
       - Scroll down to find 'Window Selector' and add it to the panel to 
         the right of the second separator. It is a bit tricky to select
         it to lock it.  Right-click just to the right of the second separator
@@ -1393,16 +1434,17 @@ start in making modifications.
          - right-click between the 2 separators and add to the panel:
            'MATE Terminal' and again move and lock it.
 
+<!--
 I add some custom application launchers related to the use of secure
 shell as well.  If you are interested look at the secure shell example
 further in the appendix.
- 
+-->
 
-## Other Changes Done From the Control Center
+### Other Changes Done From the Control Center
 
  1. Find the Control Center in the System Menu.
  2. Under the 'Look and Feel' section select 'Screensaver':
-      - Chanage the theme to 'Cosmos'.
+      - Chanage the theme to something else, for example: 'Cosmos'.
       - Disable the 'lock screen' option if you wish.
  3. Under the 'Look and Feel' section select 'Windows':
       - Change the 'Titlebar Action' to 'Roll up'
@@ -1414,7 +1456,7 @@ further in the appendix.
       - Select 'Show hidden' and look at what is lurking underneath,
         disable things that clearly are not important to you.
 
-## Here are a Few Notes About Window Actions:
+### Here are a Few Notes About Window Actions:
 
 The 'Maximize Window' button (between the 'Minimize Window' button and
 the 'Close Window' on the right of each window) has difference actions
@@ -1508,9 +1550,9 @@ files into place on the filesystem.
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
 
-## Secure Shell Topics
 
 <!--
+## Secure Shell Topics
   1. Add a start-up custom launcher asking for the ssh passphrases for
      the day's work:
       - From the Control Center select 'Startup Applications'
