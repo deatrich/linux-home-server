@@ -24,7 +24,7 @@ HTMLVIEWER	= firefox
 PRINTOPT	= 
 PANDOC_OPTS	= -c style.css --toc --toc-depth=3 --syntax-definition=shell.xml --highlight-style=custom-highlight.theme
 PANDOC_HTML_OPTS = --template template.htm
-PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm --pdf-engine=xelatex --top-level-division=chapter
+PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm --pdf-engine=xelatex
 
 #***************************************************************************
 ## DEFAULT GOAL
