@@ -77,6 +77,8 @@
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="style.css" />
+  
+  
 </head>
 <body>
 <header id="title-block-header">
@@ -88,7 +90,7 @@
 <ul>
 <li><a href="#overview">Overview</a>
 <ul>
-<li><a href="#a-few-issues-before-you-begin">A Few Issues Before You Begin</a></li>
+<li><a href="#reserved-address">A Few Issues Before You Begin</a></li>
 <li><a href="#doc">About this Document</a></li>
 </ul></li>
 <li><a href="#environment">Picking the OS (Operating System) and the Window Manager</a></li>
@@ -119,9 +121,11 @@
 <li><a href="#turn-off-wireless">Turn Off Wireless</a></li>
 <li><a href="#enable-boot-up-console-messages">Enable Boot-up Console Messages</a></li>
 <li><a href="#disable-the-graphical-login-interface">Disable the Graphical Login Interface</a></li>
-<li><a href="#disabling-various-unused-services">Disabling Various Unused Services</a></li>
+<li><a href="#disable-various-unused-services">Disable Various Unused Services</a></li>
 <li><a href="#remove-anacron-service">Remove <strong>anacron</strong> Service</a></li>
 </ul></li>
+<li><a href="#enabling-the-secure-shell-daemon-and-using-secure-shell">Enabling the Secure Shell Daemon and Using Secure Shell</a></li>
+<li><a href="#topics-to-document">Topics To Document</a></li>
 <li><a href="#appendix">Appendix</a>
 <ul>
 <li><a href="#find-device">Identifying Device Names for Storage Devices</a></li>
@@ -142,17 +146,27 @@
 <li><a href="#here-are-a-few-notes-about-window-actions">Here are a Few Notes About Window Actions:</a></li>
 </ul></li>
 <li><a href="#backups">An Example Process and Script for Backups</a></li>
+<li><a href="#lan">LAN (Local Area Network) Configuration files</a>
+<ul>
+<li><a href="#changing-the-servers-hostname">Changing the Server’s Hostname</a></li>
+<li><a href="#the-resolver-and-looking-up-your-local-hostnames">The Resolver and Looking Up Your Local Hostnames</a></li>
+<li><a href="#modifying-the-resolvers-list-of-nameservers">Modifying the Resolver’s List of Nameservers</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </nav>
-<!-- Introduction -->
+<!-- Pandoc meta-data, mostly used when generating PDF
+
+     Solution for setting a new page for major sections of PDF output
+     in metadata (documentclass, header-includes) is decscribed at:
+     https://superuser.com/a/1436367 -->
 <h1 id="overview">Overview</h1>
 <p>Single-board computers (SBC) are both inexpensive and reliable; they are also very small. As such they make excellent 24x7 home servers. This guide steps you through the process of creating such a server.</p>
 <p>This guide has been tested on a Raspberry Pi 400, which is very similar to a Raspberry Pi 4b. The main difference it that the RP 400 board is embedded in a small keyboard.</p>
 <p>I also have another SBC, an <a href="https://www.hardkernel.com/">ODROID</a> still running Ubuntu LTS 16.04, and I will document it as well as I update it. I am not sure yet whether I will document it here, or as another mini-document. For now I am focusing on the Raspberry Pi.</p>
-<p>One of my goals is to promote using the command-line to do most of the work. If you are interested in expanding your horizons and understanding more about the command-line, then this guide is for you.</p>
+<p>One of my goals is to promote using the command-line to do most of the work. If you are interested in expanding your horizons and understanding more about the command-line, then this guide is for you. There is also a lot of detail in this guide; this is my personal preference. I grow tired of the current trend to provide internet-searched answers on a mobile phone with just a few finger swipes.</p>
 <p>Take a look at the table of contents at the top of the document. Some users will only be interested in creating a 24x7 local file-sharing (Samba) service at home – in that case you do not need to read beyond the section on ‘Backups’. Of course, people familiar with Linux and the command-line will skip some sections of this guide.</p>
-<h2 id="a-few-issues-before-you-begin">A Few Issues Before You Begin</h2>
+<h2 id="reserved-address">A Few Issues Before You Begin</h2>
 <p>You should look into assigning a permanent network IP address for your server in your home network so that you can easily connect to it from any of your devices. Your home network router/WiFi modem should have the option to enable you to reserve an IP address for any device. You only need to know the hardware MAC address of your future server. There will be 2 MAC addresses - one for hardwired ethernet and one for wireless. You can reserve both interfaces until you decide which way you will connect your server to your router.</p>
 <!-- mention in document somewhere about getting MAC addrs early -->
 <h2 id="doc">About this Document</h2>
@@ -167,7 +181,7 @@
 <p>Sometimes I add a double-exclamation (<strong>!!</strong>) mark – that is only a reminder for myself to fix an issue at that point in the documentation.</p>
 <p>If you discover issues with instructions in this document, or have other comments or suggestions then you can contact me on <a href="https://github.com/deatrich/">my github project page</a>.</p>
 <h1 id="environment">Picking the OS (Operating System) and the Window Manager</h1>
-<p>Though many Raspberry Pi owners run the Raspberry Pi OS (Raspian), in this guide I chose to use Ubuntu. <a href="https://releases.ubuntu.com/">Ubuntu LTS</a>, is a long-term support Debian-based Linux OS. Ubuntu is renowned for its desktop support, but it also provides a comfortable home server experience. A server should be stable. We want to apply software updates, but we also want to avoid the need to update the major version of the base OS every year. The Official Gnome LTS releases with the Gnome desktop environment in the <em>main</em> software repository are supported for up to 5 years from initial release, and up to 10 years with extended security-only updates via <a href="advantage">Ubuntu Advantage</a> access<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. However if you do not have an <em>advantage</em> account, then community-supported desktop environments which are located in the <em>universe</em> software repository only get 3 years of support, meaning system-wide there is only partial support after 3 years. Nonetheless, many critical services are installed from the base repository, and they have the usual 5 years of support.</p>
+<p>Though many Raspberry Pi owners run the Raspberry Pi OS (formerly known as Raspbian), in this guide I chose to use Ubuntu. <a href="https://releases.ubuntu.com/">Ubuntu LTS</a>, is a long-term support Debian-based Linux OS. Ubuntu is renowned for its desktop support, but it also provides a comfortable home server experience. A server should be stable. We want to apply software updates, but we also want to avoid the need to update the major version of the base OS every year. The Official Gnome LTS releases with the Gnome desktop environment in the <em>main</em> software repository are supported for up to 5 years from initial release, and up to 10 years with extended security-only updates via <a href="advantage">Ubuntu Advantage</a> access<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. However if you do not have an <em>advantage</em> account, then community-supported desktop environments which are located in the <em>universe</em> software repository only get 3 years of support, meaning system-wide there is only partial support after 3 years. Nonetheless, many critical services are installed from the base repository, and they have the usual 5 years of support.</p>
 <p>Generally you should think about updating your server OS every few years so that you stay in touch with current technologies.</p>
 <p>At the time of writing this guide I used version 22.04 of Ubuntu LTS (also known as <strong>Jammy Jellyfish</strong>). It was first released in April 2022, as indicated by the release number.</p>
 <p>I also opt to use an installation image which uses the <a href="https://mate-desktop.org/">MATE desktop system</a>. At the bottom of that linked website is a note about why it is called MATE (pronounced mat-ay). The MATE window manager is intuitive, efficient, skinny, dependable and popular. It is widely available on most flavours of Linux.</p>
@@ -200,13 +214,27 @@
 <p>Once you have prepared your microSD card then insert it in your Raspberry Pi. Note that the card pushes in easily. It will only go in one way. To eject it gently push <em>in</em> on it once and it will pop out enough to handle it. There is no need to pull on it to remove it because it essentially pops out.</p>
 <p>Turn the power on with the Pi connected to a monitor, USB keyboard and mouse. You will shortly see the firmware rainbow splash screen. Shortly after that there are a series of screens allowing you to customize the installation:</p>
 <ul>
-<li>pick your system language</li>
+<li>pick your language</li>
 <li>pick the keyboard layout language</li>
 <li>enable the Wi-Fi network access if you want to have concurrent updates</li>
 <li>select your timezone by clicking on your timezone region</li>
-<li>enter your preferred name and your login name - this is your login account</li>
+<li>enter your preferred name and your login name with a password – this is your login account</li>
 </ul>
 <p>As the installation starts it will show some informational screens to entertain you while it installs. Eventually it will reboot and present you with the login screen. Once you login you will see the default MATE desktop configuration.</p>
+<p>Before going further immediately update the software on the system. The MATE installation image is not released often, so it can be a bit behind the package update curve. As well, any final configuration issues will be updated.</p>
+<p>Open a terminal window by selecting:<br />
+Application -&gt; System Tools -&gt; MATE Terminal<br />
+and enter the following commands:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co">// This will update the system&#39;s knowledge about what should be updated;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co">// in other works, the cache of software package names pending for update:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="fu">$ sudo apt update</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="co">// then update the software; the command is actually &#39;upgrade&#39;, which is odd,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="co">// at least to me..</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="fu">$ sudo apt upgrade</span></span></code></pre></div>
+<p>It will take a while. Once finished reboot the system to get the newer kernel. On the far upper right taskbar, select the powerbutton icon, and then select <em>Switch Off</em> -&gt; <em>Restart</em>.</p>
+<!-- (!!) add a note about unmounting the PI-DATA volume at some point after
+installation -->
 <h2 id="experimenting-with-the-graphical-environment">Experimenting With the Graphical Environment</h2>
 <p>If you are not overly familiar with Linux environments then this is a good time to take a few days and play with the installation while it presents a graphical interface. Note that in the Server Customization chapter we will <em>remove</em> the graphical login screen. This will not stop you from using the Linux desktop environment remotely. As well, you can still invoke on demand a graphical presentation locally by logging into the text console and running the <em>startx</em> command.</p>
 <p>Remember that you can always <em>reinstall</em> the server by re-imaging the microSD card to start over. It does not take much time.</p>
@@ -302,12 +330,13 @@
 <p>For people without much command-line experience it is important to get going at the command-line. When logged into the MATE desktop open a terminal window by selecting Application -&gt; System Tools -&gt; MATE Terminal.</p>
 <p>Try <a href="#eg-cmds">some command-line examples</a> in the appendix. Note that the up/down arrow keys can be used to recall your previous commands. You can edit and reuse an entry in your previous commands using the left/right arrow keys.</p>
 <p>You will find that the ‘TAB’ key (shown below as <em><TAB></em>) is very useful for command-line completion. Suppose you are going to use the command ‘timedatectl’. You start by typing the word ‘time’ and then hit the TAB key once, then again when you do not get a response. You will see 4 possible commands as shown below. Then to complete the command simply type d followed by another TAB and the full command will complete:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>    <span class="fu">$ time&lt;TAB&gt;&lt;TAB&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    time         timedatectl  timeout      times</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    <span class="fu">$ timed&lt;TAB&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    <span class="fu">$ timedatectl </span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>    <span class="fu">$ time&lt;TAB&gt;&lt;TAB&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>    time         timedatectl  timeout      times</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>    <span class="fu">$ timed&lt;TAB&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    <span class="fu">$ timedatectl </span></span></code></pre></div>
 <p>Look online for some tutorials; there are millions of results on Google if you search for:</p>
 <pre><code>    Linux &quot;command line&quot; tutorial for beginners</code></pre>
+<p>A complete list of all commands used in the guide will be added to a future <em>index</em>.</p>
 <h1 id="creating-a-samba-file-sharing-service">Creating a Samba File Sharing Service</h1>
 <p>We are going to create a Samba file sharing service on our server. Other devices like mobile phones, tablets, laptops and desktops running a variety of operating systems should be able to manage files in the designated data area.</p>
 <p>We are not going to be really secure, in that we are allowing guest access. Presumably if you let your family and your guests connect to your network, then you would allow them to connect to your Samba server.</p>
@@ -317,49 +346,49 @@
 <p>Always use a sub-directory inside the data area to begin any new project. One of the advantages is that the <a href="https://www.baeldung.com/linux/lost-found-directory">lost+found</a> directory does not become part of your project. For this Samba project we will create <em>/data/shared</em>.</p>
 <p>For Samba the top level ownership of the samba area will be a user named ‘nobody’. This user is always created in Linux systems and has no login shell, so ‘nobody’ cannot log in. It is a safer user identity to use for guest access to Samba shares.</p>
 <p>We set the access permissions using chmod<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> and chown<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>    <span class="fu">$ cd /data</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir shared</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    <span class="fu">$ sudo chown nobody:nogroup shared</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    <span class="fu">$ sudo chmod g+ws shared</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>    <span class="fu">$ cd /data</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir shared</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>    <span class="fu">$ sudo chown nobody:nogroup shared</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>    <span class="fu">$ sudo chmod g+ws shared</span></span></code></pre></div>
 <p>Here are 3 example directories to create for differing purposes:<br />
 ‘Music’, ‘Protected’ and ‘Test’<br />
 other examples might be ‘Videos’ and ‘Pictures’:</p>
 <p>You will be able to create directories inside the shared area using your other devices as well.</p>
 <p>I use the Test area initially for testing from various devices; that is, create and delete files in the test directory.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>    <span class="fu">$ cd /data/shared</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir Test</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>    <span class="fu">$ sudo chown nobody:nogroup Test</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>    <span class="fu">$ sudo chmod g+ws Test</span></span></code></pre></div>
-<p>I like having a general ‘Protected’ area that others can access but cannot change. I use secure-shell access to that area for dumping files that I manage without using Samba tools.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>    <span class="fu">$ cd /data/shared</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir Protected</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>    <span class="fu">$ sudo chown myname:mygroup Protected</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>    <span class="fu">$ sudo chmod g+ws Protected</span></span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir Test</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>    <span class="fu">$ sudo chown nobody:nogroup Test</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>    <span class="fu">$ sudo chmod g+ws Test</span></span></code></pre></div>
+<p>I like having a general ‘Protected’ area that others can access but cannot change. I use secure-shell access to that area for dumping files that I manage without using Samba tools.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>    <span class="fu">$ cd /data/shared</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir Protected</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    <span class="fu">$ sudo chown myname:mygroup Protected</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    <span class="fu">$ sudo chmod g+ws Protected</span></span></code></pre></div>
 <p>As an example I put my old Music files in ‘Music’ so that it could be accessed from various devices 24x7. You can either keep the permissions as <em>nobody:nogroup</em>, allowing other people in your home network to help manage the collection, or you can change ownership so that only you manage them locally. In this example my login name is ‘myname’ with group ‘mygroup’:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>    <span class="fu">$ du -sh /data/shared/Music/</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>    7.4G    /data/shared/Music/</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    <span class="fu">$ ls -la /data/shared/Music/</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    drwxr-sr-x  9 myname mygroup   4096 Apr 15 16:03 .</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>    drwxrwsr-x  7 nobody nogroup   4096 Feb 26 11:59 ..</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup 108364 Feb 27  2022 all.m3u</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>    drwxr-xr-x  9 myname mygroup   4096 Feb 26  2022 Celtic</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup  13373 Mar  6  2022 Celtic.m3u</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>    ...</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>    drwxr-xr-x  5 myname mygroup   4096 Feb 27  2022 Nostalgia</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup   6145 Feb 27  2022 Nostalgia.m3u</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>    drwxr-xr-x 13 myname mygroup   4096 Feb 26  2022 Pop</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup  10065 Feb 27  2022 Pop.m3u</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>    drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup  41656 Feb 27  2022 Rock.m3u</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>    <span class="fu">$ du -sh /data/shared/Music/</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>    7.4G    /data/shared/Music/</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>    <span class="fu">$ ls -la /data/shared/Music/</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>    drwxr-sr-x  9 myname mygroup   4096 Apr 15 16:03 .</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>    drwxrwsr-x  7 nobody nogroup   4096 Feb 26 11:59 ..</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup 108364 Feb 27  2022 all.m3u</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>    drwxr-xr-x  9 myname mygroup   4096 Feb 26  2022 Celtic</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup  13373 Mar  6  2022 Celtic.m3u</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>    ...</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>    drwxr-xr-x  5 myname mygroup   4096 Feb 27  2022 Nostalgia</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup   6145 Feb 27  2022 Nostalgia.m3u</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a>    drwxr-xr-x 13 myname mygroup   4096 Feb 26  2022 Pop</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup  10065 Feb 27  2022 Pop.m3u</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>    drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>    -rw-r--r--  1 myname mygroup  41656 Feb 27  2022 Rock.m3u</span></code></pre></div>
 <h2 id="install-the-samba-software">Install the Samba software</h2>
 <p>Simply install the <em>samba</em> package; <em>apt</em> will pull in any dependencies:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="fu">$ sudo apt install samba</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>...</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>0 upgraded, 21 newly installed, 0 to remove and 3 not upgraded.</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>Need to get 7,870 kB of archives.</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>After this operation, 44.1 MB of additional disk space will be used.</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>Do you want to continue? [Y/n] </span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>...</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="fu">$ sudo apt install samba</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>...</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>0 upgraded, 21 newly installed, 0 to remove and 3 not upgraded.</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>Need to get 7,870 kB of archives.</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>After this operation, 44.1 MB of additional disk space will be used.</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>Do you want to continue? [Y/n] </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>...</span></code></pre></div>
 <h2 id="modify-the-samba-configuration-file">Modify the Samba configuration file</h2>
 <p>The main configuration file is:<br />
 <em>/etc/samba/smb.conf</em></p>
@@ -380,46 +409,47 @@ other examples might be ‘Videos’ and ‘Pictures’:</p>
 <li>Our ‘share’ section named <em>home</em></li>
 </ul>
 <p>The <a href="smb-conf">modified smb.conf file</a> is in github.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="fu">$ cd /etc/samba</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="fu">$ sudo cp -p smb.conf smb.conf.orig</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="fu">$ sudo nano smb.conf</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a><span class="co">// The &#39;diff&#39; command shows differences in snippets with the line numbers</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a><span class="co">// A more elegant way to see the differences would be side-by-side:</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a><span class="co">//   diff --color=always -y smb.conf smb.conf.orig | less -r </span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a><span class="fu">$ diff smb.conf smb.conf.orig</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>29,30c29</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true"></a>&lt; #   workgroup = WORKGROUP</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true"></a>&lt;    workgroup = LINUX</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true"></a>---</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true"></a>&gt;    workgroup = WORKGROUP</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true"></a>34,37d32</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true"></a>&lt;    fruit:nfs_aces = no</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true"></a>&lt;    fruit:aapl = yes</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true"></a>&lt;    vfs objects = catia fruit streams_xattr</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true"></a>&lt; </span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true"></a>68,69d62</span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true"></a>&lt;    log level = 1 passdb:3 auth:3</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true"></a>&lt; </span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true"></a>249,258d241</span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true"></a>&lt; </span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true"></a>&lt; [home]</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true"></a>&lt;     comment = Samba on Raspberry Pi</span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true"></a>&lt;     path = /data/shared</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true"></a>&lt;     writable = yes</span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true"></a>&lt;     read only = no</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true"></a>&lt;     browsable = yes</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true"></a>&lt;     guest ok = yes</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true"></a>&lt;     create mask = 0664</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true"></a>&lt;     directory mask = 0775</span></code></pre></div>
+<!-- fix diff ordering below -->
+<div class="sourceCode" id="cb11"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="fu">$ cd /etc/samba</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="fu">$ sudo cp -p smb.conf smb.conf.orig</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="fu">$ sudo nano smb.conf</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="co">// The &#39;diff&#39; command shows differences in snippets with the line numbers</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a><span class="co">// A more elegant way to see the differences would be side-by-side:</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a><span class="co">//   diff --color=always -y smb.conf smb.conf.orig | less -r </span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="fu">$ diff smb.conf smb.conf.orig</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>29,30c29</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a>&lt; #   workgroup = WORKGROUP</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a>&lt;    workgroup = LINUX</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true"></a>---</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true"></a>&gt;    workgroup = WORKGROUP</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true"></a>34,37d32</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true"></a>&lt;    fruit:nfs_aces = no</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true"></a>&lt;    fruit:aapl = yes</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true"></a>&lt;    vfs objects = catia fruit streams_xattr</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true"></a>&lt; </span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true"></a>68,69d62</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true"></a>&lt;    log level = 1 passdb:3 auth:3</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true"></a>&lt; </span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true"></a>249,258d241</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true"></a>&lt; </span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true"></a>&lt; [home]</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true"></a>&lt;     comment = Samba on Raspberry Pi</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true"></a>&lt;     path = /data/shared</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true"></a>&lt;     writable = yes</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true"></a>&lt;     read only = no</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true"></a>&lt;     browsable = yes</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true"></a>&lt;     guest ok = yes</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true"></a>&lt;     create mask = 0664</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true"></a>&lt;     directory mask = 0775</span></code></pre></div>
 <h2 id="start-the-service-and-run-some-tests">Start the Service and Run Some Tests</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="co">// enable the samba daemons</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="fu">$ sudo systemctl enable smbd nmbd</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="fu">$ sudo systemctl restart smbd nmbd</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="fu">$ systemctl status smbd | grep Status:</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>     Status: &quot;smbd: ready to serve connections...&quot;</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a><span class="fu">$ systemctl  status nmbd | grep Status:</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>     Status: &quot;nmbd: ready to serve connections...&quot;</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co">// enable the samba daemons</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="fu">$ sudo systemctl enable smbd nmbd</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="fu">$ sudo systemctl restart smbd nmbd</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="fu">$ systemctl status smbd | grep Status:</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>     Status: &quot;smbd: ready to serve connections...&quot;</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a><span class="fu">$ systemctl  status nmbd | grep Status:</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>     Status: &quot;nmbd: ready to serve connections...&quot;</span></code></pre></div>
 <p>Testing will depend on your device and client.</p>
 <p><em>Suppose you have a MATE desktop session</em> on your Pi server or on another Linux device. Open a file browser:</p>
 <p>Applications -&gt; Accessories -&gt; Files</p>
@@ -471,117 +501,214 @@ other examples might be ‘Videos’ and ‘Pictures’:</p>
 <!-- at some point discuss the lack of a RTC and its effect
 on logging, etc. on SBC devices -->
 <p>You will need to eventually reboot the server once you have make this change. If you also disable WiFi then wait until you have finished the next task.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co">// List bluetooth devices:</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="fu">$ hcitool dev</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>Devices:</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>        hci0    E4:5F:01:A7:11:0F</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a><span class="co">// disable bluetooth services running on the Pi</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a><span class="fu">$ sudo systemctl disable blueman-mechanism bluetooth</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a><span class="co">// Always save a copy of the original file with the &#39;cp&#39; command:</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a><span class="fu">$ cd /boot/firmware</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a><span class="fu">$ sudo cp -p config.txt config.txt.orig</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a><span class="co">// Disable bluetooth in config.txt by adding &#39;dtoverlay=disable-bt&#39; at the end</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a><span class="fu">$ sudo nano config.txt</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a><span class="co">// Use the &#39;tail&#39; command to see the end of the file:</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a><span class="fu">$ tail -3 config.txt</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a>dtoverlay=disable-bt</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="co">// List bluetooth devices:</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="fu">$ hcitool dev</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>Devices:</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a>        hci0    E4:5F:01:A7:11:0F</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="co">// disable bluetooth services running on the Pi</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="fu">$ sudo systemctl disable blueman-mechanism bluetooth</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a><span class="co">// Always save a copy of the original file with the &#39;cp&#39; command:</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a><span class="fu">$ cd /boot/firmware</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a><span class="fu">$ sudo cp -p config.txt config.txt.orig</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a><span class="co">// Disable bluetooth in config.txt by adding &#39;dtoverlay=disable-bt&#39; at the end</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a><span class="fu">$ sudo nano config.txt</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a><span class="co">// Use the &#39;tail&#39; command to see the end of the file:</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a><span class="fu">$ tail -3 config.txt</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a>dtoverlay=disable-bt</span></code></pre></div>
 <h2 id="turn-off-wireless">Turn Off Wireless</h2>
 <p>If you will use the built-in ethernet interface for networking on your server then turn WiFi off. I prefer wired connections for servers, especially since newer technology offers gigabit speed ethernet. In my experience, the network latency is usually better to wired devices. But if you prefer it on wireless then skip this task.</p>
 <p>You will need to reboot the server once you have make this change, but <strong>remember to connect the ethernet cable</strong> on the Pi to your home router first.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="co">// List wireless devices - after making this change you will not see this</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="co">// information:</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="fu">$ iw dev</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a>phy#0</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a>        Unnamed/non-netdev interface</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a>                wdev 0x2</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a>                addr e6:5f:01:a7:71:0d</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>                type P2P-device</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a>                txpower 31.00 dBm</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a>        Interface wlan0</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a>                ifindex 3</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a>                wdev 0x1</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a>                addr e4:5f:01:a7:71:0d</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a>                ssid MYNET</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a>                type managed</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a>                channel 104 (5520 MHz), width: 80 MHz, center1: 5530 MHz</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true"></a>                txpower 31.00 dBm</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true"></a><span class="co">// Disable wireless in config.txt by adding &#39;dtoverlay=disable-wifi&#39; at the end</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true"></a><span class="fu">$ cd /boot/firmware</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true"></a><span class="fu">$ sudo nano config.txt</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true"></a><span class="co">// Use the &#39;tail&#39; command to see the end of the file:</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true"></a><span class="fu"># tail -3 config.txt</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true"></a></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true"></a>dtoverlay=disable-bt</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true"></a>dtoverlay=disable-wifi</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true"></a></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true"></a><span class="co">// After rebooting the Pi disable the wireless authentication service</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true"></a><span class="fu">$ sudo systemctl stop wpa_supplicant</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true"></a><span class="fu">$ sudo systemctl disable wpa_supplicant</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="co">// List wireless devices - after making this change you will not see this</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="co">// information:</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a><span class="fu">$ iw dev</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a>phy#0</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true"></a>        Unnamed/non-netdev interface</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true"></a>                wdev 0x2</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true"></a>                addr e6:5f:01:a7:71:0d</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true"></a>                type P2P-device</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true"></a>                txpower 31.00 dBm</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true"></a>        Interface wlan0</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true"></a>                ifindex 3</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true"></a>                wdev 0x1</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true"></a>                addr e4:5f:01:a7:71:0d</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true"></a>                ssid MYNET</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true"></a>                type managed</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true"></a>                channel 104 (5520 MHz), width: 80 MHz, center1: 5530 MHz</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true"></a>                txpower 31.00 dBm</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true"></a><span class="co">// Disable wireless in config.txt by adding &#39;dtoverlay=disable-wifi&#39; at the end</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true"></a><span class="fu">$ cd /boot/firmware</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true"></a><span class="fu">$ sudo nano config.txt</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true"></a><span class="co">// Use the &#39;tail&#39; command to see the end of the file:</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true"></a><span class="fu"># tail -3 config.txt</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true"></a></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true"></a>dtoverlay=disable-bt</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true"></a>dtoverlay=disable-wifi</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true"></a></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true"></a><span class="co">// After rebooting the Pi disable the wireless authentication service</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true"></a><span class="fu">$ sudo systemctl stop wpa_supplicant</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true"></a><span class="fu">$ sudo systemctl disable wpa_supplicant</span></span></code></pre></div>
 <!-- verify order -->
 <h2 id="enable-boot-up-console-messages">Enable Boot-up Console Messages</h2>
 <p>Maybe like me you like seeing informational messages as a computer boots up. In that case you need to edit <em>/boot/firmware/cmdline.txt</em> and remove the ‘quiet’ argument. On my system this one line file nows ends in:<br />
 ‘… fixrtc splash’<br />
 instead of<br />
 ‘… fixrtc quiet splash’:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="fu">$ cd /boot/firmware</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="fu">$ sudo cp -p cmdline.txt cmdline.txt.orig</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a><span class="fu">$ sudo nano cmdline.txt</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="fu">$ cd /boot/firmware</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="fu">$ sudo cp -p cmdline.txt cmdline.txt.orig</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="fu">$ sudo nano cmdline.txt</span></span></code></pre></div>
 <h2 id="disable-the-graphical-login-interface">Disable the Graphical Login Interface</h2>
 <p>Simpler is better for a server. Normally 24x7 servers are headless, mouseless, keyboardless, and sit in the semi-darkness. A graphics-based console is therefore useless. Though your home server might not be as lonely as a data centre server, you might want to try a text-based console:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="fu">$ sudo systemctl set-default multi-user</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="fu">$ sudo systemctl stop display-manager</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="co">// If you do have a mouse and a screen attached then you can still make </span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a><span class="co">// the mouse work in a text console login -- it can be useful.  At work</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="co">// I have sometimes used the mouse at a console switch to quickly copy and</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a><span class="co">// paste process numbers for the kill command.</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a><span class="fu">$ sudo apt install gpm</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true"></a><span class="fu">$ sudo systemctl enable gpm</span></span></code></pre></div>
-<h2 id="disabling-various-unused-services">Disabling Various Unused Services</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="fu">$ sudo systemctl set-default multi-user</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a><span class="fu">$ sudo systemctl stop display-manager</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a><span class="co">// If you do have a mouse and a screen attached then you can still make </span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="co">// the mouse work in a text console login -- it can be useful.  At work</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a><span class="co">// I have sometimes used the mouse at a console switch to quickly copy and</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a><span class="co">// paste process numbers for the kill command.</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a><span class="fu">$ sudo apt install gpm</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a><span class="fu">$ sudo systemctl enable gpm</span></span></code></pre></div>
+<h2 id="disable-various-unused-services">Disable Various Unused Services</h2>
 <p>Here are some services which normally can be disabled. Of course, if any of these services are interesting to you then keep them. Note that server processes are sometimes called <em>daemons</em>.</p>
 <p>The <em>systemctl</em> command can handle multiple services at the same time, but doing them individually allows you to watch for any feedback. You can also simply disable these services without stopping them. They will not run on the next reboot.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="co">// If you want to run a series of commands as root you can sudo to the bash</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a><span class="co">// shell, run your commands, and then exit the shell.  Be careful to</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a><span class="co">// always exit immediately after running your commands.</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a><span class="fu">$ sudo /bin/bash</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a><span class="co">// disable serial and bluetooth modems or serial devices</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a><span class="fu"># systemctl stop ModemManager</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a><span class="fu"># systemctl disable ModemManager</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a><span class="fu"># systemctl stop hciuart</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a><span class="fu"># systemctl disable hciuart</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true"></a></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a><span class="co">// disable VPN and printing services - you can print without running</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a><span class="co">// a local printer daemon (!!maybe document using one tho )</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true"></a><span class="fu"># systemctl stop openvpn</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true"></a><span class="fu"># systemctl disable openvpn</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true"></a><span class="fu"># systemctl stop cups-browsed cups</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true"></a><span class="fu"># systemctl disable cups-browsed cups</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true"></a></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true"></a><span class="co">// disable secureboot-db</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true"></a><span class="co">// UEFI Secure boot</span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true"></a><span class="co">// (!! add notes)</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true"></a></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true"></a><span class="co">// disable whoopsie and kerneloops if you don&#39;t want to be sending</span></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true"></a><span class="co">// information to outside entities</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true"></a><span class="fu"># systemctl stop kerneloops</span></span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true"></a><span class="fu"># systemctl disable kerneloops</span></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true"></a><span class="fu"># systemctl stop whoopsie</span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true"></a><span class="fu"># systemctl disable whoopsie</span></span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true"></a><span class="fu"># apt remove whoopsie kerneloops</span></span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true"></a><span class="fu"># apt purge whoopsie kerneloops</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="co">// If you want to run a series of commands as root you can sudo to the bash</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a><span class="co">// shell, run your commands, and then exit the shell.  Be careful to</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true"></a><span class="co">// always exit immediately after running your commands.</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true"></a><span class="fu">$ sudo /bin/bash</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true"></a><span class="co">// disable serial and bluetooth modems or serial devices</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true"></a><span class="fu"># systemctl stop ModemManager</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true"></a><span class="fu"># systemctl disable ModemManager</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true"></a><span class="fu"># systemctl stop hciuart</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true"></a><span class="fu"># systemctl disable hciuart</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true"></a><span class="co">// disable VPN and printing services - you can print without running</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true"></a><span class="co">// a local printer daemon (!!maybe document using one tho )</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true"></a><span class="fu"># systemctl stop openvpn</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true"></a><span class="fu"># systemctl disable openvpn</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true"></a><span class="fu"># systemctl stop cups-browsed cups</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true"></a><span class="fu"># systemctl disable cups-browsed cups</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true"></a></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true"></a><span class="co">// disable secureboot-db</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true"></a><span class="co">// UEFI Secure boot</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true"></a><span class="co">// (!! add notes)</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true"></a></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true"></a><span class="co">// disable whoopsie and kerneloops if you don&#39;t want to be sending</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true"></a><span class="co">// information to outside entities</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true"></a><span class="fu"># systemctl stop kerneloops</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true"></a><span class="fu"># systemctl disable kerneloops</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true"></a><span class="fu"># systemctl stop whoopsie</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true"></a><span class="fu"># systemctl disable whoopsie</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true"></a><span class="fu"># apt remove whoopsie kerneloops</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true"></a><span class="fu"># apt purge whoopsie kerneloops</span></span></code></pre></div>
 <h2 id="remove-anacron-service">Remove <strong>anacron</strong> Service</h2>
 <p>UNIX and Linux has a mechanism called <em>cron</em> allowing servers to run commands at specific times and days. However personal and mobile computing is typically not powered on all the time. So operating systems like Linux have another mechanism called <em>anacron</em> which trys to run periodic cron-configured commands while the computer is still running. Since we are creating a 24x7 server we do not also need anacron – delete it:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="fu">$ sudo apt remove anacron</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a><span class="fu">$ sudo apt purge anacron</span></span></code></pre></div>
-<h4 id="enabling-the-secure-shell-daemon">Enabling the Secure Shell Daemon</h4>
-<p>describe enabling, configuring and creating a key pair.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="fu">$ sudo apt remove anacron</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="fu">$ sudo apt purge anacron</span></span></code></pre></div>
+<!--
+to add: handling the silly /swapfile issue
+to add: some local network options to make your life easier (see 'lan' in
+the appendix.
+ -->
+<h1 id="enabling-the-secure-shell-daemon-and-using-secure-shell">Enabling the Secure Shell Daemon and Using Secure Shell</h1>
+<p>The secure shell daemon, <strong><em>sshd</em></strong>, is a very useful and important service for connecting between computers near or far. If you are never going to connect via ssh into your Pi home server from within your network then do NOT install the daemon. You can always use the secure shell client, <strong><em>ssh</em></strong>, to initiate a connection to some external server – for that you do not need sshd.</p>
+<p>If you will be needing sshd then first install it, since it is not installed by default in the LTS desktop version:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="fu">$ sudo apt install openssh-server</span></span></code></pre></div>
+<p>There are some configuration issues that I like to fix in the secure shell daemon’s configuration file: <em>/etc/ssh/sshd_config</em>. The issues to fix are:</p>
+<ul>
+<li>stop the daemon from listening on IPv6: <em>AddressFamily inet</em></li>
+<li>tell the daemon to use DNS: <em>UseDNS yes</em></li>
+<li>limit ssh access to yourself in your LAN;<br />
+and block ssh access to the root user except for ‘localhost’:<br />
+<em>AllowUsers yourlogin@192.168.1.* *<span class="citation" data-cites="localhost">@localhost</span></em></li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="fu">$ cd /etc/ssh</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a><span class="fu">$ sudo cp -p sshd_config sshd_config.orig</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a><span class="co">// edit the file:</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a><span class="fu">$ sudo nano sshd_config</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true"></a><span class="fu">$ diff sshd_config.orig sshd_config</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true"></a>15a16</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true"></a>&gt; AddressFamily inet</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true"></a>101a103</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true"></a>&gt; UseDNS yes</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true"></a>122a125,130</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true"></a>&gt; </span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true"></a>&gt; # Limit access to root user; only local users can connect via ssh to root</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true"></a>&gt; # if root&#39;s authorized_keys file allows them.</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true"></a>&gt; # note: using @localhost does not work on ubuntu unless you set UseDNS to yes</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true"></a>&gt; AllowUsers    myname@192.168.1.* *@localhost</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true"></a>&gt; </span></code></pre></div>
+<!-- 
+describe enabling, configuring and creating a key pair.
+-->
+<!--
+## Secure Shell Topics
+  1. Add a start-up custom launcher asking for the ssh passphrases for
+     the day's work:
+      - From the Control Center select 'Startup Applications'
+      - Click on '+Add' and a small window pops up.
+      - Input a name for it, input the full path to your shell script
+        and add it.
+~~~~ .shell
+  // I run an xterm window in the background, executing inside the
+  // xterm a script that sets up the environment file where other
+  // applications can find my ssh agent process.
+  // 
+  $ tail /home/myname/bin/ssh-prime.sh
+  PATH=/usr/bin
+
+  exec xterm +vb -u8 -e /home/myname/bin/ssh_prime & 2>/dev/null
+  exit 0
+
+  // I must enter the passphrase for each ssh key-pair that I list
+  // in the script below.  The agent is valid until I log out,
+  // or reboot, or kill the agent.
+  // 
+  $ cat /home/myname/bin/ssh_prime
+  PATH=/bin:/usr/bin
+  ssh_info_file=$HOME/.ssh-agent-info-`hostname`
+  ssh-agent >$ssh_info_file
+  chmod 600 $ssh_info_file
+  source $ssh_info_file
+  ssh-add ~/.ssh/id_rsa ~/.ssh/id_some_other_key 
+
+  $ cat /home/myname/.ssh-agent-info-myhostname
+  SSH_AUTH_SOCK=/tmp/ssh-1Z893wPnDPpL/agent.2842; export SSH_AUTH_SOCK;
+  SSH_AGENT_PID=2850; export SSH_AGENT_PID;
+
+~~~~
+
+  2. Secure-shell to a remove server:
+      - Select 'Custom Application Launcher', with Type: 'Application',
+        give it a name, select an icon, and then set the command to an
+        existing shell script which connects to the remote server:
+
+~~~~ .shell
+  $ cat ~/bin/remote-work.sh
+  ...
+  PATH=/usr/bin
+
+  cmd=`basename $0`
+  if [ "$DISPLAY" = "" ] ; then
+    echo "DISPLAY is not set.  This isn't going to work"
+    exit 1
+  fi
+
+  . ~/.bash_cron
+
+  exec xterm +vb -u8 -bg '#ffe5e5' -fn 8x13 -e ssh -A -Y remote.server.org & 2>/dev/null
+  exit 0
+~~~~
+   -->
 <!-- -->
+<h1 id="topics-to-document">Topics To Document</h1>
+<p>These topics are not yet documented.</p>
 <h4 id="enabling-remote-desktop-services">Enabling Remote Desktop Services</h4>
 <p>description here for startx, x2go and xrdp.</p>
 <h4 id="creating-a-web-site-on-the-server">Creating a Web Site on the Server</h4>
@@ -593,7 +720,6 @@ instead of<br />
 <h4 id="other-possible-services">Other Possible Services</h4>
 <p>Other services will be added to this document in the future - examples: MySQL, KVM, Ansible, …</p>
 <!--  -->
-<!-- Appendix -->
 <h1 id="appendix">Appendix</h1>
 <h2 id="find-device">Identifying Device Names for Storage Devices</h2>
 <p>In a Linux system it is important to correctly identify storage devices, especially when you want to repartition or reformat them. If you pick the wrong device you might wipe out its data.</p>
@@ -605,81 +731,81 @@ instead of<br />
 <li>a card reader with 4 slots – 3 slots have 0 bytes, so they are empty (sdb, sdc, sdd) and one of the slots (sde) is occupied by another 256 GB microSD card which is listed with lesser size of 232 GB.</li>
 <li>you can use <em>fdisk</em> and <em>parted</em> to look more closely at the sde device:</li>
 </ul>
-<div class="sourceCode" id="cb18"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>    <span class="fu"># lsblk -i </span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>    NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a>    sda           8:0    1 238.5G  0 disk</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true"></a>    `-sda1        8:1    1 238.5G  0 part /usbdata</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true"></a>    sdb           8:16   1     0B  0 disk</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true"></a>    sdc           8:32   1     0B  0 disk</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true"></a>    sdd           8:48   1     0B  0 disk</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true"></a>    sde           8:64   1 231.7G  0 disk</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true"></a>    |-sde1        8:65   1   243M  0 part</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true"></a>    `-sde2        8:66   1   5.9G  0 part</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true"></a>    mmcblk0     179:0    0  59.4G  0 disk</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true"></a>    |-mmcblk0p1 179:1    0   243M  0 part /boot/firmware</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true"></a>    `-mmcblk0p2 179:2    0  59.2G  0 part /</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true"></a></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true"></a>    <span class="fu"># fdisk -l /dev/sde</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true"></a>    Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true"></a>    Disk model: FCR-HS3       -3</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true"></a>    ...</span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true"></a>    Disklabel type: dos</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true"></a>    Disk identifier: 0x11d94b9e</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true"></a></span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true"></a>    Device     Boot  Start      End  Sectors  Size Id Type</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true"></a>    /dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true"></a>    /dev/sde2       499712 12969983 12470272  5.9G 83 Linux</span>
-<span id="cb18-25"><a href="#cb18-25" aria-hidden="true"></a></span>
-<span id="cb18-26"><a href="#cb18-26" aria-hidden="true"></a>    <span class="fu"># parted /dev/sde print</span></span>
-<span id="cb18-27"><a href="#cb18-27" aria-hidden="true"></a>    Model:  FCR-HS3 -3 (scsi)</span>
-<span id="cb18-28"><a href="#cb18-28" aria-hidden="true"></a>    Disk /dev/sde: 249GB</span>
-<span id="cb18-29"><a href="#cb18-29" aria-hidden="true"></a>    Sector size (logical/physical): 512B/512B</span>
-<span id="cb18-30"><a href="#cb18-30" aria-hidden="true"></a>    Partition Table: msdos</span>
-<span id="cb18-31"><a href="#cb18-31" aria-hidden="true"></a>    Disk Flags: </span>
-<span id="cb18-32"><a href="#cb18-32" aria-hidden="true"></a></span>
-<span id="cb18-33"><a href="#cb18-33" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
-<span id="cb18-34"><a href="#cb18-34" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
-<span id="cb18-35"><a href="#cb18-35" aria-hidden="true"></a>     2      256MB   6641MB  6385MB  primary  ext4</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a>    <span class="fu"># lsblk -i </span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a>    NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a>    sda           8:0    1 238.5G  0 disk</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a>    `-sda1        8:1    1 238.5G  0 part /usbdata</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true"></a>    sdb           8:16   1     0B  0 disk</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true"></a>    sdc           8:32   1     0B  0 disk</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true"></a>    sdd           8:48   1     0B  0 disk</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true"></a>    sde           8:64   1 231.7G  0 disk</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true"></a>    |-sde1        8:65   1   243M  0 part</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true"></a>    `-sde2        8:66   1   5.9G  0 part</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true"></a>    mmcblk0     179:0    0  59.4G  0 disk</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true"></a>    |-mmcblk0p1 179:1    0   243M  0 part /boot/firmware</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true"></a>    `-mmcblk0p2 179:2    0  59.2G  0 part /</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true"></a>    <span class="fu"># fdisk -l /dev/sde</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true"></a>    Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true"></a>    Disk model: FCR-HS3       -3</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true"></a>    ...</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true"></a>    Disklabel type: dos</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true"></a>    Disk identifier: 0x11d94b9e</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true"></a></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true"></a>    Device     Boot  Start      End  Sectors  Size Id Type</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true"></a>    /dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true"></a>    /dev/sde2       499712 12969983 12470272  5.9G 83 Linux</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true"></a></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true"></a>    <span class="fu"># parted /dev/sde print</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true"></a>    Model:  FCR-HS3 -3 (scsi)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true"></a>    Disk /dev/sde: 249GB</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true"></a>    Sector size (logical/physical): 512B/512B</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true"></a>    Partition Table: msdos</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true"></a>    Disk Flags: </span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true"></a></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true"></a>     2      256MB   6641MB  6385MB  primary  ext4</span></code></pre></div>
 <p>You can pass options to the <em>lsblk</em> command so that you print out columns you are interested in – try <em>lsblk --help</em> to see other options.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a>    <span class="fu"># lsblk -i -o &#39;NAME,MODEL,VENDOR,SIZE,MOUNTPOINT,FSTYPE&#39;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true"></a>    NAME        MODEL       VENDOR     SIZE MOUNTPOINT     FSTYPE</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true"></a>    sda         Extreme Pro SanDisk  238.5G</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true"></a>    `-sda1                           238.5G /usbdata       ext4</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true"></a>    sdb         FCR-HS3 -0               0B</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true"></a>    sdc         FCR-HS3 -1               0B</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true"></a>    sdd         FCR-HS3 -2               0B</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true"></a>    sde         FCR-HS3 -3           231.7G</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true"></a>    |-sde1                             243M                vfat</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true"></a>    `-sde2                             5.9G                ext4</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true"></a>    mmcblk0                           59.4G</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true"></a>    |-mmcblk0p1                        243M /boot/firmware vfat</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true"></a>    `-mmcblk0p2                       59.2G /              ext4</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a>    <span class="fu"># lsblk -i -o &#39;NAME,MODEL,VENDOR,SIZE,MOUNTPOINT,FSTYPE&#39;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a>    NAME        MODEL       VENDOR     SIZE MOUNTPOINT     FSTYPE</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>    sda         Extreme Pro SanDisk  238.5G</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>    `-sda1                           238.5G /usbdata       ext4</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a>    sdb         FCR-HS3 -0               0B</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a>    sdc         FCR-HS3 -1               0B</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>    sdd         FCR-HS3 -2               0B</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a>    sde         FCR-HS3 -3           231.7G</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a>    |-sde1                             243M                vfat</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a>    `-sde2                             5.9G                ext4</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true"></a>    mmcblk0                           59.4G</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true"></a>    |-mmcblk0p1                        243M /boot/firmware vfat</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true"></a>    `-mmcblk0p2                       59.2G /              ext4</span></code></pre></div>
 <h2 id="image-cmds">Installation Disk Creation from the Command-line</h2>
 <p>This is a generic approach to creating an installation image on removable media; it generally works for various Linux distributions.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a>    <span class="co">// create a directory for downloaded images</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a>    <span class="fu">$ mkdir raspberry-pi-images</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a>    <span class="fu">$ cd raspberry-pi-images</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a>    <span class="co">// Use wget to pull the compressed image into our directory</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true"></a>    <span class="co">// (The web page also shows the file checksum so that you can verify</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true"></a>    <span class="co">//  that the compressed file is not corrupted)</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true"></a>    <span class="fu">$ serverpath=&quot;https://releases.ubuntu-mate.org/jammy/arm64&quot;</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true"></a>    <span class="fu">$ compressed=&quot;ubuntu-mate-22.04-desktop-arm64+raspi.img.xz&quot;</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true"></a>    <span class="fu">$ wget -N -nd $serverpath&quot;/&quot;$compressed</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true"></a>    <span class="fu">$ sha256sum ubuntu-mate-22.04-desktop-arm64+raspi.img.xz</span></span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true"></a>    3b538f8462cdd957acfbab57f5d949faa607c50c3fb8e6e9d1ad13d5cd6c0c02 ...</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true"></a></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true"></a>    <span class="co">// uncompress the file so we can write the image file to our microSD.</span></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true"></a>    <span class="co">// the 1.9 GB compressed file uncompressed to 6.2 GB:</span></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true"></a>    <span class="fu">$ xz -dv ubuntu-mate-22.04-desktop-arm64+raspi.img.xz </span></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true"></a>    ubuntu-mate-22.04-desktop-arm64+raspi.img.xz (1/1)</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true"></a>      5.1 %      95.2 MiB / 404.4 MiB = 0.235    35 MiB/s     0:11   3 min 40 s</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true"></a>      ...</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true"></a>      100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             </span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a>    <span class="co">// create a directory for downloaded images</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a>    <span class="fu">$ mkdir raspberry-pi-images</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a>    <span class="fu">$ cd raspberry-pi-images</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true"></a>    <span class="co">// Use wget to pull the compressed image into our directory</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true"></a>    <span class="co">// (The web page also shows the file checksum so that you can verify</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true"></a>    <span class="co">//  that the compressed file is not corrupted)</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true"></a>    <span class="fu">$ serverpath=&quot;https://releases.ubuntu-mate.org/jammy/arm64&quot;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true"></a>    <span class="fu">$ compressed=&quot;ubuntu-mate-22.04-desktop-arm64+raspi.img.xz&quot;</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true"></a>    <span class="fu">$ wget -N -nd $serverpath&quot;/&quot;$compressed</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true"></a>    <span class="fu">$ sha256sum ubuntu-mate-22.04-desktop-arm64+raspi.img.xz</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true"></a>    3b538f8462cdd957acfbab57f5d949faa607c50c3fb8e6e9d1ad13d5cd6c0c02 ...</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true"></a>    <span class="co">// uncompress the file so we can write the image file to our microSD.</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true"></a>    <span class="co">// the 1.9 GB compressed file uncompressed to 6.2 GB:</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true"></a>    <span class="fu">$ xz -dv ubuntu-mate-22.04-desktop-arm64+raspi.img.xz </span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true"></a>    ubuntu-mate-22.04-desktop-arm64+raspi.img.xz (1/1)</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true"></a>      5.1 %      95.2 MiB / 404.4 MiB = 0.235    35 MiB/s     0:11   3 min 40 s</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true"></a>      ...</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true"></a>      100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             </span></code></pre></div>
 <p>Now plug in the microSD card, <a href="#find-device">identify the microSD card device name</a>, and then use the <em>dd</em> command to write the image to it. Safely remove the device when you are done with the <em>eject</em> command. In this example the device name <em>/dev/sdX</em> is not real; it is a place-holder for your real device name:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a>    <span class="fu">$ img=&quot;ubuntu-mate-22.04-desktop-arm64+raspi.img&quot;</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a>    <span class="fu">$ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a>    <span class="fu">$ sudo eject /dev/sdX</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a>    <span class="fu">$ img=&quot;ubuntu-mate-22.04-desktop-arm64+raspi.img&quot;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a>    <span class="fu">$ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a>    <span class="fu">$ sudo eject /dev/sdX</span></span></code></pre></div>
 <h2 id="mod-partition">Modify the Partitioning of the Installation Image</h2>
 <p>If you modify the microSD’s partioning <em>before</em> you start the installation then you can reserve a portion of the disk for special data usage - for example as a shared Samba area or an NFS area. We do this by expanding the main Linux partition up to 40 GB, and then we create a third partition.</p>
 <p>I show here how to do that from another Linux computer (in my case another Pi) with a USB card reader and an inserted 256 GB microSD card.</p>
@@ -718,186 +844,186 @@ instead of<br />
 <h3 id="expand-the-main-linux-partition-on-the-microsd">Expand the Main Linux Partition on the microSD</h3>
 <p>40 GB is lots of space for future system needs, so I decide to expand the second partition from 6 up to 40 GB.</p>
 <p>To be sure this partition is sound I run a check on it with <em>e2fsck</em>. Then I use <em>parted</em> to expand the partition, and then <em>resize2fs</em> which can adjusts the size of the underlying ext4 filesystem.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a>    <span class="co">// run a filesystem check on the target partition:</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a>    <span class="fu">$ sudo e2fsck /dev/sde2</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a>    e2fsck 1.46.5 (30-Dec-2021)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a>    writable: clean, 224088/390144 files, 1485804/1558784 blocks</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a>    <span class="co">// invoke the partitioning tool *parted*, print the partition table</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a>    <span class="co">// for reference, and then resize the second partition:</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a>    <span class="fu">$ sudo parted /dev/sde</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a>    ...</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a>    (parted) print                                                            </span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true"></a>    ...</span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true"></a>     2      256MB   6641MB  6385MB  primary  ext4</span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true"></a></span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true"></a>    (parted) resizepart</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true"></a>    Partition number? 2                                                       </span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true"></a>    End?  [6641MB]? 40G                                                       </span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true"></a></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true"></a>    (parted) print                                                            </span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true"></a>    ...</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true"></a>     2      256MB   40.0GB  39.7GB  primary  ext4</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true"></a></span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true"></a>    (parted) quit</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true"></a></span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true"></a>    <span class="co">// Now expand the underlying filesystem to the end of the partition</span></span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true"></a>    <span class="fu">$ sudo resize2fs /dev/sde2</span></span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true"></a>    resize2fs 1.46.5 (30-Dec-2021)</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true"></a>    Resizing the filesystem on /dev/sde2 to 9703161 (4k) blocks.</span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true"></a>    The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.</span></code></pre></div>
-<h3 id="create-a-new-data-partition">Create a New Data Partition</h3>
-<p>Now we want to create a third large partition. We run into the problem of partition alignment because I chose 40 GB for the second partition expansion without considering alignment for the next partition.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a>    <span class="co">// invoke *parted* and print the partition table in sector units:</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true"></a>    <span class="fu">$ sudo parted /dev/sde</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true"></a>    ...</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true"></a>    (parted) unit s print</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true"></a>    Model:  FCR-HS3 -3 (scsi)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true"></a>    Disk /dev/sde: 485869568s</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true"></a>    Sector size (logical/physical): 512B/512B</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true"></a>    Partition Table: msdos</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true"></a>    Disk Flags: </span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true"></a></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true"></a>    Number  Start    End        Size       Type     File system  Flags</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true"></a>     1      2048s    499711s    497664s    primary  fat16        boot, lba</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true"></a>     2      499712s  78125000s  77625289s  primary  ext4</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true"></a></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true"></a>    <span class="co">// the &#39;End&#39; of the second partition is at 78125000 sectors, so I increment</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true"></a>    <span class="co">// that number and try to create the third partition up to 100% of the disk</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true"></a>    <span class="co">// There is a warning about partition alignment, so I cancel that operation</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true"></a>    (parted) mkpart primary ext4 78125001 100%</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true"></a>    Warning: The resulting partition is not properly aligned for best performance:</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true"></a>    78125001s % 2048s != 0s</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true"></a>    Ignore/Cancel? c</span></code></pre></div>
-<p>Disk technology has evolved considerably. Block devices traditionally had a default 512 byte sector size (a sector is the minimum usable unit), but newer disks may have a 4096 (4k) sector size. In order to work efficiently with different sector sizes on various disk technologies a good starting point is at sector 2048. This is at 1 mebibyte (MiB), or 1048576 bytes into the disk, since 512 bytes * 2048 sectors is 1048576 bytes. You lose a bit of disk space at the ‘front’ of the disk, but partitioning and file system data structures are better aligned, and disk performance is enhanced.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a>    <span class="co">// To calculate the best starting sector number for an aligned new</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a>    <span class="co">//  partition simply calculate: </span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a>    <span class="co">//  TRUNCATE(FIRST_POSSIBLE_SECTOR / 2048) * 2048 + 2048</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true"></a>    <span class="co">//  thus: 78125001 / 2048 = 38146.973144</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true"></a>    <span class="co">//        TRUNCATE(38146.973144) = 38146</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true"></a>    <span class="co">//        (38146 * 2048) + 2048  = 78125056</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true"></a>    (parted) mkpart primary ext4 78125056 100%</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true"></a>    (parted) print unit s </span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true"></a>    ...</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true"></a>     2      256MB   40.0GB  39.7GB  primary  ext4</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true"></a>     3      40.0GB  249GB   209GB   primary</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true"></a>    (parted) align-check optimal 3                                            </span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true"></a>    3 aligned</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true"></a></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true"></a>    (parted) unit s print free</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true"></a>    ...</span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true"></a>    Number  Start      End         Size        Type     File system  Flags</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true"></a>            32s        2047s       2016s                Free Space</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true"></a>     1      2048s      499711s     497664s     primary  fat16        boot, lba</span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true"></a>     2      499712s    78125000s   77625289s   primary  ext4</span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true"></a>            78125001s  78125055s   55s                  Free Space</span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true"></a>     3      78125056s  485869567s  407744512s  primary</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true"></a></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true"></a>    (parted) quit</span></code></pre></div>
-<p>Though we have now a bit of wasted space between partition 2 and 3, we can extend partition 2 to use that space. We need to resize its ext4 file system after:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a>    <span class="co">// first check the file system:</span></span>
+<div class="sourceCode" id="cb25"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a>    <span class="co">// run a filesystem check on the target partition:</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true"></a>    <span class="fu">$ sudo e2fsck /dev/sde2</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true"></a>    e2fsck 1.46.5 (30-Dec-2021)</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true"></a>    writable: clean, 224088/2414016 files, 1615846/9703161 blocks</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true"></a>    writable: clean, 224088/390144 files, 1485804/1558784 blocks</span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true"></a></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true"></a>    <span class="fu">$ sudo parted /dev/sde</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true"></a>    ...</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true"></a>    (parted) unit s print free</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true"></a>    <span class="co">// invoke the partitioning tool *parted*, print the partition table</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true"></a>    <span class="co">// for reference, and then resize the second partition:</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true"></a>    <span class="fu">$ sudo parted /dev/sde</span></span>
 <span id="cb25-9"><a href="#cb25-9" aria-hidden="true"></a>    ...</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true"></a>    Number  Start      End         Size        Type     File system  Flags</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true"></a>            32s        2047s       2016s                Free Space</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true"></a>     1      2048s      499711s     497664s     primary  fat16        boot, lba</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true"></a>     2      499712s    78125000s   77625289s   primary  ext4</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true"></a>            78125001s  78125055s   55s                  Free Space</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true"></a>     3      78125056s  485869567s  407744512s  primary</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true"></a></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true"></a>    (parted) resizepart</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true"></a>    Partition number? 2                                                       </span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true"></a>    End?  [78125000s]? 78125055s                                              </span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true"></a>    (parted) print free</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true"></a>    (parted) print                                                            </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true"></a>    ...</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true"></a>     2      256MB   6641MB  6385MB  primary  ext4</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true"></a>    (parted) resizepart</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true"></a>    Partition number? 2                                                       </span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true"></a>    End?  [6641MB]? 40G                                                       </span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true"></a></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true"></a>    (parted) print                                                            </span>
 <span id="cb25-21"><a href="#cb25-21" aria-hidden="true"></a>    ...</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true"></a>    Number  Start      End         Size        Type     File system  Flags</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true"></a>            32s        2047s       2016s                Free Space</span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true"></a>     1      2048s      499711s     497664s     primary  fat16        boot, lba</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true"></a>     2      499712s    78125055s   77625344s   primary  ext4</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true"></a>     3      78125056s  485869567s  407744512s  primary</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true"></a>     2      256MB   40.0GB  39.7GB  primary  ext4</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true"></a></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true"></a>    (parted) quit</span>
 <span id="cb25-27"><a href="#cb25-27" aria-hidden="true"></a></span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true"></a>    (parted) quit                                                             </span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true"></a>    Information: You may need to update /etc/fstab.</span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true"></a></span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true"></a>    <span class="fu">$ sudo resize2fs /dev/sde2</span></span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true"></a>    resize2fs 1.46.5 (30-Dec-2021)</span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true"></a>    Resizing the filesystem on /dev/sde2 to 9703168 (4k) blocks.</span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true"></a>    The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.</span></code></pre></div>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true"></a>    <span class="co">// Now expand the underlying filesystem to the end of the partition</span></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true"></a>    <span class="fu">$ sudo resize2fs /dev/sde2</span></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true"></a>    resize2fs 1.46.5 (30-Dec-2021)</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true"></a>    Resizing the filesystem on /dev/sde2 to 9703161 (4k) blocks.</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true"></a>    The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.</span></code></pre></div>
+<h3 id="create-a-new-data-partition">Create a New Data Partition</h3>
+<p>Now we want to create a third large partition. We run into the problem of partition alignment because I chose 40 GB for the second partition expansion without considering alignment for the next partition.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a>    <span class="co">// invoke *parted* and print the partition table in sector units:</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a>    <span class="fu">$ sudo parted /dev/sde</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a>    ...</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true"></a>    (parted) unit s print</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true"></a>    Model:  FCR-HS3 -3 (scsi)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true"></a>    Disk /dev/sde: 485869568s</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true"></a>    Sector size (logical/physical): 512B/512B</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true"></a>    Partition Table: msdos</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true"></a>    Disk Flags: </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true"></a>    Number  Start    End        Size       Type     File system  Flags</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true"></a>     1      2048s    499711s    497664s    primary  fat16        boot, lba</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true"></a>     2      499712s  78125000s  77625289s  primary  ext4</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true"></a></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true"></a>    <span class="co">// the &#39;End&#39; of the second partition is at 78125000 sectors, so I increment</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true"></a>    <span class="co">// that number and try to create the third partition up to 100% of the disk</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true"></a>    <span class="co">// There is a warning about partition alignment, so I cancel that operation</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true"></a>    (parted) mkpart primary ext4 78125001 100%</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true"></a>    Warning: The resulting partition is not properly aligned for best performance:</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true"></a>    78125001s % 2048s != 0s</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true"></a>    Ignore/Cancel? c</span></code></pre></div>
+<p>Disk technology has evolved considerably. Block devices traditionally had a default 512 byte sector size (a sector is the minimum usable unit), but newer disks may have a 4096 (4k) sector size. In order to work efficiently with different sector sizes on various disk technologies a good starting point is at sector 2048. This is at 1 mebibyte (MiB), or 1048576 bytes into the disk, since 512 bytes * 2048 sectors is 1048576 bytes. You lose a bit of disk space at the ‘front’ of the disk, but partitioning and file system data structures are better aligned, and disk performance is enhanced.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a>    <span class="co">// To calculate the best starting sector number for an aligned new</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true"></a>    <span class="co">//  partition simply calculate: </span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true"></a>    <span class="co">//  TRUNCATE(FIRST_POSSIBLE_SECTOR / 2048) * 2048 + 2048</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true"></a>    <span class="co">//  thus: 78125001 / 2048 = 38146.973144</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true"></a>    <span class="co">//        TRUNCATE(38146.973144) = 38146</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true"></a>    <span class="co">//        (38146 * 2048) + 2048  = 78125056</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true"></a>    (parted) mkpart primary ext4 78125056 100%</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true"></a>    (parted) print unit s </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true"></a>    ...</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true"></a>    Number  Start   End     Size    Type     File system  Flags</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true"></a>     1      1049kB  256MB   255MB   primary  fat16        boot, lba</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true"></a>     2      256MB   40.0GB  39.7GB  primary  ext4</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true"></a>     3      40.0GB  249GB   209GB   primary</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true"></a>    (parted) align-check optimal 3                                            </span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true"></a>    3 aligned</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true"></a></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true"></a>    (parted) unit s print free</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true"></a>    ...</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true"></a>    Number  Start      End         Size        Type     File system  Flags</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true"></a>            32s        2047s       2016s                Free Space</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true"></a>     1      2048s      499711s     497664s     primary  fat16        boot, lba</span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true"></a>     2      499712s    78125000s   77625289s   primary  ext4</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true"></a>            78125001s  78125055s   55s                  Free Space</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true"></a>     3      78125056s  485869567s  407744512s  primary</span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true"></a></span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true"></a>    (parted) quit</span></code></pre></div>
+<p>Though we have now a bit of wasted space between partition 2 and 3, we can extend partition 2 to use that space. We need to resize its ext4 file system after:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a>    <span class="co">// first check the file system:</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a>    <span class="fu">$ sudo e2fsck /dev/sde2</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true"></a>    e2fsck 1.46.5 (30-Dec-2021)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true"></a>    writable: clean, 224088/2414016 files, 1615846/9703161 blocks</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true"></a>    <span class="fu">$ sudo parted /dev/sde</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true"></a>    ...</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true"></a>    (parted) unit s print free</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true"></a>    ...</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true"></a>    Number  Start      End         Size        Type     File system  Flags</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true"></a>            32s        2047s       2016s                Free Space</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true"></a>     1      2048s      499711s     497664s     primary  fat16        boot, lba</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true"></a>     2      499712s    78125000s   77625289s   primary  ext4</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true"></a>            78125001s  78125055s   55s                  Free Space</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true"></a>     3      78125056s  485869567s  407744512s  primary</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true"></a></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true"></a>    (parted) resizepart</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true"></a>    Partition number? 2                                                       </span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true"></a>    End?  [78125000s]? 78125055s                                              </span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true"></a>    (parted) print free</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true"></a>    ...</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true"></a>    Number  Start      End         Size        Type     File system  Flags</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true"></a>            32s        2047s       2016s                Free Space</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true"></a>     1      2048s      499711s     497664s     primary  fat16        boot, lba</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true"></a>     2      499712s    78125055s   77625344s   primary  ext4</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true"></a>     3      78125056s  485869567s  407744512s  primary</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true"></a></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true"></a>    (parted) quit                                                             </span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true"></a>    Information: You may need to update /etc/fstab.</span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true"></a></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true"></a>    <span class="fu">$ sudo resize2fs /dev/sde2</span></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true"></a>    resize2fs 1.46.5 (30-Dec-2021)</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true"></a>    Resizing the filesystem on /dev/sde2 to 9703168 (4k) blocks.</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true"></a>    The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.</span></code></pre></div>
 <h3 id="create-a-filesystem-on-the-new-data-partition">Create a Filesystem on the New Data Partition</h3>
 <p>Ubuntu uses the <em>ext4</em> filesystem, so let’s create that filesystem on the new data partition:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkfs.ext4 /dev/sde3</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a>    mke2fs 1.46.5 (30-Dec-2021)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a>    Creating filesystem with 50968064 4k blocks and 12746752 inodes</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true"></a>    Filesystem UUID: 2dba1eef-34e4-47ed-90fc-c1938d5fa9e0</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true"></a>    Superblock backups stored on blocks: </span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true"></a>        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true"></a>        4096000, 7962624, 11239424, 20480000, 23887872</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true"></a></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true"></a>    Allocating group tables: done                            </span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true"></a>    Writing inode tables: done                            </span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true"></a>    Creating journal (262144 blocks): done</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true"></a>    Writing superblocks and filesystem accounting information: done</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkfs.ext4 /dev/sde3</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a>    mke2fs 1.46.5 (30-Dec-2021)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a>    Creating filesystem with 50968064 4k blocks and 12746752 inodes</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true"></a>    Filesystem UUID: 2dba1eef-34e4-47ed-90fc-c1938d5fa9e0</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true"></a>    Superblock backups stored on blocks: </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true"></a>        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true"></a>        4096000, 7962624, 11239424, 20480000, 23887872</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true"></a>    Allocating group tables: done                            </span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true"></a>    Writing inode tables: done                            </span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true"></a>    Creating journal (262144 blocks): done</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true"></a>    Writing superblocks and filesystem accounting information: done</span></code></pre></div>
 <p>By default, the generations of the <a href="https://en.wikipedia.org/wiki/Extended_file_system"><em>ext</em> filesystems</a> reserve 5% of the available space for the <em>root</em> user. On a data partition where most files created will belong to ordinary users this reservation is not necessary. 5% of 200 GB is 10 GB - that is a lot of space. So it is a good idea to reduce the percentage to 1%; do this with the <em>tune2fs</em> utility:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -l /dev/sde3 | grep -i count</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true"></a>    ...</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true"></a>    Reserved block count:     2548403</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true"></a></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -m 1 /dev/sde3</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true"></a>    tune2fs 1.46.5 (30-Dec-2021)</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true"></a>    Setting reserved blocks percentage to 1% (509680 blocks)</span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true"></a></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -l /dev/sde3 | grep -i count</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true"></a>    ...</span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true"></a>    Reserved block count:     509680</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -l /dev/sde3 | grep -i count</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true"></a>    ...</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true"></a>    Reserved block count:     2548403</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -m 1 /dev/sde3</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true"></a>    tune2fs 1.46.5 (30-Dec-2021)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true"></a>    Setting reserved blocks percentage to 1% (509680 blocks)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true"></a></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -l /dev/sde3 | grep -i count</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true"></a>    ...</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true"></a>    Reserved block count:     509680</span></code></pre></div>
 <p>Lastly, lets add a <em>label</em> to this partition to make it easier to mount the filesystem in the future. We will use the label <em>PI-DATA</em>:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -L PI-DATA /dev/sde3</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a>    tune2fs 1.46.5 (30-Dec-2021)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a>    <span class="fu">$ sudo tune2fs -L PI-DATA /dev/sde3</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true"></a>    tune2fs 1.46.5 (30-Dec-2021)</span></code></pre></div>
 <h2 id="data-area">Setting Up a Data Area</h2>
 <p>If you did not <a href="#mod-partition">modify the initial partitioning</a> of your microSD card then you will simply make a directory in the root of your filesystem where we will store any data associated with a Samba service or with an NFS service – that is all.</p>
 <p>In case you did make a data partition on the microSD card then we <em>still</em> need to make a directory in the root of the filesystem to mount that data partition:</p>
 <p>Let’s call the directory <em>/data</em>:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /data</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /data</span></span></code></pre></div>
 <p>For the case with the third (data) partition then we need to mount it and make the mount action permanent on reboots. For this we create an entry in the filesystem table, the <em>/etc/fstab</em> file:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>    <span class="co">// make a backup copy first</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true"></a>    <span class="fu">$ sudo cp -p /etc/fstab /etc/fstab.orig</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true"></a></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true"></a>    <span class="co">// There are 6 fields in an fstab entry:</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true"></a>    <span class="co">//    1. the partition name, the partition label or the partition uuid</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true"></a>    <span class="co">//    2. the directory to use for the mount point</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true"></a>    <span class="co">//    3. the filesystem type</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true"></a>    <span class="co">//    4. any mount options recognized by the mount command</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true"></a>    <span class="co">//    5. use a zero here, it is a legacy option for the &#39;dump&#39; command</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true"></a>    <span class="co">//    6. the file system check ordering, use &#39;2&#39; here</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true"></a></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true"></a>    <span class="co">// Edit the file, adding a mount entry line to the end of the file;</span></span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true"></a>    <span class="co">// recall that we added the label &#39;PI-DATA&#39; to its filesystem:</span></span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true"></a>    <span class="fu">$ sudo nano /etc/fstab</span></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true"></a>    <span class="fu">$ tail -2 /etc/fstab</span></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true"></a>    LABEL=PI-DATA       /data           ext4    defaults  0  2</span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true"></a></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true"></a>    <span class="fu">$ sudo mount /data</span></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true"></a>    <span class="fu">$ ls -la /data</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true"></a>    total 24</span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true"></a>    drwxr-xr-x  3 root root  4096 Apr 16 10:35 .</span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true"></a>    drwxr-xr-x 20 root root  4096 Apr 16 14:30 ..</span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true"></a>    drwx------  2 root root 16384 Apr 16 10:35 lost+found</span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true"></a></span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true"></a>    <span class="fu">$ df -h /data</span></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true"></a>    Filesystem      Size  Used Avail Use% Mounted on</span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true"></a>    /dev/sde3       191G   28K  189G   1% /data (!! put correct dev here)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a>    <span class="co">// make a backup copy first</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a>    <span class="fu">$ sudo cp -p /etc/fstab /etc/fstab.orig</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true"></a>    <span class="co">// There are 6 fields in an fstab entry:</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true"></a>    <span class="co">//    1. the partition name, the partition label or the partition uuid</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true"></a>    <span class="co">//    2. the directory to use for the mount point</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true"></a>    <span class="co">//    3. the filesystem type</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true"></a>    <span class="co">//    4. any mount options recognized by the mount command</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true"></a>    <span class="co">//    5. use a zero here, it is a legacy option for the &#39;dump&#39; command</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true"></a>    <span class="co">//    6. the file system check ordering, use &#39;2&#39; here</span></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true"></a>    <span class="co">// Edit the file, adding a mount entry line to the end of the file;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true"></a>    <span class="co">// recall that we added the label &#39;PI-DATA&#39; to its filesystem:</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true"></a>    <span class="fu">$ sudo nano /etc/fstab</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true"></a>    <span class="fu">$ tail -2 /etc/fstab</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true"></a>    LABEL=PI-DATA       /data           ext4    defaults  0  2</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true"></a></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true"></a>    <span class="fu">$ sudo mount /data</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true"></a>    <span class="fu">$ ls -la /data</span></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true"></a>    total 24</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true"></a>    drwxr-xr-x  3 root root  4096 Apr 16 10:35 .</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true"></a>    drwxr-xr-x 20 root root  4096 Apr 16 14:30 ..</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true"></a>    drwx------  2 root root 16384 Apr 16 10:35 lost+found</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true"></a></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true"></a>    <span class="fu">$ df -h /data</span></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true"></a>    Filesystem      Size  Used Avail Use% Mounted on</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true"></a>    /dev/sde3       191G   28K  189G   1% /data (!! put correct dev here)</span></code></pre></div>
 <h2 id="eg-cmds">Some Command-line Utilities and Their Purpose</h2>
 <table>
 <colgroup>
@@ -1094,7 +1220,6 @@ further in the appendix.
 <li>a middle-mouse-button-click over the maximize button maximizes the window vertically. Another middle-mouse-button-click will return it to the previous size.</li>
 <li>a left-mouse-button-click over the maximize button maximizes the window completely. Another left-mouse-button-click will return it to the previous size.</li>
 </ul>
-<!-- end   -->
 <h2 id="backups">An Example Process and Script for Backups</h2>
 <p>There are many ways to do backups - this is just one example.<br />
 An <a href="https://github.com/deatrich/tools/blob/main/system-backup.sh">example script</a> in my github area can do both local system backups; it can also do external backups to a removable drive, such as an attached USB drive. If you do only local backups without creating a copy elsewhere then you run the risk of losing your data because of a major failure (like losing or overwriting the local disk) when you don’t have another copy.</p>
@@ -1105,88 +1230,241 @@ An <a href="https://github.com/deatrich/tools/blob/main/system-backup.sh">exampl
 * copy the configuration file and the script into place
 * edit the configuration file
 * create/edit the cronjob to run the local backup at 1 in the early morning</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /var/local-backups</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true"></a>    <span class="fu">$ sudo cp /path/to/system-backup.conf /etc</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /root/bin</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true"></a>    <span class="fu">$ sudo cp /path/to/system-backup.sh /root/bin</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true"></a>    <span class="co">// the script must be marked as &#39;executable&#39;; the chmod command will do that</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true"></a>    <span class="fu">$ sudo chmod 755 /root/bin/system-backup.sh</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true"></a>    <span class="co">// edit the configuration file for the backups</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true"></a>    <span class="fu">$ sudo nano /etc/system-backup.conf</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true"></a></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true"></a>    <span class="co">// create the cronjob and ask cron to list what that job is:</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true"></a>    <span class="fu">$ EDITOR=/bin/nano sudo crontab -e</span></span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true"></a>    <span class="fu">$ sudo crontab -l | tail -3</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true"></a></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true"></a>    0 1 * * * /root/bin/system-backup.sh -Y</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true"></a></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true"></a>    <span class="co">// Run the script in debug mode from the command line to make sure</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true"></a>    <span class="co">// that everything is correctly configured:</span></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true"></a>    <span class="fu">$ sudo /root/bin/system-backup.sh -D -Y</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /var/local-backups</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a>    <span class="fu">$ sudo cp /path/to/system-backup.conf /etc</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a>    <span class="fu">$ sudo mkdir /root/bin</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a>    <span class="fu">$ sudo cp /path/to/system-backup.sh /root/bin</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true"></a>    <span class="co">// the script must be marked as &#39;executable&#39;; the chmod command will do that</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true"></a>    <span class="fu">$ sudo chmod 755 /root/bin/system-backup.sh</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true"></a>    <span class="co">// edit the configuration file for the backups</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true"></a>    <span class="fu">$ sudo nano /etc/system-backup.conf</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true"></a></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true"></a>    <span class="co">// create the cronjob and ask cron to list what that job is:</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true"></a>    <span class="fu">$ EDITOR=/bin/nano sudo crontab -e</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true"></a>    <span class="fu">$ sudo crontab -l | tail -3</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true"></a></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true"></a>    0 1 * * * /root/bin/system-backup.sh -Y</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true"></a></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true"></a>    <span class="co">// Run the script in debug mode from the command line to make sure</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true"></a>    <span class="co">// that everything is correctly configured:</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true"></a>    <span class="fu">$ sudo /root/bin/system-backup.sh -D -Y</span></span></code></pre></div>
 <p>If you have inserted a USB drive, then make a folder at the root of the filesystem on the USB drive for backups. You should edit the configuration file with the correct USB partition and mount path; and then edit the crontab again and add ‘-X’ to the list of options for external drive backups.</p>
 <p>In case your USB drive is formated for Windows then it should be okay. The script might issue some warnings about trying to preserve LINUX permissions on the USB drive, but should otherwise work. I need to verify this case.</p>
 <p>Test it with:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a>    <span class="fu">$ sudo /root/bin/system-backup.sh -D -Y -X</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a>    <span class="fu">$ sudo /root/bin/system-backup.sh -D -Y -X</span></span></code></pre></div>
 <p>If you ever need to restore files from your backups then you should unpack the <em>tarballs</em> (compressed ‘tar’ files) on a Linux system and copy the needed files into place on the filesystem.</p>
+<!-- (!!) issues to tackle: resolv.conf; systemd encroachment -->
+<h2 id="lan">LAN (Local Area Network) Configuration files</h2>
+<p>There are some common networking files that are interesting to configure especially if you have more than one Linux computer on your home network. They are useful on your home Linux server as well, since it clarifies some configuration settings for some future services you might like to enable, for example, a web service.</p>
+<p>You can only configure the hosts file if you have reserved IP addresses in your home router for your special devices, like your home Linux server.</p>
+<p>The list of files that I like to manage are:</p>
+<ul>
+<li>/etc/networks
+<ul>
+<li>Read the man page on ‘networks’</li>
+<li>Add a local domain for your home network here. We will call this domain <em>.home</em>, that is, if your server’s short name is <em>pi</em>, then its long name becomes <em>pi.home</em></li>
+<li>Avoid problems – do not use a valid <a href="https://data.iana.org/TLD/tlds-alpha-by-domain.txt">Top Level Domain (TLD)</a>.<br />
+‘.home’ is not a TLD (at least not yet..)</li>
+</ul></li>
+<li>/etc/hosts
+<ul>
+<li>Read the man page on ‘hosts’</li>
+<li>Add some IP addresses you have reserved in your home router for your hostnames</li>
+<li>Be sure to include your home server</li>
+</ul></li>
+</ul>
+<p>Your router’s private network address is used when declaring your home domain; the private netowrk is typically something like 192.168.1.0 or 10.0.0.0. I did a quick analysis of a list of <a href="https://www.techspot.com/guides/287-default-router-ip-addresses/">the IP addresses of common routers</a>. The network address of the router is usually obtained by dropping the last octet from its IP address. The top 4 network addresses (without a trailing .0) were:</p>
+<ul>
+<li>192.168.0</li>
+<li>192.168.1</li>
+<li>192.168.2</li>
+<li>10.0.0</li>
+</ul>
+<p>Note that your home network’s IPv4 address space is always in <a href="https://en.wikipedia.org/wiki/Private_network">the private network space</a> – that is, network traffic addressed to devices in a private network is never routed over the Internet.</p>
+<p>The Ubuntu version of the /etc/hosts file automatically puts your hostname within the ‘localhost’ network during installation; we will comment that out.</p>
+<p>Here are the examples:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a><span class="co">// /etc/networks</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a><span class="co">// You can look at your router&#39;s management web page to understand</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true"></a><span class="co">// what your network address is - the example used here is: 192.168.1.0</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true"></a><span class="co">// You can drop the last octet, that is the &#39;.0&#39;, but I leave it in:</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true"></a><span class="fu">$ man networks</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true"></a><span class="fu">$ sudo cp -p /etc/networks /etc/networks.orig</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true"></a><span class="fu">$ sudo nano /etc/networks</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true"></a><span class="fu">$ cat /etc/networks</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true"></a>link-local 169.254.0.0</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true"></a>home  192.168.1.0</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true"></a></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true"></a><span class="fu">$ diff /etc/networks.orig /etc/networks</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true"></a>2a3</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true"></a>&gt; home  192.168.1.0</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true"></a></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true"></a><span class="co">// /etc/hosts</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true"></a><span class="co">// Add your favourite devices with their reserved hostnames to /etc/hosts</span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true"></a><span class="co">// Each host gets it full name with .home attached, as well as its short name</span></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true"></a><span class="co">// and any aliases:</span></span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true"></a></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true"></a><span class="fu">$ man hosts</span></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true"></a><span class="fu">$ sudo cp -p /etc/hosts /etc/hosts.orig</span></span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true"></a><span class="fu">$ sudo nano /etc/hosts</span></span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true"></a><span class="fu">$ # diff /etc/hosts.orig /etc/hosts</span></span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true"></a>2c2</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true"></a>&lt; 127.0.1.1     pi</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true"></a>---</span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true"></a>&gt; #127.0.1.1    pi</span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true"></a>9a10,13</span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true"></a>&gt; </span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true"></a>&gt; 192.168.1.90  pi.home pi web</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true"></a>&gt; 192.168.1.65  desktop.home desktop</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true"></a>&gt; 192.168.1.80  odroid.home odroid</span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true"></a>&gt; 192.168.1.81  laptop.home laptop</span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true"></a>&gt; 192.168.1.86  inkjet.home inkjet</span></code></pre></div>
+<h3 id="changing-the-servers-hostname">Changing the Server’s Hostname</h3>
+<p>Now that we have a <em>.home</em> domain we can rename our official server’s hostname. Suppose the server was originally named <em>pi</em> during the installation:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="co">// look at what you set your hostname to during the installation:</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a><span class="fu">$ hostname</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a>pi</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true"></a><span class="co">// Give the server a fully-qualified hostname using &#39;hostnamectl&#39;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true"></a><span class="co">// Note that older versions of hostnamectl required:</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true"></a><span class="co">//      sudo hostnamectl set-hostname pi.home</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true"></a><span class="fu">$ sudo hostnamectl hostname pi.home</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true"></a></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true"></a><span class="fu">$ hostname</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true"></a>pi.home</span></code></pre></div>
+<h3 id="the-resolver-and-looking-up-your-local-hostnames">The Resolver and Looking Up Your Local Hostnames</h3>
+<p>Well-known traditional command-line tools for querying DNS <a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a> are:</p>
+<ul>
+<li>host</li>
+<li>nslookup</li>
+<li>dig</li>
+</ul>
+<p>These tools look in <em>/etc/resolv.conf</em> for the nameserver(s) to query when looking up IP addresses or hostnames.</p>
+<p>Of course, external DNS servers know nothing about your private local network. So, on an older Linux version – for example CentOS 7 – when you try querying a private host using one of the above utilities, you might see:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a><span class="fu">$ host pi.home</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a>pi.home has address 192.168.1.90</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true"></a>Host pi.home not found: 3(NXDOMAIN)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true"></a>Host pi.home not found: 3(NXDOMAIN)</span></code></pre></div>
+<p>Clearly the ‘host’ command looked at the /etc/hosts file, but also consulted the external DNS servers.</p>
+<p>There is another command-line tool, <em>getent</em>, for looking up local dns data:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="fu">$ getent hosts pi</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a>192.168.1.90   pi.home pi web</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a><span class="fu">$ getent hosts 192.168.1.90</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a>192.168.1.90   pi.home pi</span></code></pre></div>
+<p>Contemporary Linux version’s like Ubuntu LTS 22.04 handle this case better since there is a local nameserver that handles local DNS lookups.</p>
+<h3 id="modifying-the-resolvers-list-of-nameservers">Modifying the Resolver’s List of Nameservers</h3>
+<p>The resolver file would typically be created at bootup when your computer makes a DHCP request to the home router asking for an IP address and the names of the router’s configured DNS servers.</p>
+<p>On contemporary Linux versions the resolver file is created and managed differently than in older Linux versions. Recent Ubuntu LTS versions use a systemd service named <em>systemd-resolved</em> which by default manages the resolver file, and it runs a local DNS server:</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true"></a><span class="co">// list open network connections and find a name match for &#39;resolve&#39;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true"></a><span class="fu"># lsof -i -P -n +c0|grep resolve</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true"></a>systemd-resolve  568 systemd-resolve   13u  IPv4  20701      0t0  UDP 127.0.0.53:53 </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true"></a>systemd-resolve  568 systemd-resolve   14u  IPv4  20702      0t0  TCP 127.0.0.53:53 (LISTEN)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true"></a></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true"></a><span class="co">// what the resolver file looks like on a newly installed Ubuntu node</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true"></a><span class="fu">$ tail -3 /etc/resolv.conf </span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true"></a>nameserver 127.0.0.53</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true"></a>options edns0 trust-ad</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true"></a>search .</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true"></a></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true"></a><span class="co">// the resolver file is actually a symbolic link into territory owned by systemd</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true"></a><span class="fu">$ ls -l /etc/resolv.conf </span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true"></a>lrwxrwxrwx 1 root root 39 Mar 17 14:38 /etc/resolv.conf -&gt; ../run/systemd/resolve/stub-resolv.conf</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true"></a></span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true"></a><span class="co">// get the resolver&#39;s status - in this case the first DNS server is my router&#39;s</span></span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true"></a><span class="co">// IP address</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true"></a><span class="fu">$ resolvectl status</span></span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true"></a>Global</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true"></a>       Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true"></a>resolv.conf mode: stub</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true"></a></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true"></a>Link 2 (ens3)</span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true"></a>    Current Scopes: DNS</span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true"></a>         Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported</span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true"></a>Current DNS Server: 192.168.1.254</span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true"></a>       DNS Servers: 192.168.1.254 75.153.171.67</span></code></pre></div>
+<p>If you want to modify the list of DNS servers that your router provides then this is the process for the version of Ubuntu. Sometimes the DNS servers which my router configures have ‘slow’ days, and I like to have control of the list of DNS servers to fix this issue. I use DNS IP addresses from CloudFlare (1.1.1.1) and Google (8.8.8.8). Here is a look at the process.</p>
+<p>Create a local copy of the resolver file - do not pollute systemd space:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true"></a><span class="co">// Remove the current resolver file (we don&#39;t want to edit systemd&#39;s file.</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true"></a><span class="co">// This just removes the symbolic link:</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true"></a><span class="fu">$ sudo rm /etc/resolv.conf</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true"></a><span class="co">// Get a copy of /usr/lib/systemd/resolv.conf for manual control of the resolver</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true"></a><span class="fu">$ sudo cp -p /usr/lib/systemd/resolv.conf /etc/resolv.conf</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true"></a><span class="co">// Change only the comments at the top to show it is locally managed:</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true"></a><span class="fu">$ sudo nano /etc/resolv.conf</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true"></a></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true"></a><span class="fu">$ tail -3 /etc/resolv.conf</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true"></a>nameserver 127.0.0.53</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true"></a>options edns0 trust-ad</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true"></a>search .</span></code></pre></div>
+<p>By default this version of Ubuntu uses NetworkManager for network configuration, and the local systemd-resolved for DNS service. To make a permanent change to the DNS information known to systemd we configure NetworkManager. Here we look at the network using NetworkManager’s <em>nmcli</em> utility:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true"></a><span class="fu">$ nmcli con show</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true"></a>NAME                UUID                                  TYPE      DEVICE </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true"></a>Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0   </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true"></a>MY-SSID             924de702-7f7e-4e31-8dff-4bc968148f2b  wifi      --</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true"></a><span class="fu">$ nmcli connection show &#39;Wired connection 1&#39;|grep -i dns</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true"></a>connection.mdns:                        -1 (default)</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true"></a>connection.dns-over-tls:                -1 (default)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true"></a>ipv4.dns:                               --</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true"></a>ipv4.dns-search:                        --</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true"></a>ipv4.dns-options:                       --</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true"></a>...</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true"></a>IP4.DNS[1]:                             192.168.1.254</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true"></a>IP4.DNS[2]:                             75.153.171.67</span></code></pre></div>
+<p>Now add some other DNS servers to this configuration using nmcli; it should persist after a reboot. We are adding well-known public IP addresses from Cloudflare (1.1.1.1), and from Google (8.8.8.8):</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true"></a><span class="fu">$ sudo nmcli connection modify &#39;Wired connection 1&#39; ipv4.dns &quot;1.1.1.1,8.8.8.8&quot;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true"></a><span class="fu">$ nmcli connection show &#39;Wired connection 1&#39;|grep -i dns</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true"></a>connection.mdns:                        -1 (default)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true"></a>connection.dns-over-tls:                -1 (default)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true"></a>ipv4.dns:                               1.1.1.1,8.8.8.8</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true"></a>ipv4.dns-search:                        --</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true"></a>...</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true"></a>IP4.DNS[1]:                             1.1.1.1</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true"></a>IP4.DNS[2]:                             8.8.8.8</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true"></a>IP4.DNS[3]:                             192.168.1.254</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true"></a>IP4.DNS[4]:                             75.153.171.67</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true"></a></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true"></a><span class="co">// Check it with resolvectl:</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true"></a><span class="fu">$ resolvectl status|grep &#39;DNS Serv&#39;</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true"></a>Current DNS Server: 1.1.1.1</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true"></a>       DNS Servers: 1.1.1.1 8.8.8.8 192.168.1.254 75.153.171.67</span></code></pre></div>
+<p>If ever you want to make a temporary change, use ‘resolvctl’ to do that; it will not persist after a reboot:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode shell"><code class="sourceCode shell"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true"></a><span class="fu">$ sudo resolvectl dns eth0 9.9.9.9 8.8.4.4 75.153.171.67</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true"></a><span class="fu">$ resolvectl status</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true"></a>Global</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true"></a>       Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true"></a>resolv.conf mode: foreign</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true"></a>      DNS Domain: ~.</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true"></a>Link 2 (eth0)</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true"></a>    Current Scopes: DNS</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true"></a>         Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true"></a>Current DNS Server: 9.9.9.9</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true"></a>       DNS Servers: 9.9.9.9 8.8.4.4 75.153.171.67</span></code></pre></div>
 <!--
-## Secure Shell Topics
-  1. Add a start-up custom launcher asking for the ssh passphrases for
-     the day's work:
-      - From the Control Center select 'Startup Applications'
-      - Click on '+Add' and a small window pops up.
-      - Input a name for it, input the full path to your shell script
-        and add it.
-~~~~ .shell
-  // I run an xterm window in the background, executing inside the
-  // xterm a script that sets up the environment file where other
-  // applications can find my ssh agent process.
-  // 
-  $ tail /home/mylogin/bin/ssh-prime.sh
-  PATH=/usr/bin
+// extraneous stuff
+// ping 'pi.home' 10 times from another host; its network latency
+//  average is 0.160 milliseconds:
+$ ping -c 10 pi.home
+PING pi.home (192.168.1.90) 56(84) bytes of data.
+64 bytes from pi.home (192.168.1.90): icmp_seq=1 ttl=64 time=0.187 ms
+64 bytes from pi.home (192.168.1.90): icmp_seq=2 ttl=64 time=0.177 ms
+...
+64 bytes from pi.home (192.168.1.90): icmp_seq=10 ttl=64 time=0.161 ms
 
-  exec xterm +vb -u8 -e /home/mylogin/bin/ssh_prime & 2>/dev/null
-  exit 0
+--- pi.home ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9000ms
+rtt min/avg/max/mdev = 0.110/0.160/0.187/0.023 ms
 
-  // I must enter the passphrase for each ssh key-pair that I list
-  // in the script below.  The agent is valid until I log out,
-  // or reboot, or kill the agent.
-  // 
-  $ cat /home/mylogin/bin/ssh_prime
-  PATH=/bin:/usr/bin
-  ssh_info_file=$HOME/.ssh-agent-info-`hostname`
-  ssh-agent >$ssh_info_file
-  chmod 600 $ssh_info_file
-  source $ssh_info_file
-  ssh-add ~/.ssh/id_rsa ~/.ssh/id_some_other_key 
+// look at your default gateway:
+$ ip route | grep default
+default via 192.168.1.254 dev ens3 proto dhcp metric 100
 
-  $ cat /home/mylogin/.ssh-agent-info-myhostname
-  SSH_AUTH_SOCK=/tmp/ssh-1Z893wPnDPpL/agent.2842; export SSH_AUTH_SOCK;
-  SSH_AGENT_PID=2850; export SSH_AGENT_PID;
-
-~~~~
-
-  2. Secure-shell to a remove server:
-      - Select 'Custom Application Launcher', with Type: 'Application',
-        give it a name, select an icon, and then set the command to an
-        existing shell script which connects to the remote server:
-
-~~~~ .shell
-  $ cat ~/bin/remote-work.sh
-  ...
-  PATH=/usr/bin
-
-  cmd=`basename $0`
-  if [ "$DISPLAY" = "" ] ; then
-    echo "DISPLAY is not set.  This isn't going to work"
-    exit 1
-  fi
-
-  . ~/.bash_cron
-
-  exec xterm +vb -u8 -bg '#ffe5e5' -fn 8x13 -e ssh -A -Y remote.server.org & 2>/dev/null
-  exit 0
-~~~~
-   -->
+-->
+<!-- Yet to do: Command-line Index  -->
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
@@ -1194,6 +1472,7 @@ An <a href="https://github.com/deatrich/tools/blob/main/system-backup.sh">exampl
 <li id="fn2" role="doc-endnote"><p>It is possible to add a <em>timestamp_timeout</em> factor in minutes to the <em>/etc/sudoers</em> file to allow you to run other sudo commands for some minutes without entering your password.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3" role="doc-endnote"><p>changes the mode of a file or directory. It takes <a href="https://en.wikipedia.org/wiki/Chmod">symbolic or numeric arguments</a>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4" role="doc-endnote"><p>changes the owner of a file or directory; with a colon it also changes the group ownership.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5" role="doc-endnote"><p>Domain Name System – how we look up hostnames<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </body>
