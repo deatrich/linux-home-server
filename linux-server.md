@@ -1,3 +1,8 @@
+<!-- Pandoc meta-data, mostly used when generating PDF
+
+     Solution for setting a new page for major sections of PDF output
+     in metadata (documentclass, header-includes) is decscribed at:
+     https://superuser.com/a/1436367 -->
 ---
 title: Creating a Linux Home Server
 author: Denice Deatrich
@@ -7,9 +12,12 @@ colorlinks: true
 linkcolor: Magenta
 urlcolor: ForestGreen
 toccolor: Magenta
+documentclass: report
+header-includes:
+- \renewcommand{\chaptername}{}
+- \renewcommand{\thechapter}{}
 ---
 
-<!-- Introduction -->
 # Overview {#overview}
 
 Single-board computers (SBC) are both inexpensive and reliable; they
@@ -27,7 +35,10 @@ focusing on the Raspberry Pi.
 
 One of my goals is to promote using the command-line to do most of the work.
 If you are interested in expanding your horizons and understanding
-more about the command-line, then this guide is for you.
+more about the command-line, then this guide is for you.  There is also a lot
+of detail in this guide; this is my personal preference.  I grow tired
+of the current trend to provide internet-searched answers on a mobile
+phone with just a few finger swipes.
 
 Take a look at the table of contents at the top of the document.  Some users
 will only be interested in creating a 24x7 local file-sharing (Samba) service
@@ -37,7 +48,7 @@ sections of this guide.
 
 [odroid]: https://www.hardkernel.com/
 
-## A Few Issues Before You Begin
+## A Few Issues Before You Begin {#reserved-address}
 
 You should look into assigning a permanent network IP address for your server
 in your home network so that you can easily connect to it from any of your
@@ -89,8 +100,9 @@ comments or suggestions then you can contact me on
 
 # Picking the OS (Operating System) and the Window Manager {#environment}
 
-Though many Raspberry Pi owners run the Raspberry Pi OS (Raspian), in
-this guide I chose to use Ubuntu.  [Ubuntu LTS](https://releases.ubuntu.com/), 
+Though many Raspberry Pi owners run the Raspberry Pi OS (formerly known
+as Raspbian), in this guide I chose to use Ubuntu.
+[Ubuntu LTS](https://releases.ubuntu.com/), 
 is a long-term support Debian-based Linux OS. Ubuntu is renowned for
 its desktop support,
 but it also provides a comfortable home server experience.  A server
@@ -210,16 +222,43 @@ Turn the power on with the Pi connected to a monitor, USB keyboard and mouse.
 You will shortly see the firmware rainbow splash screen.  Shortly after that
 there are a series of screens allowing you to customize the installation:
 
-  * pick your system language
+  * pick your language
   * pick the keyboard layout language
   * enable the Wi-Fi network access if you want to have concurrent updates
   * select your timezone by clicking on your timezone region
-  * enter your preferred name and your login name - this is your login account
+  * enter your preferred name and your login name with a password -- this
+    is your login account
 
 As the installation starts it will show some informational screens to
 entertain you while it installs.  Eventually it will reboot and present you
 with the login screen.  Once you login you will see the default MATE
 desktop configuration.
+
+Before going further immediately update the software on the system.  The
+MATE installation image is not released often, so it can be a bit behind
+the package update curve.  As well, any final configuration issues will
+be updated.
+
+Open a terminal window by selecting:\
+   Application -> System Tools -> MATE Terminal\
+and enter the following commands:
+
+~~~~ {.shell}
+// This will update the system's knowledge about what should be updated;
+// in other works, the cache of software package names pending for update:
+$ sudo apt update
+
+// then update the software; the command is actually 'upgrade', which is odd,
+// at least to me..
+$ sudo apt upgrade
+~~~~
+
+It will take a while.  Once finished reboot the system to get the newer
+kernel.  On the far upper right taskbar, select the powerbutton icon,
+and then select  *Switch Off* -> *Restart*.
+
+<!-- (!!) add a note about unmounting the PI-DATA volume at some point after
+installation -->
 
 ## Experimenting With the Graphical Environment
 
@@ -371,6 +410,9 @@ search for:
     Linux "command line" tutorial for beginners
 ~~~~ 
 
+A complete list of all commands used in the guide will be added to a future
+*index*.
+
 # Creating a Samba File Sharing Service
 
 We are going to create a Samba file sharing service on our server.  Other
@@ -508,6 +550,7 @@ Here are the specifics:
 
 The [modified smb.conf file](smb-conf) is in github.
 
+<!-- fix diff ordering below -->
 ~~~~ {.shell}
 $ cd /etc/samba
 $ sudo cp -p smb.conf smb.conf.orig
@@ -768,7 +811,7 @@ $ sudo apt install gpm
 $ sudo systemctl enable gpm
 ~~~~
 
-## Disabling Various Unused Services
+## Disable Various Unused Services
 
 Here are some services which normally can be disabled.  Of course, if any
 of these services are interesting to you then keep them.  Note that server
@@ -826,11 +869,126 @@ $ sudo apt remove anacron
 $ sudo apt purge anacron
 ~~~~
 
-#### Enabling the Secure Shell Daemon
+<!--
+to add: handling the silly /swapfile issue
+to add: some local network options to make your life easier (see 'lan' in
+the appendix.
+ -->
 
+# Enabling the Secure Shell Daemon and Using Secure Shell
+
+The secure shell daemon, ***sshd***, is a very useful and important service
+for connecting between computers near or far.  If you are never going to
+connect via ssh into your Pi home server from within your network then
+do NOT install the daemon.  You can always use the secure shell client,
+***ssh***, to initiate a connection to some external server -- for that you
+do not need sshd.
+
+If you will be needing sshd then first install it, since
+it is not installed by default in the LTS desktop version:
+
+~~~~ {.shell}
+$ sudo apt install openssh-server
+~~~~
+
+There are some configuration issues that I like to fix in the secure shell
+daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
+
+  * stop the daemon from listening on IPv6: *AddressFamily inet*
+  * tell the daemon to use DNS: *UseDNS yes*
+  * limit ssh access to yourself in your LAN;\
+    and block ssh access to the root user except for 'localhost':\
+      *AllowUsers    yourlogin@192.168.1.\* \*@localhost*
+
+~~~~ {.shell}
+$ cd /etc/ssh
+$ sudo cp -p sshd_config sshd_config.orig
+
+// edit the file:
+$ sudo nano sshd_config
+
+$ diff sshd_config.orig sshd_config
+15a16
+> AddressFamily inet
+101a103
+> UseDNS yes
+122a125,130
+> 
+> # Limit access to root user; only local users can connect via ssh to root
+> # if root's authorized_keys file allows them.
+> # note: using @localhost does not work on ubuntu unless you set UseDNS to yes
+> AllowUsers    myname@192.168.1.* *@localhost
+> 
+~~~~
+
+<!-- 
 describe enabling, configuring and creating a key pair.
+-->
+<!--
+## Secure Shell Topics
+  1. Add a start-up custom launcher asking for the ssh passphrases for
+     the day's work:
+      - From the Control Center select 'Startup Applications'
+      - Click on '+Add' and a small window pops up.
+      - Input a name for it, input the full path to your shell script
+        and add it.
+~~~~ .shell
+  // I run an xterm window in the background, executing inside the
+  // xterm a script that sets up the environment file where other
+  // applications can find my ssh agent process.
+  // 
+  $ tail /home/myname/bin/ssh-prime.sh
+  PATH=/usr/bin
+
+  exec xterm +vb -u8 -e /home/myname/bin/ssh_prime & 2>/dev/null
+  exit 0
+
+  // I must enter the passphrase for each ssh key-pair that I list
+  // in the script below.  The agent is valid until I log out,
+  // or reboot, or kill the agent.
+  // 
+  $ cat /home/myname/bin/ssh_prime
+  PATH=/bin:/usr/bin
+  ssh_info_file=$HOME/.ssh-agent-info-`hostname`
+  ssh-agent >$ssh_info_file
+  chmod 600 $ssh_info_file
+  source $ssh_info_file
+  ssh-add ~/.ssh/id_rsa ~/.ssh/id_some_other_key 
+
+  $ cat /home/myname/.ssh-agent-info-myhostname
+  SSH_AUTH_SOCK=/tmp/ssh-1Z893wPnDPpL/agent.2842; export SSH_AUTH_SOCK;
+  SSH_AGENT_PID=2850; export SSH_AGENT_PID;
+
+~~~~
+
+  2. Secure-shell to a remove server:
+      - Select 'Custom Application Launcher', with Type: 'Application',
+        give it a name, select an icon, and then set the command to an
+        existing shell script which connects to the remote server:
+
+~~~~ .shell
+  $ cat ~/bin/remote-work.sh
+  ...
+  PATH=/usr/bin
+
+  cmd=`basename $0`
+  if [ "$DISPLAY" = "" ] ; then
+    echo "DISPLAY is not set.  This isn't going to work"
+    exit 1
+  fi
+
+  . ~/.bash_cron
+
+  exec xterm +vb -u8 -bg '#ffe5e5' -fn 8x13 -e ssh -A -Y remote.server.org & 2>/dev/null
+  exit 0
+~~~~
+   -->
 
 <!-- -->
+
+# Topics To Document
+
+These topics are not yet documented.
 
 #### Enabling Remote Desktop Services
 
@@ -856,10 +1014,8 @@ description here.
 Other services will be added to this document in the future
 - examples: MySQL, KVM, Ansible, ...
 
-
 <!--  -->
 
-<!-- Appendix -->
 # Appendix {#appendix}
 
 ## Identifying Device Names for Storage Devices {#find-device}
@@ -1472,7 +1628,6 @@ depending on which mouse-click you use:
     completely.  Another left-mouse-button-click will return it to the
     previous size.
 
-<!-- end   -->
 
 ## An Example Process and Script for Backups {#backups}
 
@@ -1550,64 +1705,304 @@ files into place on the filesystem.
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
 
+<!-- (!!) issues to tackle: resolv.conf; systemd encroachment -->
+
+## LAN (Local Area Network) Configuration files {#lan}
+
+There are some common networking files that are interesting to configure
+especially if you have more than one Linux computer on your home network.
+They are useful on your home Linux server as well, since it clarifies some
+configuration settings for some future services you might like to enable,
+for example, a web service.
+
+You can only configure the hosts file if you have reserved IP addresses
+in your home router for your special devices, like your home Linux server.
+
+The list of files that I like to manage are:
+
+  * /etc/networks
+     * Read the man page on 'networks'
+     * Add a local domain for your home network here.
+       We will call this domain *.home*, that is, if
+       your server's short name is *pi*, then its long name becomes *pi.home*
+     * Avoid problems -- do not use a valid [Top Level Domain (TLD)][tld].\
+       '.home' is not a TLD (at least not yet..)
+  * /etc/hosts
+     * Read the man page on 'hosts'
+     * Add some IP addresses you have reserved in your home router for your
+       hostnames
+     * Be sure to include your home server
+
+Your router's private network address is used when declaring your home domain;
+the private netowrk is typically something like 192.168.1.0
+or 10.0.0.0.  I did a quick analysis of a list of
+[the IP addresses of common routers][routers].  The network address of the
+router is usually obtained by dropping the last octet from its IP address.
+The top 4 network addresses (without a trailing .0) were:
+
+  * 192.168.0
+  * 192.168.1
+  * 192.168.2
+  * 10.0.0
+
+Note that your home network's IPv4 address space is always in [the private
+network space][private] -- that is, network traffic addressed to devices in
+a private network is never routed over the Internet.
+
+The Ubuntu version of the /etc/hosts file automatically puts your hostname 
+within the 'localhost' network during installation; we will comment that out.
+
+Here are the examples:
+
+~~~~ {.shell}
+// /etc/networks
+// You can look at your router's management web page to understand
+// what your network address is - the example used here is: 192.168.1.0
+// You can drop the last octet, that is the '.0', but I leave it in:
+
+$ man networks
+$ sudo cp -p /etc/networks /etc/networks.orig
+$ sudo nano /etc/networks
+$ cat /etc/networks
+link-local 169.254.0.0
+home  192.168.1.0
+
+$ diff /etc/networks.orig /etc/networks
+2a3
+> home  192.168.1.0
+
+// /etc/hosts
+// Add your favourite devices with their reserved hostnames to /etc/hosts
+// Each host gets it full name with .home attached, as well as its short name
+// and any aliases:
+
+$ man hosts
+$ sudo cp -p /etc/hosts /etc/hosts.orig
+$ sudo nano /etc/hosts
+$ # diff /etc/hosts.orig /etc/hosts
+2c2
+< 127.0.1.1     pi
+---
+> #127.0.1.1    pi
+9a10,13
+> 
+> 192.168.1.90	pi.home pi web
+> 192.168.1.65	desktop.home desktop
+> 192.168.1.80	odroid.home odroid
+> 192.168.1.81	laptop.home laptop
+> 192.168.1.86	inkjet.home inkjet
+~~~~
+
+### Changing the Server's Hostname
+
+Now that we have a *.home* domain we can rename our official server's hostname.
+Suppose the server was originally named *pi* during the installation:
+
+~~~~ {.shell}
+// look at what you set your hostname to during the installation:
+$ hostname
+pi
+
+// Give the server a fully-qualified hostname using 'hostnamectl'
+// Note that older versions of hostnamectl required:
+//      sudo hostnamectl set-hostname pi.home
+$ sudo hostnamectl hostname pi.home
+
+$ hostname
+pi.home
+~~~~
+
+### The Resolver and Looking Up Your Local Hostnames
+
+Well-known traditional command-line tools for querying DNS [^dns] are:
+
+  * host
+  * nslookup
+  * dig
+
+These tools look in */etc/resolv.conf* for the nameserver(s) to query
+when looking up IP addresses or hostnames.
+
+Of course, external DNS servers know nothing about your private local network.
+So, on an older Linux version -- for example CentOS 7 -- when you try
+querying a private host using one of the above utilities, you might see:
+
+~~~~ {.shell}
+$ host pi.home
+pi.home has address 192.168.1.90
+Host pi.home not found: 3(NXDOMAIN)
+Host pi.home not found: 3(NXDOMAIN)
+~~~~
+
+Clearly the 'host' command looked at the /etc/hosts file, but
+also consulted the external DNS servers.
+
+There is another command-line tool, *getent*, for looking up local dns data:
+
+~~~~ {.shell}
+$ getent hosts pi
+192.168.1.90   pi.home pi web
+$ getent hosts 192.168.1.90
+192.168.1.90   pi.home pi
+~~~~
+
+Contemporary Linux version's like Ubuntu LTS 22.04 handle this case better
+since there is a local nameserver that handles local DNS lookups.
+
+### Modifying the Resolver's List of Nameservers
+
+The resolver file would typically be created at bootup when your computer
+makes a DHCP request to the home router asking for an IP address and the
+names of the router's configured DNS servers.
+
+On contemporary Linux versions the resolver file is created and managed
+differently than in older Linux versions.  Recent Ubuntu LTS versions
+use a systemd service named *systemd-resolved* which by default manages
+the resolver file, and it runs a local DNS server:
+
+~~~~ {.shell}
+// list open network connections and find a name match for 'resolve'
+# lsof -i -P -n +c0|grep resolve
+systemd-resolve  568 systemd-resolve   13u  IPv4  20701      0t0  UDP 127.0.0.53:53 
+systemd-resolve  568 systemd-resolve   14u  IPv4  20702      0t0  TCP 127.0.0.53:53 (LISTEN)
+
+// what the resolver file looks like on a newly installed Ubuntu node
+$ tail -3 /etc/resolv.conf 
+nameserver 127.0.0.53
+options edns0 trust-ad
+search .
+
+// the resolver file is actually a symbolic link into territory owned by systemd
+$ ls -l /etc/resolv.conf 
+lrwxrwxrwx 1 root root 39 Mar 17 14:38 /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
+
+// get the resolver's status - in this case the first DNS server is my router's
+// IP address
+$ resolvectl status
+Global
+       Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+resolv.conf mode: stub
+
+Link 2 (ens3)
+    Current Scopes: DNS
+         Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+Current DNS Server: 192.168.1.254
+       DNS Servers: 192.168.1.254 75.153.171.67
+~~~~
+
+If you want to modify the list of DNS servers that your router provides then
+this is the process for the version of Ubuntu.  Sometimes the DNS servers
+which my router configures have 'slow' days, and I like to have control of
+the list of DNS servers to fix this issue.  I use DNS IP addresses from
+CloudFlare (1.1.1.1) and Google (8.8.8.8).  Here is a look at the process.
+
+Create a local copy of the resolver file - do not pollute systemd space:
+
+~~~~ {.shell}
+// Remove the current resolver file (we don't want to edit systemd's file.
+// This just removes the symbolic link:
+$ sudo rm /etc/resolv.conf
+
+// Get a copy of /usr/lib/systemd/resolv.conf for manual control of the resolver
+$ sudo cp -p /usr/lib/systemd/resolv.conf /etc/resolv.conf
+
+// Change only the comments at the top to show it is locally managed:
+$ sudo nano /etc/resolv.conf
+
+$ tail -3 /etc/resolv.conf
+nameserver 127.0.0.53
+options edns0 trust-ad
+search .
+~~~~
+
+By default this version of Ubuntu uses NetworkManager for network configuration,
+and the local systemd-resolved for DNS service.  To make a permanent change
+to the DNS information known to systemd we configure NetworkManager.  Here
+we look at the network using NetworkManager's *nmcli* utility:
+
+~~~~ {.shell}
+$ nmcli con show
+NAME                UUID                                  TYPE      DEVICE 
+Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0   
+MY-SSID             924de702-7f7e-4e31-8dff-4bc968148f2b  wifi      --
+
+$ nmcli connection show 'Wired connection 1'|grep -i dns
+connection.mdns:                        -1 (default)
+connection.dns-over-tls:                -1 (default)
+ipv4.dns:                               --
+ipv4.dns-search:                        --
+ipv4.dns-options:                       --
+...
+IP4.DNS[1]:                             192.168.1.254
+IP4.DNS[2]:                             75.153.171.67
+~~~~
+
+Now add some other DNS servers to this configuration using nmcli; it should
+persist after a reboot.  We are adding well-known public IP addresses from
+Cloudflare (1.1.1.1), and from Google (8.8.8.8):
+
+~~~~ {.shell}
+$ sudo nmcli connection modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
+$ nmcli connection show 'Wired connection 1'|grep -i dns
+connection.mdns:                        -1 (default)
+connection.dns-over-tls:                -1 (default)
+ipv4.dns:                               1.1.1.1,8.8.8.8
+ipv4.dns-search:                        --
+...
+IP4.DNS[1]:                             1.1.1.1
+IP4.DNS[2]:                             8.8.8.8
+IP4.DNS[3]:                             192.168.1.254
+IP4.DNS[4]:                             75.153.171.67
+
+// Check it with resolvectl:
+$ resolvectl status|grep 'DNS Serv'
+Current DNS Server: 1.1.1.1
+       DNS Servers: 1.1.1.1 8.8.8.8 192.168.1.254 75.153.171.67
+~~~~
+
+If ever you want to make a temporary change, use 'resolvctl' to do that; it
+will not persist after a reboot:
+
+~~~~ {.shell}
+$ sudo resolvectl dns eth0 9.9.9.9 8.8.4.4 75.153.171.67
+
+$ resolvectl status
+Global
+       Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+resolv.conf mode: foreign
+      DNS Domain: ~.
+
+Link 2 (eth0)
+    Current Scopes: DNS
+         Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
+Current DNS Server: 9.9.9.9
+       DNS Servers: 9.9.9.9 8.8.4.4 75.153.171.67
+~~~~
 
 <!--
-## Secure Shell Topics
-  1. Add a start-up custom launcher asking for the ssh passphrases for
-     the day's work:
-      - From the Control Center select 'Startup Applications'
-      - Click on '+Add' and a small window pops up.
-      - Input a name for it, input the full path to your shell script
-        and add it.
-~~~~ .shell
-  // I run an xterm window in the background, executing inside the
-  // xterm a script that sets up the environment file where other
-  // applications can find my ssh agent process.
-  // 
-  $ tail /home/mylogin/bin/ssh-prime.sh
-  PATH=/usr/bin
+// extraneous stuff
+// ping 'pi.home' 10 times from another host; its network latency
+//  average is 0.160 milliseconds:
+$ ping -c 10 pi.home
+PING pi.home (192.168.1.90) 56(84) bytes of data.
+64 bytes from pi.home (192.168.1.90): icmp_seq=1 ttl=64 time=0.187 ms
+64 bytes from pi.home (192.168.1.90): icmp_seq=2 ttl=64 time=0.177 ms
+...
+64 bytes from pi.home (192.168.1.90): icmp_seq=10 ttl=64 time=0.161 ms
 
-  exec xterm +vb -u8 -e /home/mylogin/bin/ssh_prime & 2>/dev/null
-  exit 0
+--- pi.home ping statistics ---
+10 packets transmitted, 10 received, 0% packet loss, time 9000ms
+rtt min/avg/max/mdev = 0.110/0.160/0.187/0.023 ms
 
-  // I must enter the passphrase for each ssh key-pair that I list
-  // in the script below.  The agent is valid until I log out,
-  // or reboot, or kill the agent.
-  // 
-  $ cat /home/mylogin/bin/ssh_prime
-  PATH=/bin:/usr/bin
-  ssh_info_file=$HOME/.ssh-agent-info-`hostname`
-  ssh-agent >$ssh_info_file
-  chmod 600 $ssh_info_file
-  source $ssh_info_file
-  ssh-add ~/.ssh/id_rsa ~/.ssh/id_some_other_key 
+// look at your default gateway:
+$ ip route | grep default
+default via 192.168.1.254 dev ens3 proto dhcp metric 100
 
-  $ cat /home/mylogin/.ssh-agent-info-myhostname
-  SSH_AUTH_SOCK=/tmp/ssh-1Z893wPnDPpL/agent.2842; export SSH_AUTH_SOCK;
-  SSH_AGENT_PID=2850; export SSH_AGENT_PID;
+-->
 
-~~~~
+[tld]: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
+[private]: https://en.wikipedia.org/wiki/Private_network
+[routers]: https://www.techspot.com/guides/287-default-router-ip-addresses/
+[^dns]: Domain Name System -- how we look up hostnames
 
-  2. Secure-shell to a remove server:
-      - Select 'Custom Application Launcher', with Type: 'Application',
-        give it a name, select an icon, and then set the command to an
-        existing shell script which connects to the remote server:
-
-~~~~ .shell
-  $ cat ~/bin/remote-work.sh
-  ...
-  PATH=/usr/bin
-
-  cmd=`basename $0`
-  if [ "$DISPLAY" = "" ] ; then
-    echo "DISPLAY is not set.  This isn't going to work"
-    exit 1
-  fi
-
-  . ~/.bash_cron
-
-  exec xterm +vb -u8 -bg '#ffe5e5' -fn 8x13 -e ssh -A -Y remote.server.org & 2>/dev/null
-  exit 0
-~~~~
-   -->
-
+<!-- Yet to do: Command-line Index  -->
