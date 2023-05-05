@@ -653,7 +653,7 @@ Tests to run to validate functionality include the following:
    5. Delete all files and folders inside the Test folder
 
 [cx]: https://cxfileexplorer.com/
-[seahorse]: https://wiki.gnome.org/Apps/Seahorse GNOME encryption interface
+[seahorse]: https://wiki.gnome.org/Apps/Seahorse
 
 # Backing up Your Server
 
@@ -773,8 +773,6 @@ $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
 ~~~~
 
-<!-- verify order -->
-
 ## Enable Boot-up Console Messages
 
 Maybe like me you like seeing informational messages as a computer boots up.
@@ -841,9 +839,12 @@ $ sudo /bin/bash
 # systemctl stop cups-browsed cups
 # systemctl disable cups-browsed cups
 
-// disable secureboot-db
-// UEFI Secure boot
-// (!! add notes)
+// disable System Security Services Daemon ([sssd][sssd]) if you don't need it
+# systemctl disable sssd
+
+// Disable UEFI Secure Boot (secureboot-db)
+// 
+# systemctl disable secureboot-db
 
 // disable whoopsie and kerneloops if you don't want to be sending
 // information to outside entities
@@ -854,6 +855,8 @@ $ sudo /bin/bash
 # apt remove whoopsie kerneloops
 # apt purge whoopsie kerneloops
 ~~~~
+
+[sssd]: https://ubuntu.com/server/docs/service-sssd
 
 ## Remove **anacron** Service
 
@@ -869,11 +872,16 @@ $ sudo apt remove anacron
 $ sudo apt purge anacron
 ~~~~
 
-<!--
-to add: handling the silly /swapfile issue
-to add: some local network options to make your life easier (see 'lan' in
-the appendix.
- -->
+## Other Configuration Targets
+
+These topics will be documented soon: 
+
+  * managing swap and dealing with the swapfile in /
+  * disabling snapd if you so choose; cleaning it up
+  * automatically or manually managing software updates
+  * explore firewall issues - ufw seems lacking
+  * getting rid of ESM messages in terminal logins
+  * local time configuration and ntp configuration
 
 # Enabling the Secure Shell Daemon and Using Secure Shell
 
@@ -891,7 +899,11 @@ it is not installed by default in the LTS desktop version:
 $ sudo apt install openssh-server
 ~~~~
 
-There are some configuration issues that I like to fix in the secure shell
+If you will be using ssh to connect to any local Linux systems, then
+think about configuring your local area network (LAN) to suit your taste.
+There is an [explanation in the appendix](#lan).
+
+There are some sshd configuration issues that I like to fix in the secure shell
 daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
 
   * stop the daemon from listening on IPv6: *AddressFamily inet*
@@ -921,70 +933,7 @@ $ diff sshd_config.orig sshd_config
 > 
 ~~~~
 
-<!-- 
-describe enabling, configuring and creating a key pair.
--->
-<!--
-## Secure Shell Topics
-  1. Add a start-up custom launcher asking for the ssh passphrases for
-     the day's work:
-      - From the Control Center select 'Startup Applications'
-      - Click on '+Add' and a small window pops up.
-      - Input a name for it, input the full path to your shell script
-        and add it.
-~~~~ .shell
-  // I run an xterm window in the background, executing inside the
-  // xterm a script that sets up the environment file where other
-  // applications can find my ssh agent process.
-  // 
-  $ tail /home/myname/bin/ssh-prime.sh
-  PATH=/usr/bin
-
-  exec xterm +vb -u8 -e /home/myname/bin/ssh_prime & 2>/dev/null
-  exit 0
-
-  // I must enter the passphrase for each ssh key-pair that I list
-  // in the script below.  The agent is valid until I log out,
-  // or reboot, or kill the agent.
-  // 
-  $ cat /home/myname/bin/ssh_prime
-  PATH=/bin:/usr/bin
-  ssh_info_file=$HOME/.ssh-agent-info-`hostname`
-  ssh-agent >$ssh_info_file
-  chmod 600 $ssh_info_file
-  source $ssh_info_file
-  ssh-add ~/.ssh/id_rsa ~/.ssh/id_some_other_key 
-
-  $ cat /home/myname/.ssh-agent-info-myhostname
-  SSH_AUTH_SOCK=/tmp/ssh-1Z893wPnDPpL/agent.2842; export SSH_AUTH_SOCK;
-  SSH_AGENT_PID=2850; export SSH_AGENT_PID;
-
-~~~~
-
-  2. Secure-shell to a remove server:
-      - Select 'Custom Application Launcher', with Type: 'Application',
-        give it a name, select an icon, and then set the command to an
-        existing shell script which connects to the remote server:
-
-~~~~ .shell
-  $ cat ~/bin/remote-work.sh
-  ...
-  PATH=/usr/bin
-
-  cmd=`basename $0`
-  if [ "$DISPLAY" = "" ] ; then
-    echo "DISPLAY is not set.  This isn't going to work"
-    exit 1
-  fi
-
-  . ~/.bash_cron
-
-  exec xterm +vb -u8 -bg '#ffe5e5' -fn 8x13 -e ssh -A -Y remote.server.org & 2>/dev/null
-  exit 0
-~~~~
-   -->
-
-<!-- -->
+<!-- describe enabling, configuring and creating a key pair.  -->
 
 # Topics To Document
 
@@ -1011,8 +960,8 @@ description here.
 
 #### Other Possible Services 
 
-Other services will be added to this document in the future
-- examples: MySQL, KVM, Ansible, ...
+Other services will be added to this document in the future;\
+- some examples: bind DNS, MySQL, KVM virtualization, Ansible, ...
 
 <!--  -->
 
@@ -1554,7 +1503,8 @@ start in making modifications.
         status.  Then right-click and select 'Remove from Panel'.
       - Now right-click and select 'Add to Panel'.  A list of applets mostly
         in alphabetical order will appear in a new window.  Select 
-        'Classic Menu' and click on 'Add' and it will appear on the panel.
+        'Classic Menu' (or the 'Compact Menu') and click on 'Add' and
+        it will appear on the panel.
         Right-click on it and move it completely to the left.  Then
         right-click on it again and select 'Lock to Panel'.  Leave the
         'Add to Panel' window on your screen to continue adding applets.
@@ -1705,8 +1655,6 @@ files into place on the filesystem.
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
 
-<!-- (!!) issues to tackle: resolv.conf; systemd encroachment -->
-
 ## LAN (Local Area Network) Configuration files {#lan}
 
 There are some common networking files that are interesting to configure
@@ -1786,7 +1734,7 @@ $ # diff /etc/hosts.orig /etc/hosts
 > #127.0.1.1    pi
 9a10,13
 > 
-> 192.168.1.90	pi.home pi web
+> 192.168.1.90	pi.home pi www
 > 192.168.1.65	desktop.home desktop
 > 192.168.1.80	odroid.home odroid
 > 192.168.1.81	laptop.home laptop
@@ -1824,20 +1772,30 @@ These tools look in */etc/resolv.conf* for the nameserver(s) to query
 when looking up IP addresses or hostnames.
 
 Of course, external DNS servers know nothing about your private local network.
-So, on an older Linux version -- for example CentOS 7 -- when you try
-querying a private host using one of the above utilities, you might see:
+So, when you try querying a private host using one of the above utilities,
+you might see:
 
 ~~~~ {.shell}
 $ host pi.home
 pi.home has address 192.168.1.90
 Host pi.home not found: 3(NXDOMAIN)
-Host pi.home not found: 3(NXDOMAIN)
 ~~~~
 
-Clearly the 'host' command looked at the /etc/hosts file, but
-also consulted the external DNS servers.
+!!!
+The 'host' command looked at the /etc/hosts file, but
+might also consulted the external DNS servers.  This is because it consults an
+important file named */etc/nsswitch.conf* which configures the order to try
+when looking up host and other data.  Because 'files' is first, the
+daemon consults /etc/hosts before doing any dns request:
 
-There is another command-line tool, *getent*, for looking up local dns data:
+~~~~ {.shell}
+$ grep hosts /etc/nsswitch.conf
+hosts:          files mdns4_minimal [NOTFOUND=return] dns
+~~~~
+
+
+There is another command-line tool -- *getent* -- for looking up local dns data,
+and does not consult nameservers:
 
 ~~~~ {.shell}
 $ getent hosts pi
@@ -1846,8 +1804,38 @@ $ getent hosts 192.168.1.90
 192.168.1.90   pi.home pi
 ~~~~
 
-Contemporary Linux version's like Ubuntu LTS 22.04 handle this case better
-since there is a local nameserver that handles local DNS lookups.
+Contemporary Linux version's using systemd-resolvd handle this case better
+since it acts as a local nameserver that handles local DNS lookups, especially
+local IP address lookups.  However it still whines about hostname looks, though
+it returns the correct local lookup anyway:
+
+~~~~ {.shell}
+// Try from another ubuntu host:
+
+$ hostname
+ubuntu.home
+
+$ host pi
+pi has address 192.168.1.90
+Host pi not found: 3(NXDOMAIN)
+$ echo $?
+1
+
+$ host 192.168.1.90
+90.1.168.192.in-addr.arpa domain name pointer pi.
+
+
+// Now from the pi host - NOTE that it will not emit an NXDOMAIN message
+// for its own hostname, and thus will return success, which is '0':
+
+$ hostname
+pi.home
+
+$ host pi
+pi has address 192.168.1.90
+$ echo $?
+0
+~~~~
 
 ### Modifying the Resolver's List of Nameservers
 
@@ -1862,11 +1850,11 @@ the resolver file, and it runs a local DNS server:
 
 ~~~~ {.shell}
 // list open network connections and find a name match for 'resolve'
-# lsof -i -P -n +c0|grep resolve
+# lsof -i -P -n +c0 | grep resolve
 systemd-resolve  568 systemd-resolve   13u  IPv4  20701      0t0  UDP 127.0.0.53:53 
 systemd-resolve  568 systemd-resolve   14u  IPv4  20702      0t0  TCP 127.0.0.53:53 (LISTEN)
 
-// what the resolver file looks like on a newly installed Ubuntu node
+// This is what the resolver file looks like on a newly installed Ubuntu node
 $ tail -3 /etc/resolv.conf 
 nameserver 127.0.0.53
 options edns0 trust-ad
@@ -1874,10 +1862,10 @@ search .
 
 // the resolver file is actually a symbolic link into territory owned by systemd
 $ ls -l /etc/resolv.conf 
-lrwxrwxrwx 1 root root 39 Mar 17 14:38 /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
+lrwxrwxrwx 1 root ... Mar 17 14:38 /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
 
-// get the resolver's status - in this case the first DNS server is my router's
-// IP address
+// get the resolver's status -- in this example the first DNS server is
+// my router's IP address
 $ resolvectl status
 Global
        Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
@@ -1890,16 +1878,15 @@ Current DNS Server: 192.168.1.254
        DNS Servers: 192.168.1.254 75.153.171.67
 ~~~~
 
-If you want to modify the list of DNS servers that your router provides then
-this is the process for the version of Ubuntu.  Sometimes the DNS servers
-which my router configures have 'slow' days, and I like to have control of
-the list of DNS servers to fix this issue.  I use DNS IP addresses from
-CloudFlare (1.1.1.1) and Google (8.8.8.8).  Here is a look at the process.
+Sometimes you want to modify the list of external DNS servers -- for example --
+the DNS servers used by *my* router have 'slow' days, so I like to have
+control over the list of DNS servers to fix this issue.  Here is a look
+at the process.
 
 Create a local copy of the resolver file - do not pollute systemd space:
 
 ~~~~ {.shell}
-// Remove the current resolver file (we don't want to edit systemd's file.
+// Remove the current resolver file (we don't want to edit systemd's file).
 // This just removes the symbolic link:
 $ sudo rm /etc/resolv.conf
 
@@ -1917,16 +1904,16 @@ search .
 
 By default this version of Ubuntu uses NetworkManager for network configuration,
 and the local systemd-resolved for DNS service.  To make a permanent change
-to the DNS information known to systemd we configure NetworkManager.  Here
-we look at the network using NetworkManager's *nmcli* utility:
+to the DNS information known to systemd we configure NetworkManager using
+its management utility *nmcli*:
 
 ~~~~ {.shell}
-$ nmcli con show
+$ nmcli connection show
 NAME                UUID                                  TYPE      DEVICE 
 Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0   
 MY-SSID             924de702-7f7e-4e31-8dff-4bc968148f2b  wifi      --
 
-$ nmcli connection show 'Wired connection 1'|grep -i dns
+$ nmcli connection show 'Wired connection 1' | grep -i dns
 connection.mdns:                        -1 (default)
 connection.dns-over-tls:                -1 (default)
 ipv4.dns:                               --
@@ -1937,13 +1924,15 @@ IP4.DNS[1]:                             192.168.1.254
 IP4.DNS[2]:                             75.153.171.67
 ~~~~
 
-Now add some other DNS servers to this configuration using nmcli; it should
+Now we add some other DNS servers to this configuration using nmcli; it should
 persist after a reboot.  We are adding well-known public IP addresses from
 Cloudflare (1.1.1.1), and from Google (8.8.8.8):
 
+<-- !! I need to check if we need to restart the network.. -->
+
 ~~~~ {.shell}
 $ sudo nmcli connection modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
-$ nmcli connection show 'Wired connection 1'|grep -i dns
+$ nmcli connection show 'Wired connection 1' | grep -i dns
 connection.mdns:                        -1 (default)
 connection.dns-over-tls:                -1 (default)
 ipv4.dns:                               1.1.1.1,8.8.8.8
@@ -1964,6 +1953,7 @@ If ever you want to make a temporary change, use 'resolvctl' to do that; it
 will not persist after a reboot:
 
 ~~~~ {.shell}
+// Here the Pi's ethernet device name is 'eth0'
 $ sudo resolvectl dns eth0 9.9.9.9 8.8.4.4 75.153.171.67
 
 $ resolvectl status
@@ -1979,30 +1969,10 @@ Current DNS Server: 9.9.9.9
        DNS Servers: 9.9.9.9 8.8.4.4 75.153.171.67
 ~~~~
 
-<!--
-// extraneous stuff
-// ping 'pi.home' 10 times from another host; its network latency
-//  average is 0.160 milliseconds:
-$ ping -c 10 pi.home
-PING pi.home (192.168.1.90) 56(84) bytes of data.
-64 bytes from pi.home (192.168.1.90): icmp_seq=1 ttl=64 time=0.187 ms
-64 bytes from pi.home (192.168.1.90): icmp_seq=2 ttl=64 time=0.177 ms
-...
-64 bytes from pi.home (192.168.1.90): icmp_seq=10 ttl=64 time=0.161 ms
-
---- pi.home ping statistics ---
-10 packets transmitted, 10 received, 0% packet loss, time 9000ms
-rtt min/avg/max/mdev = 0.110/0.160/0.187/0.023 ms
-
-// look at your default gateway:
-$ ip route | grep default
-default via 192.168.1.254 dev ens3 proto dhcp metric 100
-
--->
-
 [tld]: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 [private]: https://en.wikipedia.org/wiki/Private_network
 [routers]: https://www.techspot.com/guides/287-default-router-ip-addresses/
 [^dns]: Domain Name System -- how we look up hostnames
 
 <!-- Yet to do: Command-line Index  -->
+<!-- Yet to do: URL Index  -->
