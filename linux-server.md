@@ -694,6 +694,10 @@ The main objective here is to show you some options that reduce
 complexity and memory consumption, and might improve security and reliability.
 You can always circle back here in the future and try them.
 
+By all means, ignore all of this if you don't want to be bothered with 
+disabling extraneous software.  I have spent 3 decades managing UNIX and
+Linux systems, so I can be a bit picky about what runs on my systems.
+
 ## Turn Off Bluetooth
 
 If you won't be using it on your server then turn Bluetooth off.
@@ -706,7 +710,8 @@ changes to enable or disable devices are managed in the configuration file
 on logging, etc. on SBC devices -->
 
 You will need to eventually reboot the server once you have make this change.
-If you also disable WiFi then wait until you have finished the next task.
+If you also disable WiFi then wait until you have finished the next task, or
+any other tasks in this chapter.
 
 ~~~~ {.shell}
 // List bluetooth devices:
@@ -734,11 +739,11 @@ dtoverlay=disable-bt
 If you will use the built-in ethernet interface for networking on your server
 then turn WiFi off.  I prefer wired connections for servers, especially since
 newer technology offers gigabit speed ethernet.  In my experience, the network
-latency is usually better to wired devices.  But if you prefer it on wireless
-then skip this task.
+latency is usually better to wired devices.  But if you prefer to keep the
+server on wireless then skip this task.
 
 You will need to reboot the server once you have make this change, but 
-**remember to connect the ethernet cable** on the Pi to your home router first.
+**remember to connect the ethernet cable** on the Pi to your home router first!
 
 ~~~~ {.shell}
 // List wireless devices - after making this change you will not see this
@@ -872,12 +877,114 @@ $ sudo apt remove anacron
 $ sudo apt purge anacron
 ~~~~
 
+## Disabling Snap Infrastructure
+
+Ubuntu promotes another kind of software packaging called **Snaps** (which
+includes an *App* store).  Some users are not pleased with issues introduced
+by the underlying support software, and decide to
+[delete Snap support][remove-snap] from their systems.  In my early testing
+of Ubuntu LTS 22.04 I also ran into the problem of firefox not able to
+start, and like others I traced it back to snap (firefox is installed
+from a Snap package).
+
+I don't think 'Snaps' are meant for a server environment, and so I remove
+the associated software.  I certainly find it distasteful to have more
+than a dozen mounted loop devices cluttering up output of block device commands
+for just a handful of snap packages.  I would rather free up the memory
+footprint and inodes for other purposes.
+
+So here is a quick summary on removing Snap support, that is, all snap
+packages and the snapd daemon:
+
+### Disable the daemon
+
+You should close firefox if it is running in a desktop setting.  Then
+disable the snapd services and socket:
+
+~~~~ {.shell}
+$ sudo systemctl disable snapd snapd.seeded snapd.socket
+~~~~
+
+### Remove the packages
+
+List the Snap packages installed, and then delete them.  Leave *base* and
+*snapd* packages until the end.  As noted in [Erica's instructions][snap-remove]
+remove packages one at a time and watch for messages warning about 
+dependencies.  This is my list of Snap packages; your list might be different
+depending on what you have installed:
+
+~~~~ {.shell}
+$ snap list
+Name                       Version           ...  Publisher      Notes
+bare                       1.0               ...  canonical✓    base
+core20                     20230404          ...  canonical✓    base
+core22                     20230404          ...  canonical✓    base
+firefox                    112.0.2-1         ...  mozilla✓      -
+gnome-3-38-2004            0+git.6f39565     ...  canonical✓    -
+gnome-42-2204              0+git.587e965     ...  canonical✓    -
+gtk-common-themes          0.1-81-g442e511   ...  canonical✓    -
+snapd                      2.59.2            ...  canonical✓    snapd
+snapd-desktop-integration  0.9               ...  canonical✓    -
+software-boutique          0+git.0fdcecc     ...  flexiondotorg classic
+ubuntu-mate-pi             0+git.0f0bcdf     ...  ubuntu-mate   -
+ubuntu-mate-welcome        22.04.0-a59036a6  ...  flexiondotorg classic
+
+$ sudo snap remove firefox
+$ sudo snap remove software-boutique
+$ sudo snap remove ubuntu-mate-welcome
+$ sudo snap remove ubuntu-mate-pi
+$ sudo snap remove snapd-desktop-integration
+$ sudo snap remove gtk-common-themes
+$ sudo snap remove gnome-42-2204
+$ sudo snap remove gnome-3-38-2004
+$ sudo snap remove core22
+$ sudo snap remove core20
+$ sudo snap remove bare
+$ sudo snap remove snapd
+
+$ snap list
+No snaps are installed yet. Try 'snap install hello-world'.
+~~~~
+
+### Clean up and add a new firefox dpkg source
+
+Completely remove snapd and its cache files from the system.  Then add 
+configuration files for *apt* access to firefox *dpkg-based* packages.
+Finally install firefox from the Mozilla Personal Package Archive (PPA):
+
+~~~~ {.shell}
+$ sudo apt autoremove --purge snapd
+$ sudo rm -rf /root/snap
+$ rm -rf ~/snap
+
+// Create the necessary apt configurations for firefox:
+
+$ sudo nano /etc/apt/preferences.d/firefox-no-snap
+$ cat /etc/apt/preferences.d/firefox-no-snap
+Package: firefox*
+Pin: release o=Ubuntu*
+Pin-Priority: -1
+
+$ sudo add-apt-repository ppa:mozillateam/ppa
+...
+PPA publishes dbgsym, you may need to include 'main/debug' component
+Repository: 'deb https://ppa.launchpadcontent.net/.../ppa/ubuntu/ jammy main'
+Description:
+Mozilla Team's Firefox stable + 102 ESR and Thunderbird 102 stable builds
+Support for Ubuntu 16.04 ESM is included.
+...
+
+// Install firefox
+$ sudo apt install firefox
+~~~~
+
+[remove-snap]: https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204
+
 ## Other Configuration Targets
 
 These topics will be documented soon: 
 
   * managing swap and dealing with the swapfile in /
-  * disabling snapd if you so choose; cleaning it up
   * automatically or manually managing software updates
   * explore firewall issues - ufw seems lacking
   * getting rid of ESM messages in terminal logins
@@ -1781,9 +1888,8 @@ pi.home has address 192.168.1.90
 Host pi.home not found: 3(NXDOMAIN)
 ~~~~
 
-!!!
 The 'host' command looked at the /etc/hosts file, but
-might also consulted the external DNS servers.  This is because it consults an
+might also consulted the listed nameservers.  This is because it consults an
 important file named */etc/nsswitch.conf* which configures the order to try
 when looking up host and other data.  Because 'files' is first, the
 daemon consults /etc/hosts before doing any dns request:
