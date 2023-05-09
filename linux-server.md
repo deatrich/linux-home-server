@@ -37,8 +37,8 @@ One of my goals is to promote using the command-line to do most of the work.
 If you are interested in expanding your horizons and understanding
 more about the command-line, then this guide is for you.  There is also a lot
 of detail in this guide; this is my personal preference.  I grow tired
-of the current trend to provide internet-searched answers on a mobile
-phone with just a few finger swipes.
+of the current trend to provide internet-searched answers in a few phrases
+to fit on the screen of a mobile phone.
 
 Take a look at the table of contents at the top of the document.  Some users
 will only be interested in creating a 24x7 local file-sharing (Samba) service
@@ -102,7 +102,7 @@ comments or suggestions then you can contact me on
 
 Though many Raspberry Pi owners run the Raspberry Pi OS (formerly known
 as Raspbian), in this guide I chose to use Ubuntu.
-[Ubuntu LTS](https://releases.ubuntu.com/), 
+[Ubuntu LTS][ubuntu-lts], 
 is a long-term support Debian-based Linux OS. Ubuntu is renowned for
 its desktop support,
 but it also provides a comfortable home server experience.  A server
@@ -111,7 +111,7 @@ want to avoid the need to update the major version of the base OS every
 year.  The Official Gnome LTS releases with the Gnome desktop environment
 in the *main* software repository are supported for up to 5
 years from initial release, and up to 10 years with extended security-only
-updates via [Ubuntu Advantage](advantage) access[^pro]. However if you do
+updates via [Ubuntu Advantage][advantage] access[^pro]. However if you do
 not have an *advantage* account, then 
 community-supported desktop environments which are located in the
 *universe* software repository only get 3 years of support, meaning
@@ -127,7 +127,7 @@ At the time of writing this guide I used version 22.04 of Ubuntu LTS
 as indicated by the release number.
 
 I also opt to use an installation image which uses the
-[MATE desktop system](https://mate-desktop.org/).  At the bottom of that
+[MATE desktop system][mate-desktop].  At the bottom of that
 linked website is a note about why it is called MATE (pronounced mat-ay).
 The MATE window manager is intuitive, efficient, skinny, dependable and
 popular. It is widely available on most flavours of Linux.
@@ -139,7 +139,9 @@ you can use the desktop for fun, learning, or perhaps as your Linux development
 environment from other devices.  Accessing the desktop remotely is also
 documented in this guide.
 
+[ubuntu-lts]: https://releases.ubuntu.com/
 [advantage]: https://ubuntu.com/pro/tutorial
+[mate-desktop]: https://mate-desktop.org/
 [^pro]: Ubuntu Advantage is also known as **Ubuntu Pro**.  It is *free*
 of charge for personal use on up to 5 machines.
 
@@ -163,13 +165,13 @@ There are many instructions available online to help
 you download the disk image and install it onto installation media -
 I will not reproduce the instructions here.  How you create the
 image depends on your home computing device and its OS.
-There is a helpful [Ubuntu tutorial](https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#2-prepare-the-sd-card) on creating
+There is a helpful [tutorial][tutorial] on creating
 the installation image using the Raspberry Pi Imager software for 3 operating
 systems:
 
-  * [Windows OS](https://downloads.raspberrypi.org/imager/imager_latest.exe)
-  * [MacOS](https://downloads.raspberrypi.org/imager/imager_latest.dmg)
-  * [Debian-based Linux](https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb)
+  * [Windows OS][windows]
+  * [MacOS][macos]
+  * [Debian-based Linux][debian]
 
 Note that after installing the disk image on the microSD the disk partitioning
 looks like this.  I only show it here so that you are aware of what is going
@@ -210,6 +212,10 @@ exercise for a later time in your Linux adventure.
 [ubuntu-mate]: https://ubuntu-mate.org/raspberry-pi/
 [download]: https://ubuntu-mate.org/raspberry-pi/download/
 [toms]: https://www.tomshardware.com/best-picks/raspberry-pi-microsd-cards
+[tutorial]: https://ubuntu.com/tutorials/how-to-install-ubuntu-desktop-on-raspberry-pi-4#2-prepare-the-sd-card
+[windows]: https://downloads.raspberrypi.org/imager/imager_latest.exe
+[macos]: https://downloads.raspberrypi.org/imager/imager_latest.dmg
+[debian]: https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb
 
 # Installation and First Experience
 
@@ -548,41 +554,41 @@ Here are the specifics:
        purposes
   * Our 'share' section named *home*
 
-The [modified smb.conf file](smb-conf) is in github.
+The [modified smb.conf file][smb-conf] is in github.
 
-<!-- fix diff ordering below -->
 ~~~~ {.shell}
 $ cd /etc/samba
 $ sudo cp -p smb.conf smb.conf.orig
 $ sudo nano smb.conf
 // The 'diff' command shows differences in snippets with the line numbers
 // A more elegant way to see the differences would be side-by-side:
-//   diff --color=always -y smb.conf smb.conf.orig | less -r 
-$ diff smb.conf smb.conf.orig
-29,30c29
-< #   workgroup = WORKGROUP
-<    workgroup = LINUX
+//   diff --color=always -y smb.conf.orig smb.conf | less -r 
+$ diff smb.conf.orig smb.conf
+29c29,30
+<    workgroup = WORKGROUP
 ---
->    workgroup = WORKGROUP
-34,37d32
-<    fruit:nfs_aces = no
-<    fruit:aapl = yes
-<    vfs objects = catia fruit streams_xattr
-< 
-68,69d62
-<    log level = 1 passdb:3 auth:3
-< 
-249,258d241
-< 
-< [home]
-<     comment = Samba on Raspberry Pi
-<     path = /data/shared
-<     writable = yes
-<     read only = no
-<     browsable = yes
-<     guest ok = yes
-<     create mask = 0664
-<     directory mask = 0775
+> #   workgroup = WORKGROUP
+>    workgroup = LINUX
+33a35,39
+> # for Apple SMB clients
+>    fruit:nfs_aces = no
+>    fruit:aapl = yes
+>    vfs objects = catia fruit streams_xattr
+> 
+62a69,70
+>    log level = 1 passdb:3 auth:3
+> 
+241a250,259
+> 
+> [home]
+>     comment = Samba on Raspberry Pi
+>     path = /data/shared
+>     writable = yes
+>     read only = no
+>     browsable = yes
+>     guest ok = yes
+>     create mask = 0664
+>     directory mask = 0775
 ~~~~
 
 [vfs]: https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html
@@ -680,7 +686,7 @@ which directories and/or data exports should be added and/or used for backups.
 Note that when you have create a Samba or an NFS server you will have other
 data directories to back up, and these directories might be large.
 
-A [backup process and a link to an example backup script]{#backups} is
+A [backup process and a link to an example backup script](#backups) is
 in the appendix.  We look at backing up both system and data directories.
 
 # Server Customization
@@ -859,23 +865,14 @@ $ sudo /bin/bash
 # systemctl disable whoopsie
 # apt remove whoopsie kerneloops
 # apt purge whoopsie kerneloops
+
+// If you want to disable other apport-based crash reporting then remove apport
+// from your server:
+# apt autoremove --purge apport
+
 ~~~~
 
 [sssd]: https://ubuntu.com/server/docs/service-sssd
-
-## Remove **anacron** Service
-
-UNIX and Linux has a mechanism called *cron* allowing servers to run
-commands at specific times and days.  However personal and mobile computing is
-typically not powered on all the time.  So operating systems like Linux 
-have another mechanism called *anacron* which trys to run periodic 
-cron-configured commands while the computer is still running.  Since we 
-are creating a 24x7 server we do not also need anacron -- delete it:
-
-~~~~ {.shell}
-$ sudo apt remove anacron
-$ sudo apt purge anacron
-~~~~
 
 ## Disabling Snap Infrastructure
 
@@ -896,7 +893,7 @@ footprint and inodes for other purposes.
 So here is a quick summary on removing Snap support, that is, all snap
 packages and the snapd daemon:
 
-### Disable the daemon
+#### Disable the daemon
 
 You should close firefox if it is running in a desktop setting.  Then
 disable the snapd services and socket:
@@ -905,7 +902,7 @@ disable the snapd services and socket:
 $ sudo systemctl disable snapd snapd.seeded snapd.socket
 ~~~~
 
-### Remove the packages
+#### Remove the packages
 
 List the Snap packages installed, and then delete them.  Leave *base* and
 *snapd* packages until the end.  As noted in [Erica's instructions][snap-remove]
@@ -916,15 +913,15 @@ depending on what you have installed:
 ~~~~ {.shell}
 $ snap list
 Name                       Version           ...  Publisher      Notes
-bare                       1.0               ...  canonical✓    base
-core20                     20230404          ...  canonical✓    base
-core22                     20230404          ...  canonical✓    base
-firefox                    112.0.2-1         ...  mozilla✓      -
-gnome-3-38-2004            0+git.6f39565     ...  canonical✓    -
-gnome-42-2204              0+git.587e965     ...  canonical✓    -
-gtk-common-themes          0.1-81-g442e511   ...  canonical✓    -
-snapd                      2.59.2            ...  canonical✓    snapd
-snapd-desktop-integration  0.9               ...  canonical✓    -
+bare                       1.0               ...  canonical     base
+core20                     20230404          ...  canonical     base
+core22                     20230404          ...  canonical     base
+firefox                    112.0.2-1         ...  mozilla       -
+gnome-3-38-2004            0+git.6f39565     ...  canonical     -
+gnome-42-2204              0+git.587e965     ...  canonical     -
+gtk-common-themes          0.1-81-g442e511   ...  canonical     -
+snapd                      2.59.2            ...  canonical     snapd
+snapd-desktop-integration  0.9               ...  canonical     -
 software-boutique          0+git.0fdcecc     ...  flexiondotorg classic
 ubuntu-mate-pi             0+git.0f0bcdf     ...  ubuntu-mate   -
 ubuntu-mate-welcome        22.04.0-a59036a6  ...  flexiondotorg classic
@@ -946,7 +943,7 @@ $ snap list
 No snaps are installed yet. Try 'snap install hello-world'.
 ~~~~
 
-### Clean up and add a new firefox dpkg source
+#### Clean up and add a new firefox dpkg source
 
 Completely remove snapd and its cache files from the system.  Then add 
 configuration files for *apt* access to firefox *dpkg-based* packages.
@@ -980,11 +977,102 @@ $ sudo apt install firefox
 
 [remove-snap]: https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204
 
-## Other Configuration Targets
+## Modifying the Swap Setup
+
+There is a big 1 GB [swapfile][swap] in the root of the filesystem - I find
+that offensive, so I moved it.  If you are not as easily offended as I am
+then skip this topic.
+
+It is a good idea to have some kind of swap enabled, since swap is only used
+if too much memory is being consumed by processes.  Once memory is low the
+system will start using any configured swap on disk.  Of course this is slower
+than memory, but it is better to use some swap at those moments instead of 
+having an unfortunate process die [because of an out-of-memory condition][OOM].
+
+Over time if you never see swap being used then you could turn swap off and 
+delete the swap file.
+
+Here we create another 1 GB file -- it can be much larger if needed; but 
+if you need a lot of swap then you should investigate to see what is eating
+memory.
+
+~~~~ {.shell}
+// check to see what the current swap usage is; in this case it is 0
+$ free -t
+           total       used        free    shared  buff/cache   available
+Mem:     3881060     176900     3022600      5332      681560     3541748
+Swap:    1048572          0     1048572
+Total:   4929632     176900     4071172
+
+// Look at what systemd does with swap, and turn off the appropriate items
+$ systemctl list-unit-files | grep swap
+mkswap.service                              disabled        enabled
+swapfile.swap                               static          -
+swap.target                                 static          -
+
+// There will be a .swap rule for every swap file - this one is for /swapfile
+// and we want to get rid of it
+$ sudo systemctl mask swapfile.swap
+Created symlink /etc/systemd/system/swapfile.swap → /dev/null.
+
+// Even though the 'mkswap' service is by default disabled, I also
+// mask it so that it doesn't come back from the dead - because it
+// will come back if you don't also mask that service
+$ sudo systemctl mask mkswap.service
+Created symlink /etc/systemd/system/mkswap.service → /dev/null.
+
+// turn current swap off so we can delete the old file
+$ sudo swapoff -a
+$ sudo rm /swapfile
+
+// Create an new swapfile in a subdirectory
+$ sudo mkdir /swap
+$ sudo fallocate -l 1G /swap/swapfile
+$ sudo mkswap /swap/swapfile
+Setting up swapspace version 1, size = 1024 MiB (1073737728 bytes)
+no label, UUID=3e64d157-6f09-48d1-94c2-3851b82a73b7
+
+// Protect the swap file and add it to /etc/fstab
+$ sudo chmod 600 /swap/swapfile
+$ sudo nano /etc/fstab
+$ grep swap /etc/fstab
+/swap/swapfile    none           swap defaults     0 0
+
+// Turn swap back on and check
+$ sudo swapon -a
+$ swapon
+NAME           TYPE  SIZE USED PRIO
+/swap/swapfile file 1024M   0B   -2
+
+// Note that systemd will show a new 'swap' type named 'swap-swapfile.swap'
+$ systemctl --type swap 
+  UNIT               LOAD   ACTIVE SUB    DESCRIPTION   
+  swap-swapfile.swap loaded active active /swap/swapfile
+
+~~~~
+
+[OOM]: https://docs.memset.com/cd/Linux%27s-OOM-Process-Killer.199066633.html
+[swap]: https://help.ubuntu.com/community/SwapFaq
+
+
+## Remove **anacron** Service
+
+UNIX and Linux has a mechanism called *cron* allowing servers to run
+commands at specific times and days.  However personal and mobile computing is
+typically not powered on all the time.  So operating systems like Linux 
+have another mechanism called *anacron* which trys to run periodic 
+cron-configured commands while the computer is still running.  Since we 
+are creating a 24x7 server we do not also need anacron -- delete it:
+
+~~~~ {.shell}
+$ sudo apt remove anacron
+$ sudo apt purge anacron
+~~~~
+
+## Other Configuration Issues
 
 These topics will be documented soon: 
 
-  * managing swap and dealing with the swapfile in /
   * automatically or manually managing software updates
   * explore firewall issues - ufw seems lacking
   * getting rid of ESM messages in terminal logins
@@ -1718,12 +1806,19 @@ the example below you:
     * create/edit the cronjob to run the local backup at 1 in the early morning
 
 ~~~~ {.shell}
+    // Create local directory with permissions limiting access to
+    // backed-up files to users in the 'adm' group 
     $ sudo mkdir /var/local-backups
+    $ sudo chown root:adm /var/local-backups
+    $ sudo chmod o-rwx /var/local-backups
+
+    // copy configuration to /etc/ and script to /root/bin/
     $ sudo cp /path/to/system-backup.conf /etc
     $ sudo mkdir /root/bin
-    $ sudo cp /path/to/system-backup.sh /root/bin
+    $ sudo cp /path/to/system-backup.sh /root/bin/
     // the script must be marked as 'executable'; the chmod command will do that
     $ sudo chmod 755 /root/bin/system-backup.sh
+
     // edit the configuration file for the backups
     $ sudo nano /etc/system-backup.conf
 
@@ -1749,6 +1844,8 @@ The script might issue some warnings about trying to preserve LINUX
 permissions on the USB drive, but should otherwise work.  I need to verify
 this case.
 
+<!-- note to self: verify using a windows-formatted usb drive -->
+
 Test it with:
 
 ~~~~ {.shell}
@@ -1758,6 +1855,8 @@ Test it with:
 If you ever need to restore files from your backups then you should unpack the
 *tarballs* (compressed 'tar' files) on a Linux system and copy the needed
 files into place on the filesystem.
+
+<!-- think about adding a restore-files example -->
 
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
