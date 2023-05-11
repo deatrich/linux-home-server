@@ -266,7 +266,7 @@ and then select  *Switch Off* -> *Restart*.
 <!-- (!!) add a note about unmounting the PI-DATA volume at some point after
 installation -->
 
-## Experimenting With the Graphical Environment
+## Experiment With the Graphical Environment
 
 If you are not overly familiar with Linux environments then this is a
 good time to take a few days and play with the installation while it presents
@@ -820,61 +820,7 @@ $ sudo apt install gpm
 $ sudo systemctl enable gpm
 ~~~~
 
-## Disable Various Unused Services
-
-Here are some services which normally can be disabled.  Of course, if any
-of these services are interesting to you then keep them.  Note that server
-processes are sometimes called *daemons*.
-
-The *systemctl* command can handle multiple services at the same time, but
-doing them individually allows you to watch for any feedback.  You can also
-simply disable these services without stopping them.  They will not run
-on the next reboot.
-
-~~~~ {.shell}
-// If you want to run a series of commands as root you can sudo to the bash
-// shell, run your commands, and then exit the shell.  Be careful to
-// always exit immediately after running your commands.
-$ sudo /bin/bash
-
-// disable serial and bluetooth modems or serial devices
-# systemctl stop ModemManager
-# systemctl disable ModemManager
-# systemctl stop hciuart
-# systemctl disable hciuart
-
-// disable VPN and printing services - you can print without running
-// a local printer daemon (!!maybe document using one tho )
-# systemctl stop openvpn
-# systemctl disable openvpn
-# systemctl stop cups-browsed cups
-# systemctl disable cups-browsed cups
-
-// disable System Security Services Daemon ([sssd][sssd]) if you don't need it
-# systemctl disable sssd
-
-// Disable UEFI Secure Boot (secureboot-db)
-// 
-# systemctl disable secureboot-db
-
-// disable whoopsie and kerneloops if you don't want to be sending
-// information to outside entities
-# systemctl stop kerneloops
-# systemctl disable kerneloops
-# systemctl stop whoopsie
-# systemctl disable whoopsie
-# apt remove whoopsie kerneloops
-# apt purge whoopsie kerneloops
-
-// If you want to disable other apport-based crash reporting then remove apport
-// from your server:
-# apt autoremove --purge apport
-
-~~~~
-
-[sssd]: https://ubuntu.com/server/docs/service-sssd
-
-## Disabling Snap Infrastructure
+## Disable Snap Infrastructure
 
 Ubuntu promotes another kind of software packaging called **Snaps** (which
 includes an *App* store).  Some users are not pleased with issues introduced
@@ -977,7 +923,7 @@ $ sudo apt install firefox
 
 [remove-snap]: https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204
 
-## Modifying the Swap Setup
+## Modify the Swap Setup
 
 There is a big 1 GB [swapfile][swap] in the root of the filesystem - I find
 that offensive, so I moved it.  If you are not as easily offended as I am
@@ -1069,6 +1015,155 @@ $ sudo apt remove anacron
 $ sudo apt purge anacron
 ~~~~
 
+## Disable Various Unused Services
+
+Here are some services which normally can be disabled.  Of course, if any
+of these services are interesting to you then keep them.  Note that server
+processes are sometimes called *daemons*.
+
+The *systemctl* command can handle multiple services at the same time, but
+doing them individually allows you to watch for any feedback.  You can also
+simply disable these services without stopping them.  They will not run
+on the next reboot.
+
+~~~~ {.shell}
+// If you want to run a series of commands as root you can sudo to the bash
+// shell, run your commands, and then exit the shell.  Be careful to
+// always exit immediately after running your commands.
+$ sudo /bin/bash
+
+// disable serial and bluetooth modems or serial devices
+# systemctl stop ModemManager
+# systemctl disable ModemManager
+# systemctl stop hciuart
+# systemctl disable hciuart
+
+// disable VPN and printing services - you can print without running
+// a local printer daemon (!!maybe document using one tho )
+# systemctl stop openvpn
+# systemctl disable openvpn
+# systemctl stop cups-browsed cups
+# systemctl disable cups-browsed cups
+
+// disable System Security Services Daemon ([sssd][sssd]) if you don't need it
+# systemctl disable sssd
+
+// Disable UEFI Secure Boot (secureboot-db)
+// 
+# systemctl disable secureboot-db
+
+// disable whoopsie and kerneloops if you don't want to be sending
+// information to outside entities
+# systemctl stop kerneloops
+# systemctl disable kerneloops
+# systemctl stop whoopsie
+# systemctl disable whoopsie
+# apt remove whoopsie kerneloops
+# apt purge whoopsie kerneloops
+
+// If you want to disable other apport-based crash reporting then remove apport
+// from your server:
+# apt autoremove --purge apport
+
+~~~~
+
+[sssd]: https://ubuntu.com/server/docs/service-sssd
+
+## Miscellaneous Configuration Tweaks
+
+### Change Local Time Presentation Globally
+
+If you prefer to see time in 24 hour format, or if you prefer to tweak
+other [locale][locale] settings, then use *localectl* to set global
+locale settings.
+
+In this example the locale setting is generic English with a region code
+for Canada.  Because the British English locale uses a 24 hour clock then
+changing only the time locale will show datestrings with a 24 hour clock:
+
+~~~~ {.shell}
+// Show your current locale settings
+$ locale
+LANG=en_CA.UTF-8
+LANGUAGE=en_CA:en
+LC_CTYPE="en_CA.UTF-8"
+LC_NUMERIC="en_CA.UTF-8"
+LC_TIME=en_CA.UTF-8
+LC_TIME=en_GB.UTF-8
+...
+
+// What the date is in the current (Canadian) locale
+$ date
+Thu 11 May 2023 08:43:57 AM MDT
+
+// What the date would look like if (American) en_US.UTF-8 were used:
+$ LC_TIME=en_US.UTF-8 date
+Thu May 11 08:45:18 AM MDT 2023
+
+// What the date would look like if (British) en_GB.UTF-8 were used:
+$ LC_TIME=en_GB.UTF-8 date
+Thu 11 May 08:44:00 MDT 2023
+
+// Change it to the British style.  The change is immediate, but since
+// you inherit the older locale environment at login, then you will not see
+// the change until you logout, and then back in.
+$ sudo localectl set-locale LC_TIME="en_GB.UTF-8"
+~~~~
+
+[locale]: https://en.wikipedia.org/wiki/Locale_(computer_software)
+
+### Change Log Rotation File Naming
+
+Ubuntu installs a log rotation package which controls how log files are
+rotated on your server.  This package typically once a week compresses log
+files to a different name in /var/log/ and truncates the current log.  The
+resulting files are rotated through a specified rotation, and the oldest
+compressed log is deleted; for example here are 4 weeks worth of rotated
+auth.log files:
+
+~~~~ {.shell}
+$ ls -ltr /var/log/ | grep auth.log
+-rw-r-----  1 syslog     adm      3498 Apr 15 23:17 auth.log.4.gz
+-rw-r-----  1 syslog     adm      8178 Apr 22 23:17 auth.log.3.gz
+-rw-r-----  1 syslog     adm      7225 Apr 30 01:09 auth.log.2.gz
+-rw-r-----  1 syslog     adm     58810 May  7 00:22 auth.log.1
+-rw-r-----  1 syslog     adm     46426 May 11 09:17 auth.log
+~~~~
+
+A better scheme is to use the 'dateext' option in */etc/logrotate.conf*
+so that older compressed logs keep their compressed and dated names until
+they are deleted:
+
+~~~~ {.shell}
+$ ls -ltr /var/log/ | grep auth.log
+-rw-r----- 1 syslog      adm      3287 Apr 17 07:30 auth.log-20230417.gz
+-rw-r----- 1 syslog      adm      2494 Apr 23 07:30 auth.log-20230423.gz
+-rw-r----- 1 syslog      adm      4495 May  1 07:30 auth.log-20230501.gz
+-rw-r----- 1 syslog      adm     35715 May  7 07:30 auth.log-20230507
+-rw-r----- 1 syslog      adm     29500 May 11 09:55 auth.log
+~~~~
+
+To make this change /etc/logrotate.conf is modified.  We also set the
+number of rotations to keep to 12 weeks instead of 4 weeks.  Note that
+per-service log file customization is possible; look at examples in
+*/etc/logrotate.d/*
+
+~~~~ {.shell}
+$ cd /etc
+$ sudo cp -p logrotate.conf logrotate.conf.orig
+$ sudo nano logrotate.conf
+$ diff logrotate.conf.orig logrotate.conf
+13c13,14
+< rotate 4
+---
+> #rotate 4
+> rotate 12
+19c20
+< #dateext
+---
+> dateext
+~~~~
+
 ## Other Configuration Issues
 
 These topics will be documented soon: 
@@ -1080,12 +1175,14 @@ These topics will be documented soon:
 
 # Enabling the Secure Shell Daemon and Using Secure Shell
 
-The secure shell daemon, ***sshd***, is a very useful and important service
-for connecting between computers near or far.  If you are never going to
-connect via ssh into your Pi home server from within your network then
-do NOT install the daemon.  You can always use the secure shell client,
-***ssh***, to initiate a connection to some external server -- for that you
-do not need sshd.
+The [Secure Shell][secure-shell] daemon, ***sshd***, is a very useful and
+important service for connecting between computers near or far.  If you
+are never going to connect via SSH into your Pi home server from
+within your network then do NOT install the daemon.  You can always
+use the secure shell client, ***ssh***, to initiate a connection
+to some external server -- for that you do not need sshd.
+
+## Configure the sshd Daemon
 
 If you will be needing sshd then first install it, since
 it is not installed by default in the LTS desktop version:
@@ -1121,22 +1218,254 @@ $ diff sshd_config.orig sshd_config
 > UseDNS yes
 122a125,130
 > 
-> # Limit access to root user; only local users can connect via ssh to root
-> # if root's authorized_keys file allows them.
+> # Limit access to root user; only local users can connect via ssh
+> # to root only if root's authorized_keys file allows them.
 > # note: using @localhost does not work on ubuntu unless you set UseDNS to yes
 > AllowUsers    myname@192.168.1.* *@localhost
 > 
 ~~~~
 
-<!-- describe enabling, configuring and creating a key pair.  -->
+## Configure a Personal SSH Key Pair
+
+If you use the Linux command-line for work between computers you soon 
+understand the usefulness of ssh.  Here we go through the exercise if
+creating an ssh key pair so that you can connect securely between devices.
+
+We use *ssh-keygen* to create the key pair - a private key which you treat
+carefully and distribute it only to your desktop or laptop, and a public
+key.  The public key you can copy to remote hosts, where 
+you create an *authorized_keys* file that specifies which public keys
+are allowed to connect without using a standard system password.
+
+Over time the Secure Shell key types have changed.  Some key types are no
+longer considered secure, like SSH-1 or DSA keys.  We will use an SSH
+RSA-based key with a key size 4096 bits.  Always use a strong passphrase.  It is
+not like a password since you have more liberty to use combinations of
+characters; as the man-page on ssh-keygen says:
+
+>  A passphrase is similar to a password, except it can be a phrase with a
+>  series of words, punctuation, numbers, whitespace, or any string of
+>  characters you want.
+
+I would not create a passphrase that is less than 16 characters; I would
+certainly never set an empty passphrase.
+
+~~~~ {.shell}
+// If you do not yet have an .ssh directory in your home directory then
+// create one now; and give access to yourself only:
+
+$ cd
+$ mkdir .ssh
+$ chmod 700 .ssh
+
+// Generate the key:
+$ ssh-keygen -t rsa -b 4096
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/myname/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/myname/.ssh/id_rsa.
+
+// The private key is named 'id_rsa' and the public key is named 'id_rsa.pub'
+// Note the permissions of these 2 files; the private key is protected
+// and is read-write only to the owner.
+$ ls -l ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
+-rw------- 1 myname myname 3326 May  2 22:34 /home/myname/.ssh/id_rsa
+-rw-r--r-- 1 myname myname  746 May  2 22:34 /home/myname/.ssh/id_rsa.pub
+~~~~
+
+Be sure to back-up important directories like $HOME/.ssh -- in your home
+environment it might not seem important, but once you start using your ssh
+keys for access to external resources then you should follow good practices.
+
+Suppose you created your keys on your desktop, and you want to use them
+to ssh to your Linux home server without using a standard password.  To
+do this you create an authorized keys file on the server:
+
+~~~~ {.shell}
+// secure-copy your public key to the linux server (assuming it is called 'pi')
+$ scp ~/.ssh/id_rsa.pub myname@pi:~/
+$ ssh myname@pi
+
+// Now create authorized_keys if it does not exist inside '~/.ssh', and
+// then 'cat' your public key to the end of the file.
+// The authorized_keys file should always be protected.
+
+$ mkdir ~/.ssh
+$ chmod 700 ~/.ssh
+$ cd ~/.ssh
+$ touch authorized_keys
+$ chmod 600 authorized_keys
+$ cat ~/id_rsa.pub >> authorized_keys
+$ rm ~/id_rsa.pub
+$ exit
+
+// Back on the desktop verify that you can ssh into the server using only
+// the key's passphrase (and not your password):
+$ ssh myname@pi
+Enter passphrase for key '/home/myname/.ssh/id_rsa': 
+Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-1027-raspi aarch64)
+...
+$ exit
+~~~~
+
+Start an [SSH agent][ssh-agent] on your desktop, and add your key to the
+agent.  The series of commands is shown here; it is best to create a 
+shell script so that you only need to run the script.  The nice thing
+about using an agent is that you avoid using passwords and passphrases
+throughout the day, or until you turn off your desktop:
+
+~~~~ {.shell}
+$ ssh_info_file=$HOME/.ssh-agent-info-`hostname`
+$ ssh-agent > $ssh_info_file
+$ chmod 600 $ssh_info_file
+$ source $ssh_info_file
+$ ssh-add
+Enter passphrase for /home/myname/.ssh/id_rsa: 
+Identity added: /home/myname/.ssh/id_rsa (/home/myname/.ssh/id_rsa)
+
+// Now ssh into the server without needing passphrases or passwords:
+$ ssh myname@pi
+Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-1027-raspi aarch64)
+...
+~~~~
+
+[secure-shell]: https://en.wikipedia.org/wiki/Secure_Shell
+[ssh-agent]: https://www.ssh.com/academy/ssh/agent
+
+<!-- still to do: modify shell .bashrc parameters and scripts to pass
+ssh-agent variables around  -->
+
+# Enabling Remote Desktop Services
+
+In case you have various devices at home that you would like to use in a Linux
+desktop fashion, but you do not want to change the current environment
+on those devices, then you can configure your home Linux server to provide
+that opportunity.
+
+For all remote desktop options, first create an *.Xsession* file in your 
+home directory on the server and configure it to start a MATE desktop session:
+
+~~~~ {.shell}
+$ cd
+$ nano .Xsession
+$ cat .Xsession
+/usr/bin/mate-session
+~~~~
+
+## Configure Remote Desktop Protocol (RDP)
+
+Most operating systems have client support for Microsoft's Remote Desktop
+Protocol.  On Linux there is also a software package named *xrdp*
+which can provide RDP.
+
+Note that RDP is [typically not really secure][secure-rdp] without
+adding some additional security features.  However, from within your
+home network xrdp is okay.
+
+We install xrdp, tweak the configuration a little, and restart xrdp:
+
+~~~~ {.shell}
+$ sudo apt install xrdp
+...
+The following additional packages will be installed:
+  xorgxrdp
+...
+Setting up xrdp (0.9.17-2ubuntu2) ...
+
+Generating 2048 bit rsa key...
+
+ssl_gen_key_xrdp1 ok
+
+saving to /etc/xrdp/rsakeys.ini
+
+Created symlink /etc/systemd/system/multi-user.target.wants/xrdp-sesman.service ...
+Created symlink /etc/systemd/system/multi-user.target.wants/xrdp.service ...
+Setting up xorgxrdp (1:0.2.17-1build1) ...
+...
+
+// The configuration file is xrdp.ini; here we disable ipv6 by stipulating
+// 'tcp://:3389' in the port configuration:
+$ cd /etc/xrdp
+$ sudo cp -p xrdp.ini xrdp.ini.orig
+$ sudo nano xrdp.ini
+$ diff xrdp.ini.orig xrdp.ini
+23c23,24
+< port=3389
+---
+> ;;port=3389
+> port=tcp://:3389
+
+// restart xrdp
+$ sudo systemctl restart xrdp
+~~~~
+
+You can test the setup from any other linux computer with
+[*remmina*][remmina] installed, or you can secure-shell into
+the Linux server with X11 forwarding using the '-Y' option
+and run 'remmina' from the command-line; that is:
+
+~~~~ {.shell}
+// Suppose that your server is named pi.home
+$ ssh -Y pi.home
+
+// Test if X11 forwarding is working:
+$ xhost
+access control enabled, only authorized clients can connect
+SI:localuser:myloginname
+
+
+// If remmina is not installed, then install it:
+$ sudo apt install remmina
+$ remmina
+
+// Start remmina and log into the server with your username and password.
+// You can save a connection profile with a custom resolution setting
+// to get the best possible presentation.
+~~~~
+
+There are many web-based tutorials; check out
+[*XRDP on Ubuntu 22.04*][xrdp-tutorial].  This tutorial shows how to connect
+from Windows and from macOS as well.
+
+[secure-rdp]: https://threatpost.com/remote-desktop-protocol-secure/167719/
+[remmina]: https://ubuntu.com/tutorials/access-remote-desktop#1-overview
+[xrdp-tutorial]: https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
+
+<!--
+## Configure X2Go 
+
+[X2Go][X2Go] is my favourite remote desktop setup since it runs seamlessly
+via secure shell connections and can use SSH key-pairs to avoid password use.
+Thus I can connect my desktop comfortably to remote servers across the
+continent, and write and test code as if I was down the hall from the
+remote server.
+
+~~~~ {.shell}
+// install both the server and the client software
+$ sudo apt install x2goserver x2goclient
+...
+Setting up x2goserver-x2goagent (4.1.0.3-5) ...
+Setting up x2goserver (4.1.0.3-5) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/x2goserver.service
+...
+
+$ systemctl list-unit-files|grep -i x2go
+x2goserver.service                         enabled         enabled
+~~~~
+
+Before starting x2goclient using ssh keys you must first tweak the
+Secure Shell configuration.  But there is a bug that prevents 
+it working until sshd_config is modified
+[X2Go]: https://en.wikipedia.org/wiki/X2Go
+-->
+
+<!-- also describe startx -->
 
 # Topics To Document
 
 These topics are not yet documented.
 
-#### Enabling Remote Desktop Services
-
-description here for startx, x2go and xrdp.
 
 #### Creating a Web Site on the Server
 
