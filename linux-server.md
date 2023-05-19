@@ -87,7 +87,7 @@ The root superuser:\
 Also, command output is sometimes long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)
 
-Sometimes I add a double-exclamation (**!!**) mark -- that is only a
+Sometimes I add a double-exclamation (**!!**) mark somewhere -- this is only a
 reminder for myself to fix an issue at that point in the documentation.
 
 If you discover issues with instructions in this document, or have other
@@ -127,10 +127,11 @@ At the time of writing this guide I used version 22.04 of Ubuntu LTS
 as indicated by the release number.
 
 I also opt to use an installation image which uses the
-[MATE desktop system][mate-desktop].  At the bottom of that
+[MATE desktop system][mate-desktop]  -- at the bottom of that
 linked website is a note about why it is called MATE (pronounced mat-ay).
 The MATE window manager is intuitive, efficient, skinny, dependable and
-popular. It is widely available on most flavours of Linux.
+popular. It is widely available on most flavours of Linux.  MATE is not
+flashy, but it gets the job done.
 
 Even though we are creating a home server, it is useful to configure the
 server to provide a remote graphical desktop environment -- this is why
@@ -139,9 +140,18 @@ you can use the desktop for fun, learning, or perhaps as your Linux development
 environment from other devices.  Accessing the desktop remotely is also
 documented in this guide.
 
+This installation image still uses the [X.org display server][x.org]
+instead of [Wayland][wayland], partly because it uses MATE which
+is not yet ready for Wayland at this Ubuntu LTS release, and also because
+this build is for the Raspberry Pi, where Wayland support is new.  Moreover
+remote desktop support is a work in progress for Wayland environments, and is
+better left to the X.org protocol for now.
+
 [ubuntu-lts]: https://releases.ubuntu.com/
 [advantage]: https://ubuntu.com/pro/tutorial
 [mate-desktop]: https://mate-desktop.org/
+[x.org]: https://en.wikipedia.org/wiki/X.Org_Server
+[wayland]: https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors
 [^pro]: Ubuntu Advantage is also known as **Ubuntu Pro**.  It is *free*
 of charge for personal use on up to 5 machines.
 
@@ -381,7 +391,7 @@ home directory:
 
   * $HOME/.bashrc
   * ~/.bashrc
-  * /home/yourlogin/.bashrc
+  * /home/mylogin/.bashrc
 
 ### Getting Going with the Command-Line
 
@@ -1202,7 +1212,7 @@ daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
   * tell the daemon to use DNS: *UseDNS yes*
   * limit ssh access to yourself in your LAN;\
     and block ssh access to the root user except for 'localhost':\
-      *AllowUsers    yourlogin@192.168.1.\* \*@localhost*
+      *AllowUsers    mylogin@192.168.1.\* \*@localhost*
 
 ~~~~ {.shell}
 $ cd /etc/ssh
@@ -1225,22 +1235,22 @@ $ diff sshd_config.orig sshd_config
 > 
 ~~~~
 
-## Configure a Personal SSH Key Pair
+## Configure a Personal SSH Key Pair {#key-pair}
 
 If you use the Linux command-line for work between computers you soon 
-understand the usefulness of ssh.  Here we go through the exercise if
+understand the usefulness of ssh.  Here we go through the exercise of
 creating an ssh key pair so that you can connect securely between devices.
 
-We use *ssh-keygen* to create the key pair - a private key which you treat
-carefully and distribute it only to your desktop or laptop, and a public
-key.  The public key you can copy to remote hosts, where 
+We use *ssh-keygen* to create the key pair.  You should treat the private
+key carefully, distributing it to your desktop systems only.  You can copy
+can copy your public key to remote hosts, where 
 you create an *authorized_keys* file that specifies which public keys
 are allowed to connect without using a standard system password.
 
 Over time the Secure Shell key types have changed.  Some key types are no
-longer considered secure, like SSH-1 or DSA keys.  We will use an SSH
-RSA-based key with a key size 4096 bits.  Always use a strong passphrase.  It is
-not like a password since you have more liberty to use combinations of
+longer considered secure, like SSH-1 or DSA keys.  Here we will use an SSH
+RSA-based key with a key size of 4096 bits.  Always use a strong passphrase.
+It is not like a password since you have more liberty to use combinations of
 characters; as the man-page on ssh-keygen says:
 
 >  A passphrase is similar to a password, except it can be a phrase with a
@@ -1277,27 +1287,37 @@ $ ls -l ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
 Be sure to back-up important directories like $HOME/.ssh -- in your home
 environment it might not seem important, but once you start using your ssh
 keys for access to external resources then you should follow good practices.
+If you lose the private key then you will need to generate a new key pair.
 
 Suppose you created your keys on your desktop, and you want to use them
 to ssh to your Linux home server without using a standard password.  To
 do this you create an authorized keys file on the server:
 
 ~~~~ {.shell}
-// secure-copy your public key to the linux server (assuming it is called 'pi')
+// secure-copy your public key to the linux server (assuming the server is
+named 'pi')
 $ scp ~/.ssh/id_rsa.pub myname@pi:~/
-$ ssh myname@pi
+The authenticity of host 'pi (192.168.1.90)' can't be established.
+ECDSA key fingerprint is SHA256:iP...
+ECDSA key fingerprint is MD5:79:54:...
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'pi,192.168.1.90' (ECDSA) to the list of known hosts.
+myname@pi's password:
 
-// Now create authorized_keys if it does not exist inside '~/.ssh', and
-// then 'cat' your public key to the end of the file.
+// On the server create your authorized_keys file if it does not exist
+// inside '~/.ssh', and then 'cat' your public key to the end of the file.
 // The authorized_keys file should always be protected.
 
+$ ssh myname@pi
+myname@pi's password:
 $ mkdir ~/.ssh
 $ chmod 700 ~/.ssh
 $ cd ~/.ssh
 $ touch authorized_keys
 $ chmod 600 authorized_keys
-$ cat ~/id_rsa.pub >> authorized_keys
-$ rm ~/id_rsa.pub
+$ cat /path/to/id_rsa.pub >> authorized_keys
+$ rm /path/to/id_rsa.pub
+// logout from the server session
 $ exit
 
 // Back on the desktop verify that you can ssh into the server using only
@@ -1309,32 +1329,108 @@ Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-1027-raspi aarch64)
 $ exit
 ~~~~
 
-Start an [SSH agent][ssh-agent] on your desktop, and add your key to the
-agent.  The series of commands is shown here; it is best to create a 
-shell script so that you only need to run the script.  The nice thing
-about using an agent is that you avoid using passwords and passphrases
-throughout the day, or until you turn off your desktop:
+## Configure an SSH agent
+
+The goal here is to start an [SSH agent][ssh-agent] on your desktop, and add
+your key(s) to the agent.
+
+With a few tweaks we allow other programs to inherit the ssh-agent
+*environment variables* and we avoid entering passwords
+and passphrases throughout the day, or until you logout, reboot or turn off
+your desktop.
+
+#### Script to start an ssh-agent
+
+Download the shell script named [*prime-ssh-keys.sh*][prime-ssh-keys.sh]
+to start the agent. The script saves the environment variables in a file named:
+
+> ~/.ssh-agent-info-YOUR-FULL-HOSTNAME
 
 ~~~~ {.shell}
-$ ssh_info_file=$HOME/.ssh-agent-info-`hostname`
-$ ssh-agent > $ssh_info_file
-$ chmod 600 $ssh_info_file
-$ source $ssh_info_file
-$ ssh-add
+// Copy the shell script to your home 'bin' directory; create it if needed:
+$ cd
+$ mkdir bin
+$ cp /path/to/prime-ssh-keys.sh ~/bin/
+$ chmod 755 ~/bin/prime-ssh-keys.sh 
+
+// Run the script:
+$ ~/bin/prime-ssh-keys.sh 
 Enter passphrase for /home/myname/.ssh/id_rsa: 
 Identity added: /home/myname/.ssh/id_rsa (/home/myname/.ssh/id_rsa)
+ 
+// The file sets and exports environment variables for the socket and the PID:
+$ cat ~/.ssh-agent-info-desktop.home
+SSH_AUTH_SOCK=/tmp/ssh-XXXXXXxRlqsm/agent.21324; export SSH_AUTH_SOCK;
+SSH_AGENT_PID=21325; export SSH_AGENT_PID;
 
-// Now ssh into the server without needing passphrases or passwords:
-$ ssh myname@pi
+// Now if you 'source' the agent file to inherit the environment variables
+//  you will be able to ssh into the linux server without using
+//  a password or passphrase:
+$ . ~/.ssh-agent-info-desktop.home 
+$ ssh -Y pi.home
 Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-1027-raspi aarch64)
 ...
+Last login: Thu May 11 23:56:17 2023 from desktop.home
+$ 
+~~~~
+
+#### Script to start an ssh-agent at initial login
+
+In a MATE desktop setting, you can add startup programs that run as 
+soon as you log into your desktop.  You can find the startup options
+in:
+
+>  Menus -> System -> Preferences -> Personal -> Startup Applications
+
+Create and add the script -- it will open a temporary terminal
+window asking for the passphrase(s) for your key(s).  The terminal
+window can be any terminal the allows you to run a shell script as
+an argument.  You can use *mate-terminal*, or if you have installed the
+**xterm** package then you can use *xterm*.  Note that the
+script invokes a shell (*/bin/sh* is a symbolic link to */bin/bash*, and
+starts with a [shebang][shebang])
+
+~~~~ {.shell}
+// make the 'bin' directory if it does not exist:
+$ cd
+$ touch ~/bin/exec-prime-ssh-keys.sh
+$ chmod 755 ~/bin/exec-prime-ssh-keys.sh
+$ nano ~/bin/exec-prime-ssh-keys.sh
+$ cat ~/bin/exec-prime-ssh-keys.sh
+#!/bin/sh
+
+#Decide which terminal command you will use:
+exec mate-terminal -e /home/myname/bin/prime-ssh-keys.sh & 2>/dev/null
+#exec xterm -u8 -e /home/myname/bin/prime-ssh-keys.sh & 2>/dev/null
+~~~~
+
+Another useful tactic is to get your personal bash shell configuration
+file to inherit the SSH agent's environment variables.  Create a small
+script named *~/.bash_ssh_env*  which provides the variables.  You can
+process that file in your *~/.bashrc* file so that any new terminal window
+you launch will always inherit the variables.  As well, other scripts which
+might need the variables can do the same.
+
+~~~~ {.shell}
+// First create .bash_ssh_env; we 'cat' it after to show what it contains:
+$ nano ~/.bash_ssh_env
+$ cat ~/.bash_ssh_env
+
+ssh_info_file=$HOME/.ssh-agent-info-`/usr/bin/hostname`
+if [ -f $ssh_info_file ] ; then
+  . $ssh_info_file
+fi
+
+// Then source ~/.bash_ssh_env inside your .bashrc file by simply including
+// the following line in ~/.bashrc:
+
+. ~/.bash_ssh_env
 ~~~~
 
 [secure-shell]: https://en.wikipedia.org/wiki/Secure_Shell
 [ssh-agent]: https://www.ssh.com/academy/ssh/agent
-
-<!-- still to do: modify shell .bashrc parameters and scripts to pass
-ssh-agent variables around  -->
+[prime-ssh-keys.sh]: https://github.com/deatrich/tools/blob/main/prime-ssh-keys.sh
+[shebang]: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
 # Enabling Remote Desktop Services
 
@@ -1432,14 +1528,13 @@ from Windows and from macOS as well.
 [remmina]: https://ubuntu.com/tutorials/access-remote-desktop#1-overview
 [xrdp-tutorial]: https://www.digitalocean.com/community/tutorials/how-to-enable-remote-desktop-protocol-using-xrdp-on-ubuntu-22-04
 
-<!--
 ## Configure X2Go 
 
 [X2Go][X2Go] is my favourite remote desktop setup since it runs seamlessly
-via secure shell connections and can use SSH key-pairs to avoid password use.
-Thus I can connect my desktop comfortably to remote servers across the
-continent, and write and test code as if I was down the hall from the
-remote server.
+via secure shell connections and can use [SSH key pairs](#key-pair)
+to avoid password use.  Thus I can comfortably connect as a remote desktop
+to remote servers across the continent, and write and test code
+as if I was down the hall from the remote server.
 
 ~~~~ {.shell}
 // install both the server and the client software
@@ -1450,17 +1545,47 @@ Setting up x2goserver (4.1.0.3-5) ...
 Created symlink /etc/systemd/system/multi-user.target.wants/x2goserver.service
 ...
 
-$ systemctl list-unit-files|grep -i x2go
+$ systemctl list-unit-files | grep -i x2go
 x2goserver.service                         enabled         enabled
 ~~~~
 
-Before starting x2goclient using ssh keys you must first tweak the
-Secure Shell configuration.  But there is a bug that prevents 
-it working until sshd_config is modified
-[X2Go]: https://en.wikipedia.org/wiki/X2Go
--->
+Your local desktop must have *x2goclient* installed so that you can
+start a remote X2Go desktop.  From any Linux desktop running an X.org
+service you can start it from the command-line.  This way the client
+inherits the SSH environment variables (you can also embed a small 
+shell script which provides the environment in a custom application launcher).
 
-<!-- also describe startx -->
+~~~~ {.shell}
+// Bring up the application window; redirect stderr to /dev/null to ignore
+//  various uninteresting messages.
+$ x2goclient 2>/dev/null
+~~~~
+
+Create and save the session parameters by starting a new session: 
+  1. Session -> New Session
+    a. Give the session a name
+    b. Add the host name
+    c. Add your login name
+    d. Check auto login
+  2. Change tabs to the Input/Output tab
+    a. Select a useful custom display geometry (e.g. Width: 1152 Height: 864)
+  3. Change tabs to the Media tab
+    a. Disable sound and client-side printing
+  4. Click on the 'OK' button to save the session data
+  5. Start the client connection by clicking on the session name on the right
+
+If you are using X2Go between different Linux varieties you might need to
+solve a few problems like font paths.
+
+At the time of documenting this setup I found that starting the x2goclient
+from an older Linux system like CentOS 7 to this Ubuntu system needed a tweak
+in the Ubuntu Pi's Secure Shell /etc/ssh/sshd_config configuration; it was
+fixed by adding 'PubkeyAcceptedAlgorithms +ssh-rsa'.  This was not needed
+between similar Ubuntu setups.
+
+[X2Go]: https://en.wikipedia.org/wiki/X2Go
+
+<!-- Also describe startx? -->
 
 # Topics To Document
 
@@ -1487,6 +1612,8 @@ description here.
 Other services will be added to this document in the future;\
 - some examples: bind DNS, MySQL, KVM virtualization, Ansible, ...
 
+<!-- Yet to do: add section concerning local user configurations; 
+ eg: careless ubuntu path settings, junk in path, etc. -->
 <!--  -->
 
 # Appendix {#appendix}
