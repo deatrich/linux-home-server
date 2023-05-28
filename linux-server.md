@@ -189,16 +189,16 @@ on under the hood.  Here is an example of a 256 GB microSD inserted into a
 USB card reader on another Linux computer where the card showed up as /dev/sde:
 
 ~~~~ {.shell}
-    # fdisk -l /dev/sde
-    Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
-    Disk model: FCR-HS3       -3
-    ...
-    Disklabel type: dos
-    Disk identifier: 0x11d94b9e
+# fdisk -l /dev/sde
+Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
+Disk model: FCR-HS3       -3
+...
+Disklabel type: dos
+Disk identifier: 0x11d94b9e
 
-    Device     Boot  Start      End  Sectors  Size Id Type
-    /dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)
-    /dev/sde2       499712 12969983 12470272  5.9G 83 Linux
+Device     Boot  Start      End  Sectors  Size Id Type
+/dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)
+/dev/sde2       499712 12969983 12470272  5.9G 83 Linux
 ~~~~
 
 So there are 2 partitions; the first (/dev/sde1) is a small boot partition
@@ -413,10 +413,10 @@ the command simply type d followed by another TAB and the full command will
 complete:
 
 ~~~~ {.shell}
-    $ time<TAB><TAB>
-    time         timedatectl  timeout      times
-    $ timed<TAB>
-    $ timedatectl 
+$ time<TAB><TAB>
+time         timedatectl  timeout      times
+$ timed<TAB>
+$ timedatectl 
 ~~~~
 
 Look online for some tutorials; there are millions of results on Google if you
@@ -460,10 +460,10 @@ to use for guest access to Samba shares.
 We set the access permissions using chmod[^chmod] and chown[^chown].
 
 ~~~~ {.shell}
-    $ cd /data
-    $ sudo mkdir shared
-    $ sudo chown nobody:nogroup shared
-    $ sudo chmod g+ws shared
+$ cd /data
+$ sudo mkdir shared
+$ sudo chown nobody:nogroup shared
+$ sudo chmod g+ws shared
 ~~~~
 
 Here are 3 example directories to create for differing purposes:\
@@ -477,10 +477,10 @@ I use the Test area initially for testing from various devices; that is,
 create and delete files in the test directory.
 
 ~~~~ {.shell}
-    $ cd /data/shared
-    $ sudo mkdir Test
-    $ sudo chown nobody:nogroup Test
-    $ sudo chmod g+ws Test
+$ cd /data/shared
+$ sudo mkdir Test
+$ sudo chown nobody:nogroup Test
+$ sudo chmod g+ws Test
 ~~~~
 
 I like having a general 'Protected' area that others can access but
@@ -488,10 +488,10 @@ cannot change.  I use secure-shell access to that area for dumping files
 that I manage without using Samba tools.
 
 ~~~~ {.shell}
-    $ cd /data/shared
-    $ sudo mkdir Protected
-    $ sudo chown myname:mygroup Protected
-    $ sudo chmod g+ws Protected
+$ cd /data/shared
+$ sudo mkdir Protected
+$ sudo chown myname:mygroup Protected
+$ sudo chmod g+ws Protected
 ~~~~
 
 As an example I put my old Music files in 'Music' so that it could be
@@ -501,21 +501,21 @@ manage the collection, or you can change ownership so that only you manage
 them locally.  In this example my login name is 'myname' with group 'mygroup':
 
 ~~~~ {.shell}
-    $ du -sh /data/shared/Music/
-    7.4G    /data/shared/Music/
-    $ ls -la /data/shared/Music/
-    drwxr-sr-x  9 myname mygroup   4096 Apr 15 16:03 .
-    drwxrwsr-x  7 nobody nogroup   4096 Feb 26 11:59 ..
-    -rw-r--r--  1 myname mygroup 108364 Feb 27  2022 all.m3u
-    drwxr-xr-x  9 myname mygroup   4096 Feb 26  2022 Celtic
-    -rw-r--r--  1 myname mygroup  13373 Mar  6  2022 Celtic.m3u
-    ...
-    drwxr-xr-x  5 myname mygroup   4096 Feb 27  2022 Nostalgia
-    -rw-r--r--  1 myname mygroup   6145 Feb 27  2022 Nostalgia.m3u
-    drwxr-xr-x 13 myname mygroup   4096 Feb 26  2022 Pop
-    -rw-r--r--  1 myname mygroup  10065 Feb 27  2022 Pop.m3u
-    drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock
-    -rw-r--r--  1 myname mygroup  41656 Feb 27  2022 Rock.m3u
+$ du -sh /data/shared/Music/
+7.4G    /data/shared/Music/
+$ ls -la /data/shared/Music/
+drwxr-sr-x  9 myname mygroup   4096 Apr 15 16:03 .
+drwxrwsr-x  7 nobody nogroup   4096 Feb 26 11:59 ..
+-rw-r--r--  1 myname mygroup 108364 Feb 27  2022 all.m3u
+drwxr-xr-x  9 myname mygroup   4096 Feb 26  2022 Celtic
+-rw-r--r--  1 myname mygroup  13373 Mar  6  2022 Celtic.m3u
+...
+drwxr-xr-x  5 myname mygroup   4096 Feb 27  2022 Nostalgia
+-rw-r--r--  1 myname mygroup   6145 Feb 27  2022 Nostalgia.m3u
+drwxr-xr-x 13 myname mygroup   4096 Feb 26  2022 Pop
+-rw-r--r--  1 myname mygroup  10065 Feb 27  2022 Pop.m3u
+drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock
+-rw-r--r--  1 myname mygroup  41656 Feb 27  2022 Rock.m3u
 ~~~~
 
 [chmod-help]: https://en.wikipedia.org/wiki/Chmod
@@ -1587,6 +1587,137 @@ between similar Ubuntu setups.
 
 <!-- Also describe startx? -->
 
+# Starting Up an NFS Service for Other Linux Devices
+
+Usually your home directory on your Linux desktop is where most of your
+important files reside.  When you shutdown your desktop then those files are 
+inaccessible.  If you also have a Linux laptop then it would be nice to
+have the same home directory available on both the desktop and the laptop.
+
+Putting your home directory on the Linux server would solve this issue.
+Here we look at installing an NFS service for 24x7 availability.
+
+## Configure the NFS Daemons
+
+First install the needed packages.  The *nfs-common* package contains both
+client and server elements; the *nfs-kernel-server* contains the server 
+daemons *rpc.mountd* and *rpc.nfsd*.
+
+~~~~ {.shell}
+$ sudo apt install nfs-common nfs-kernel-server
+...
+The following NEW packages will be installed:
+  keyutils libevent-core-2.1-7 nfs-common nfs-kernel-server rpcbind
+...
+Setting up rpcbind (1.2.6-2build1) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/rpcbind.service → /lib/systemd/system/rpcbind.service.
+Created symlink /etc/systemd/system/sockets.target.wants/rpcbind.socket → /lib/systemd/system/rpcbind.socket.
+...
+Creating config file /etc/idmapd.conf with new version
+Creating config file /etc/nfs.conf with new version
+...
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-client.target → /lib/systemd/system/nfs-client.target.
+Created symlink /etc/systemd/system/remote-fs.target.wants/nfs-client.target → /lib/systemd/system/nfs-client.target.
+...
+Setting up nfs-kernel-server (1:2.6.1-1ubuntu1.2) ...
+Created symlink /etc/systemd/system/nfs-client.target.wants/nfs-blkmap.service → /lib/systemd/system/nfs-blkmap.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service → /lib/systemd/system/nfs-server.service.
+...
+Creating config file /etc/exports with new version
+Creating config file /etc/default/nfs-kernel-server with new version
+...
+
+$ systemctl list-unit-files --state=enabled | egrep 'nfs|rpc'
+nfs-blkmap.service                  enabled enabled
+nfs-server.service                  enabled enabled
+rpcbind.service                     enabled enabled
+rpcbind.socket                      enabled enabled
+nfs-client.target                   enabled enabled
+
+$ ps -ef |egrep 'nfs|rpc'
+\_rpc      271754       1  0 10:45 ?        00:00:00 /sbin/rpcbind -f -w
+root      272176       2  0 10:46 ?        00:00:00 [rpciod]
+root      272280       1  0 10:46 ?        00:00:00 /usr/sbin/rpc.idmapd
+statd     272282       1  0 10:46 ?        00:00:00 /sbin/rpc.statd
+root      272285       1  0 10:46 ?        00:00:00 /usr/sbin/nfsdcld
+root      272286       1  0 10:46 ?        00:00:00 /usr/sbin/rpc.mountd
+root      272294       2  0 10:46 ?        00:00:00 [nfsd]
+root      272295       2  0 10:46 ?        00:00:00 [nfsd]
+root      272296       2  0 10:46 ?        00:00:00 [nfsd]
+root      272297       2  0 10:46 ?        00:00:00 [nfsd]
+root      272298       2  0 10:46 ?        00:00:00 [nfsd]
+root      272299       2  0 10:46 ?        00:00:00 [nfsd]
+root      272300       2  0 10:46 ?        00:00:00 [nfsd]
+root      272301       2  0 10:46 ?        00:00:00 [nfsd]
+~~~~
+
+There are a few files to configure.  We remove IPv6 RPC services by commenting
+out *udp6* and *tcp6* from /etc/netconfig:
+
+~~~~ {.shell}
+$ sudo cp -p /etc/netconfig /etc/netconfig.orig
+$ sudo nano /etc/netconfig
+$ diff /etc/netconfig.orig /etc/netconfig
+15,16c15,16
+< udp6       tpi_clts      v     inet6    udp     -       -
+< tcp6       tpi_cots_ord  v     inet6    tcp     -       -
+---
+> #udp6       tpi_clts      v     inet6    udp     -       -
+> #tcp6       tpi_cots_ord  v     inet6    tcp     -       -
+~~~~
+
+
+~~~~ {.shell}
+$ sudo lsof -i | grep rpc | grep IPv6
+systemd        1      root  144u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
+systemd        1      root  145u  IPv6 899100    0t0  UDP :sunrpc 
+rpcbind   271754      \_rpc    6u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
+rpcbind   271754      \_rpc    7u  IPv6 899100    0t0  UDP :sunrpc 
+rpc.statd 272282     statd   10u  IPv6 897604    0t0  UDP :59540 
+rpc.statd 272282     statd   11u  IPv6 897608    0t0  TCP :47971 (LISTEN)
+rpc.mount 272286      root    6u  IPv6 900420    0t0  UDP :53821 
+rpc.mount 272286      root    7u  IPv6 902332    0t0  TCP :45067 (LISTEN)
+rpc.mount 272286      root   10u  IPv6 902347    0t0  UDP :43059 
+rpc.mount 272286      root   11u  IPv6 902352    0t0  TCP :39207 (LISTEN)
+rpc.mount 272286      root   14u  IPv6 902367    0t0  UDP :52374 
+rpc.mount 272286      root   15u  IPv6 902372    0t0  TCP :52705 (LISTEN)
+
+$ sudo systemctl restart rpcbind nfs-server rpc-statd
+
+~~~~
+
+
+
+~~~~ {.shell}
+// create the nfs share
+$ sudo mkdir -p /data/nfs/people
+
+// copy the current contents of "myname's" home directory into place:
+$ sudo cp -a /home/myname /data/nfs/people/
+
+// edit the exports file
+$ sudo cp -p /etc/exports /etc/exports.orig
+$ sudo nano /etc/exports
+
+$ diff /etc/exports.orig /etc/exports
+6c6,11
+< #
+---
+> 
+> # Export home directories using NFSv3 syntax
+> # Limit nfs access to the IP address of the client node(s)
+> /data/nfs/people   192.168.1.65(rw,sync,no_subtree_check) 192.168.1.85(rw,sync,no_subtree_check)
+>
+~~~~
+
+
+~~~~ {.shell}
+~~~~
+
+
+~~~~ {.shell}
+~~~~
+
 # Topics To Document
 
 These topics are not yet documented.
@@ -1602,9 +1733,6 @@ description here.
 description here.
 
 
-#### Starting Up an NFS Service for Other Linux Devices
-
-description here.
 
 
 #### Other Possible Services 
@@ -1644,60 +1772,60 @@ Here is an example of a Pi that has 3 storage disks and a USB card reader with
   * you can use *fdisk* and *parted* to look more closely at the sde device:
 
 ~~~~ {.shell}
-    # lsblk -i 
-    NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
-    sda           8:0    1 238.5G  0 disk
-    `-sda1        8:1    1 238.5G  0 part /usbdata
-    sdb           8:16   1     0B  0 disk
-    sdc           8:32   1     0B  0 disk
-    sdd           8:48   1     0B  0 disk
-    sde           8:64   1 231.7G  0 disk
-    |-sde1        8:65   1   243M  0 part
-    `-sde2        8:66   1   5.9G  0 part
-    mmcblk0     179:0    0  59.4G  0 disk
-    |-mmcblk0p1 179:1    0   243M  0 part /boot/firmware
-    `-mmcblk0p2 179:2    0  59.2G  0 part /
+# lsblk -i 
+NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+sda           8:0    1 238.5G  0 disk
+`-sda1        8:1    1 238.5G  0 part /usbdata
+sdb           8:16   1     0B  0 disk
+sdc           8:32   1     0B  0 disk
+sdd           8:48   1     0B  0 disk
+sde           8:64   1 231.7G  0 disk
+|-sde1        8:65   1   243M  0 part
+`-sde2        8:66   1   5.9G  0 part
+mmcblk0     179:0    0  59.4G  0 disk
+|-mmcblk0p1 179:1    0   243M  0 part /boot/firmware
+`-mmcblk0p2 179:2    0  59.2G  0 part /
 
-    # fdisk -l /dev/sde
-    Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
-    Disk model: FCR-HS3       -3
-    ...
-    Disklabel type: dos
-    Disk identifier: 0x11d94b9e
+# fdisk -l /dev/sde
+Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
+Disk model: FCR-HS3       -3
+...
+Disklabel type: dos
+Disk identifier: 0x11d94b9e
 
-    Device     Boot  Start      End  Sectors  Size Id Type
-    /dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)
-    /dev/sde2       499712 12969983 12470272  5.9G 83 Linux
+Device     Boot  Start      End  Sectors  Size Id Type
+/dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)
+/dev/sde2       499712 12969983 12470272  5.9G 83 Linux
 
-    # parted /dev/sde print
-    Model:  FCR-HS3 -3 (scsi)
-    Disk /dev/sde: 249GB
-    Sector size (logical/physical): 512B/512B
-    Partition Table: msdos
-    Disk Flags: 
+# parted /dev/sde print
+Model:  FCR-HS3 -3 (scsi)
+Disk /dev/sde: 249GB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags: 
 
-    Number  Start   End     Size    Type     File system  Flags
-     1      1049kB  256MB   255MB   primary  fat16        boot, lba
-     2      256MB   6641MB  6385MB  primary  ext4
+Number  Start   End     Size    Type     File system  Flags
+ 1      1049kB  256MB   255MB   primary  fat16        boot, lba
+ 2      256MB   6641MB  6385MB  primary  ext4
 ~~~~
 
 You can pass options to the *lsblk* command so that you print out 
 columns you are interested in -- try *lsblk \-\-help* to see other options.
 
 ~~~~ {.shell}
-    # lsblk -i -o 'NAME,MODEL,VENDOR,SIZE,MOUNTPOINT,FSTYPE'
-    NAME        MODEL       VENDOR     SIZE MOUNTPOINT     FSTYPE
-    sda         Extreme Pro SanDisk  238.5G
-    `-sda1                           238.5G /usbdata       ext4
-    sdb         FCR-HS3 -0               0B
-    sdc         FCR-HS3 -1               0B
-    sdd         FCR-HS3 -2               0B
-    sde         FCR-HS3 -3           231.7G
-    |-sde1                             243M                vfat
-    `-sde2                             5.9G                ext4
-    mmcblk0                           59.4G
-    |-mmcblk0p1                        243M /boot/firmware vfat
-    `-mmcblk0p2                       59.2G /              ext4
+# lsblk -i -o 'NAME,MODEL,VENDOR,SIZE,MOUNTPOINT,FSTYPE'
+NAME        MODEL       VENDOR     SIZE MOUNTPOINT     FSTYPE
+sda         Extreme Pro SanDisk  238.5G
+`-sda1                           238.5G /usbdata       ext4
+sdb         FCR-HS3 -0               0B
+sdc         FCR-HS3 -1               0B
+sdd         FCR-HS3 -2               0B
+sde         FCR-HS3 -3           231.7G
+|-sde1                             243M                vfat
+`-sde2                             5.9G                ext4
+mmcblk0                           59.4G
+|-mmcblk0p1                        243M /boot/firmware vfat
+`-mmcblk0p2                       59.2G /              ext4
 ~~~~
 
 
@@ -1707,26 +1835,26 @@ This is a generic approach to creating an installation image on removable
 media; it generally works for various Linux distributions.
 
 ~~~~ {.shell}
-    // create a directory for downloaded images
-    $ mkdir raspberry-pi-images
-    $ cd raspberry-pi-images
+// create a directory for downloaded images
+$ mkdir raspberry-pi-images
+$ cd raspberry-pi-images
 
-    // Use wget to pull the compressed image into our directory
-    // (The web page also shows the file checksum so that you can verify
-    //  that the compressed file is not corrupted)
-    $ serverpath="https://releases.ubuntu-mate.org/jammy/arm64"
-    $ compressed="ubuntu-mate-22.04-desktop-arm64+raspi.img.xz"
-    $ wget -N -nd $serverpath"/"$compressed
-    $ sha256sum ubuntu-mate-22.04-desktop-arm64+raspi.img.xz
-    3b538f8462cdd957acfbab57f5d949faa607c50c3fb8e6e9d1ad13d5cd6c0c02 ...
+// Use wget to pull the compressed image into our directory
+// (The web page also shows the file checksum so that you can verify
+//  that the compressed file is not corrupted)
+$ serverpath="https://releases.ubuntu-mate.org/jammy/arm64"
+$ compressed="ubuntu-mate-22.04-desktop-arm64+raspi.img.xz"
+$ wget -N -nd $serverpath"/"$compressed
+$ sha256sum ubuntu-mate-22.04-desktop-arm64+raspi.img.xz
+3b538f8462cdd957acfbab57f5d949faa607c50c3fb8e6e9d1ad13d5cd6c0c02 ...
 
-    // uncompress the file so we can write the image file to our microSD.
-    // the 1.9 GB compressed file uncompressed to 6.2 GB:
-    $ xz -dv ubuntu-mate-22.04-desktop-arm64+raspi.img.xz 
-    ubuntu-mate-22.04-desktop-arm64+raspi.img.xz (1/1)
-      5.1 %      95.2 MiB / 404.4 MiB = 0.235    35 MiB/s     0:11   3 min 40 s
-      ...
-      100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             
+// uncompress the file so we can write the image file to our microSD.
+// the 1.9 GB compressed file uncompressed to 6.2 GB:
+$ xz -dv ubuntu-mate-22.04-desktop-arm64+raspi.img.xz 
+ubuntu-mate-22.04-desktop-arm64+raspi.img.xz (1/1)
+ 5.1 %      95.2 MiB / 404.4 MiB = 0.235    35 MiB/s     0:11   3 min 40 s
+ ...
+ 100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             
 ~~~~
 
 Now plug in the microSD card,
@@ -1737,9 +1865,9 @@ the device name */dev/sdX* is not real; it is a place-holder for your
 real device name:
 
 ~~~~ {.shell}
-    $ img="ubuntu-mate-22.04-desktop-arm64+raspi.img"
-    $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
-    $ sudo eject /dev/sdX
+$ img="ubuntu-mate-22.04-desktop-arm64+raspi.img"
+$ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
+$ sudo eject /dev/sdX
 ~~~~
 
 ## Modify the Partitioning of the Installation Image {#mod-partition}
@@ -1813,38 +1941,38 @@ Then I use *parted* to expand the partition, and then *resize2fs* which can
 adjusts the size of the underlying ext4 filesystem.
 
 ~~~~ {.shell}
-    // run a filesystem check on the target partition:
-    $ sudo e2fsck /dev/sde2
-    e2fsck 1.46.5 (30-Dec-2021)
-    writable: clean, 224088/390144 files, 1485804/1558784 blocks
+// run a filesystem check on the target partition:
+$ sudo e2fsck /dev/sde2
+e2fsck 1.46.5 (30-Dec-2021)
+writable: clean, 224088/390144 files, 1485804/1558784 blocks
 
-    // invoke the partitioning tool *parted*, print the partition table
-    // for reference, and then resize the second partition:
-    $ sudo parted /dev/sde
-    ...
-    (parted) print                                                            
-    ...
-    Number  Start   End     Size    Type     File system  Flags
-     1      1049kB  256MB   255MB   primary  fat16        boot, lba
-     2      256MB   6641MB  6385MB  primary  ext4
+// invoke the partitioning tool *parted*, print the partition table
+// for reference, and then resize the second partition:
+$ sudo parted /dev/sde
+...
+(parted) print                                                            
+...
+Number  Start   End     Size    Type     File system  Flags
+ 1      1049kB  256MB   255MB   primary  fat16        boot, lba
+ 2      256MB   6641MB  6385MB  primary  ext4
 
-    (parted) resizepart
-    Partition number? 2                                                       
-    End?  [6641MB]? 40G                                                       
+(parted) resizepart
+Partition number? 2                                                       
+End?  [6641MB]? 40G                                                       
 
-    (parted) print                                                            
-    ...
-    Number  Start   End     Size    Type     File system  Flags
-     1      1049kB  256MB   255MB   primary  fat16        boot, lba
-     2      256MB   40.0GB  39.7GB  primary  ext4
+(parted) print                                                            
+...
+Number  Start   End     Size    Type     File system  Flags
+ 1      1049kB  256MB   255MB   primary  fat16        boot, lba
+ 2      256MB   40.0GB  39.7GB  primary  ext4
 
-    (parted) quit
+(parted) quit
 
-    // Now expand the underlying filesystem to the end of the partition
-    $ sudo resize2fs /dev/sde2
-    resize2fs 1.46.5 (30-Dec-2021)
-    Resizing the filesystem on /dev/sde2 to 9703161 (4k) blocks.
-    The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.
+// Now expand the underlying filesystem to the end of the partition
+$ sudo resize2fs /dev/sde2
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /dev/sde2 to 9703161 (4k) blocks.
+The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.
 ~~~~
 
 ### Create a New Data Partition
@@ -1854,27 +1982,27 @@ of partition alignment because I chose 40 GB for the second partition
 expansion without considering alignment for the next partition.
 
 ~~~~ {.shell}
-    // invoke *parted* and print the partition table in sector units:
-    $ sudo parted /dev/sde
-    ...
-    (parted) unit s print
-    Model:  FCR-HS3 -3 (scsi)
-    Disk /dev/sde: 485869568s
-    Sector size (logical/physical): 512B/512B
-    Partition Table: msdos
-    Disk Flags: 
+// invoke *parted* and print the partition table in sector units:
+$ sudo parted /dev/sde
+...
+(parted) unit s print
+Model:  FCR-HS3 -3 (scsi)
+Disk /dev/sde: 485869568s
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+Disk Flags: 
 
-    Number  Start    End        Size       Type     File system  Flags
-     1      2048s    499711s    497664s    primary  fat16        boot, lba
-     2      499712s  78125000s  77625289s  primary  ext4
+Number  Start    End        Size       Type     File system  Flags
+ 1      2048s    499711s    497664s    primary  fat16        boot, lba
+ 2      499712s  78125000s  77625289s  primary  ext4
 
-    // the 'End' of the second partition is at 78125000 sectors, so I increment
-    // that number and try to create the third partition up to 100% of the disk
-    // There is a warning about partition alignment, so I cancel that operation
-    (parted) mkpart primary ext4 78125001 100%
-    Warning: The resulting partition is not properly aligned for best performance:
-    78125001s % 2048s != 0s
-    Ignore/Cancel? c
+// the 'End' of the second partition is at 78125000 sectors, so I increment
+// that number and try to create the third partition up to 100% of the disk
+// There is a warning about partition alignment, so I cancel that operation
+(parted) mkpart primary ext4 78125001 100%
+Warning: The resulting partition is not properly aligned for best performance:
+78125001s % 2048s != 0s
+Ignore/Cancel? c
 ~~~~
 
 Disk technology has evolved considerably.  Block devices traditionally
@@ -1888,33 +2016,33 @@ disk space at the 'front' of the disk, but partitioning and file system
 data structures are better aligned, and disk performance is enhanced.
 
 ~~~~ {.shell}
-    // To calculate the best starting sector number for an aligned new
-    //  partition simply calculate: 
-    //  TRUNCATE(FIRST_POSSIBLE_SECTOR / 2048) * 2048 + 2048
-    //  thus: 78125001 / 2048 = 38146.973144
-    //        TRUNCATE(38146.973144) = 38146
-    //        (38146 * 2048) + 2048  = 78125056
+// To calculate the best starting sector number for an aligned new
+//  partition simply calculate: 
+//  TRUNCATE(FIRST_POSSIBLE_SECTOR / 2048) * 2048 + 2048
+//  thus: 78125001 / 2048 = 38146.973144
+//        TRUNCATE(38146.973144) = 38146
+//        (38146 * 2048) + 2048  = 78125056
 
-    (parted) mkpart primary ext4 78125056 100%
-    (parted) print unit s 
-    ...
-    Number  Start   End     Size    Type     File system  Flags
-     1      1049kB  256MB   255MB   primary  fat16        boot, lba
-     2      256MB   40.0GB  39.7GB  primary  ext4
-     3      40.0GB  249GB   209GB   primary
-    (parted) align-check optimal 3                                            
-    3 aligned
+(parted) mkpart primary ext4 78125056 100%
+(parted) print unit s 
+...
+Number  Start   End     Size    Type     File system  Flags
+ 1      1049kB  256MB   255MB   primary  fat16        boot, lba
+ 2      256MB   40.0GB  39.7GB  primary  ext4
+ 3      40.0GB  249GB   209GB   primary
+(parted) align-check optimal 3                                            
+3 aligned
 
-    (parted) unit s print free
-    ...
-    Number  Start      End         Size        Type     File system  Flags
-            32s        2047s       2016s                Free Space
-     1      2048s      499711s     497664s     primary  fat16        boot, lba
-     2      499712s    78125000s   77625289s   primary  ext4
-            78125001s  78125055s   55s                  Free Space
-     3      78125056s  485869567s  407744512s  primary
+(parted) unit s print free
+...
+Number  Start      End         Size        Type     File system  Flags
+        32s        2047s       2016s                Free Space
+ 1      2048s      499711s     497664s     primary  fat16        boot, lba
+ 2      499712s    78125000s   77625289s   primary  ext4
+        78125001s  78125055s   55s                  Free Space
+ 3      78125056s  485869567s  407744512s  primary
 
-    (parted) quit
+(parted) quit
 ~~~~
 
 Though we have now a bit of wasted space between partition 2 and 3, we can
@@ -1922,40 +2050,40 @@ extend partition 2 to use that space.  We need to resize its ext4 file system
 after:
 
 ~~~~ {.shell}
-    // first check the file system:
-    $ sudo e2fsck /dev/sde2
-    e2fsck 1.46.5 (30-Dec-2021)
-    writable: clean, 224088/2414016 files, 1615846/9703161 blocks
+// first check the file system:
+$ sudo e2fsck /dev/sde2
+e2fsck 1.46.5 (30-Dec-2021)
+writable: clean, 224088/2414016 files, 1615846/9703161 blocks
 
-    $ sudo parted /dev/sde
-    ...
-    (parted) unit s print free
-    ...
-    Number  Start      End         Size        Type     File system  Flags
-            32s        2047s       2016s                Free Space
-     1      2048s      499711s     497664s     primary  fat16        boot, lba
-     2      499712s    78125000s   77625289s   primary  ext4
-            78125001s  78125055s   55s                  Free Space
-     3      78125056s  485869567s  407744512s  primary
+$ sudo parted /dev/sde
+...
+(parted) unit s print free
+...
+Number  Start      End         Size        Type     File system  Flags
+        32s        2047s       2016s                Free Space
+ 1      2048s      499711s     497664s     primary  fat16        boot, lba
+ 2      499712s    78125000s   77625289s   primary  ext4
+        78125001s  78125055s   55s                  Free Space
+ 3      78125056s  485869567s  407744512s  primary
 
-    (parted) resizepart
-    Partition number? 2                                                       
-    End?  [78125000s]? 78125055s                                              
-    (parted) print free
-    ...
-    Number  Start      End         Size        Type     File system  Flags
-            32s        2047s       2016s                Free Space
-     1      2048s      499711s     497664s     primary  fat16        boot, lba
-     2      499712s    78125055s   77625344s   primary  ext4
-     3      78125056s  485869567s  407744512s  primary
+(parted) resizepart
+Partition number? 2                                                       
+End?  [78125000s]? 78125055s                                              
+(parted) print free
+...
+Number  Start      End         Size        Type     File system  Flags
+        32s        2047s       2016s                Free Space
+ 1      2048s      499711s     497664s     primary  fat16        boot, lba
+ 2      499712s    78125055s   77625344s   primary  ext4
+ 3      78125056s  485869567s  407744512s  primary
 
-    (parted) quit                                                             
-    Information: You may need to update /etc/fstab.
+(parted) quit                                                             
+Information: You may need to update /etc/fstab.
 
-    $ sudo resize2fs /dev/sde2
-    resize2fs 1.46.5 (30-Dec-2021)
-    Resizing the filesystem on /dev/sde2 to 9703168 (4k) blocks.
-    The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.
+$ sudo resize2fs /dev/sde2
+resize2fs 1.46.5 (30-Dec-2021)
+Resizing the filesystem on /dev/sde2 to 9703168 (4k) blocks.
+The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.
 ~~~~
 
 ### Create a Filesystem on the New Data Partition
@@ -1964,18 +2092,18 @@ Ubuntu uses the *ext4* filesystem, so let's create that filesystem on the
 new data partition:
 
 ~~~~ {.shell}
-    $ sudo mkfs.ext4 /dev/sde3
-    mke2fs 1.46.5 (30-Dec-2021)
-    Creating filesystem with 50968064 4k blocks and 12746752 inodes
-    Filesystem UUID: 2dba1eef-34e4-47ed-90fc-c1938d5fa9e0
-    Superblock backups stored on blocks: 
-        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
-        4096000, 7962624, 11239424, 20480000, 23887872
+$ sudo mkfs.ext4 /dev/sde3
+mke2fs 1.46.5 (30-Dec-2021)
+Creating filesystem with 50968064 4k blocks and 12746752 inodes
+Filesystem UUID: 2dba1eef-34e4-47ed-90fc-c1938d5fa9e0
+Superblock backups stored on blocks: 
+    32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+    4096000, 7962624, 11239424, 20480000, 23887872
 
-    Allocating group tables: done                            
-    Writing inode tables: done                            
-    Creating journal (262144 blocks): done
-    Writing superblocks and filesystem accounting information: done
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (262144 blocks): done
+Writing superblocks and filesystem accounting information: done
 ~~~~
 
 By default, the generations of the [*ext* filesystems][ext] reserve 5% of the 
@@ -1985,25 +2113,25 @@ files created will belong to ordinary users this reservation is not necessary.
 to reduce the percentage to 1%; do this with the *tune2fs* utility:
 
 ~~~~ {.shell}
-    $ sudo tune2fs -l /dev/sde3 | grep -i count
-    ...
-    Reserved block count:     2548403
+$ sudo tune2fs -l /dev/sde3 | grep -i count
+...
+Reserved block count:     2548403
 
-    $ sudo tune2fs -m 1 /dev/sde3
-    tune2fs 1.46.5 (30-Dec-2021)
-    Setting reserved blocks percentage to 1% (509680 blocks)
+$ sudo tune2fs -m 1 /dev/sde3
+tune2fs 1.46.5 (30-Dec-2021)
+Setting reserved blocks percentage to 1% (509680 blocks)
 
-    $ sudo tune2fs -l /dev/sde3 | grep -i count
-    ...
-    Reserved block count:     509680
+$ sudo tune2fs -l /dev/sde3 | grep -i count
+...
+Reserved block count:     509680
 ~~~~
 
 Lastly, lets add a *label* to this partition to make it easier to mount
 the filesystem in the future.  We will use the label *PI-DATA*:
 
 ~~~~ {.shell}
-    $ sudo tune2fs -L PI-DATA /dev/sde3
-    tune2fs 1.46.5 (30-Dec-2021)
+$ sudo tune2fs -L PI-DATA /dev/sde3
+tune2fs 1.46.5 (30-Dec-2021)
 ~~~~
 [ext]: https://en.wikipedia.org/wiki/Extended_file_system
 
@@ -2021,7 +2149,7 @@ to mount that data partition:
 Let's call the directory */data*:
 
 ~~~~ {.shell}
-    $ sudo mkdir /data
+$ sudo mkdir /data
 ~~~~
 
 For the case with the third (data) partition then we need
@@ -2029,33 +2157,33 @@ to mount it and make the mount action permanent on reboots.  For this
 we create an entry in the filesystem table, the */etc/fstab* file:
 
 ~~~~ {.shell}
-    // make a backup copy first
-    $ sudo cp -p /etc/fstab /etc/fstab.orig
+// make a backup copy first
+$ sudo cp -p /etc/fstab /etc/fstab.orig
 
-    // There are 6 fields in an fstab entry:
-    //    1. the partition name, the partition label or the partition uuid
-    //    2. the directory to use for the mount point
-    //    3. the filesystem type
-    //    4. any mount options recognized by the mount command
-    //    5. use a zero here, it is a legacy option for the 'dump' command
-    //    6. the file system check ordering, use '2' here
+// There are 6 fields in an fstab entry:
+//    1. the partition name, the partition label or the partition uuid
+//    2. the directory to use for the mount point
+//    3. the filesystem type
+//    4. any mount options recognized by the mount command
+//    5. use a zero here, it is a legacy option for the 'dump' command
+//    6. the file system check ordering, use '2' here
 
-    // Edit the file, adding a mount entry line to the end of the file;
-    // recall that we added the label 'PI-DATA' to its filesystem:
-    $ sudo nano /etc/fstab
-    $ tail -2 /etc/fstab
-    LABEL=PI-DATA		/data           ext4	defaults  0  2
+// Edit the file, adding a mount entry line to the end of the file;
+// recall that we added the label 'PI-DATA' to its filesystem:
+$ sudo nano /etc/fstab
+$ tail -2 /etc/fstab
+LABEL=PI-DATA		/data           ext4	defaults  0  2
 
-    $ sudo mount /data
-    $ ls -la /data
-    total 24
-    drwxr-xr-x  3 root root  4096 Apr 16 10:35 .
-    drwxr-xr-x 20 root root  4096 Apr 16 14:30 ..
-    drwx------  2 root root 16384 Apr 16 10:35 lost+found
+$ sudo mount /data
+$ ls -la /data
+total 24
+drwxr-xr-x  3 root root  4096 Apr 16 10:35 .
+drwxr-xr-x 20 root root  4096 Apr 16 14:30 ..
+drwx------  2 root root 16384 Apr 16 10:35 lost+found
 
-    $ df -h /data
-    Filesystem      Size  Used Avail Use% Mounted on
-    /dev/sde3       191G   28K  189G   1% /data (!! put correct dev here)
+$ df -h /data
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sde3       191G   28K  189G   1% /data (!! put correct dev here)
 ~~~~
 
 ## Some Command-line Utilities and Their Purpose {#eg-cmds}
@@ -2262,31 +2390,31 @@ the example below you:
     * create/edit the cronjob to run the local backup at 1 in the early morning
 
 ~~~~ {.shell}
-    // Create local directory with permissions limiting access to
-    // backed-up files to users in the 'adm' group 
-    $ sudo mkdir /var/local-backups
-    $ sudo chown root:adm /var/local-backups
-    $ sudo chmod o-rwx /var/local-backups
+// Create local directory with permissions limiting access to
+// backed-up files to users in the 'adm' group 
+$ sudo mkdir /var/local-backups
+$ sudo chown root:adm /var/local-backups
+$ sudo chmod o-rwx /var/local-backups
 
-    // copy configuration to /etc/ and script to /root/bin/
-    $ sudo cp /path/to/system-backup.conf /etc
-    $ sudo mkdir /root/bin
-    $ sudo cp /path/to/system-backup.sh /root/bin/
-    // the script must be marked as 'executable'; the chmod command will do that
-    $ sudo chmod 755 /root/bin/system-backup.sh
+// copy configuration to /etc/ and script to /root/bin/
+$ sudo cp /path/to/system-backup.conf /etc
+$ sudo mkdir /root/bin
+$ sudo cp /path/to/system-backup.sh /root/bin/
+// the script must be marked as 'executable'; the chmod command will do that
+$ sudo chmod 755 /root/bin/system-backup.sh
 
-    // edit the configuration file for the backups
-    $ sudo nano /etc/system-backup.conf
+// edit the configuration file for the backups
+$ sudo nano /etc/system-backup.conf
 
-    // create the cronjob and ask cron to list what that job is:
-    $ EDITOR=/bin/nano sudo crontab -e
-    $ sudo crontab -l | tail -3
+// create the cronjob and ask cron to list what that job is:
+$ EDITOR=/bin/nano sudo crontab -e
+$ sudo crontab -l | tail -3
 
-    0 1 * * * /root/bin/system-backup.sh -Y
+0 1 * * * /root/bin/system-backup.sh -Y
 
-    // Run the script in debug mode from the command line to make sure
-    // that everything is correctly configured:
-    $ sudo /root/bin/system-backup.sh -D -Y
+// Run the script in debug mode from the command line to make sure
+// that everything is correctly configured:
+$ sudo /root/bin/system-backup.sh -D -Y
 ~~~~
 
 If you have inserted a USB drive, then make a folder at the root of the
@@ -2305,7 +2433,7 @@ this case.
 Test it with:
 
 ~~~~ {.shell}
-    $ sudo /root/bin/system-backup.sh -D -Y -X
+$ sudo /root/bin/system-backup.sh -D -Y -X
 ~~~~
 
 If you ever need to restore files from your backups then you should unpack the
