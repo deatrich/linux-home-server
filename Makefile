@@ -13,8 +13,10 @@
 ## get object file names from source file names
 
 TARG		= linux-server.md
+FILELIST	= contents.txt
 GENDIR		= "generated/"
 MDFILE		= $(TARG)
+MDFILES		= $(shell cat ${FILELIST})
 HTMLOBJECT	= $(MDFILE:.md=.html)
 PDFOBJECT	= $(MDFILE:.md=.pdf)
 PDFVIEWER	= evince
@@ -22,24 +24,35 @@ HTMLVIEWER	= firefox
 
 #***************************************************************************
 PRINTOPT	= 
-PANDOC_OPTS	= -c style.css --toc --toc-depth=3 --syntax-definition=shell.xml --highlight-style=custom-highlight.theme
+PANDOC_OPTS	= -c style.css --toc --toc-depth=3 \
+		  --syntax-definition=shell.xml \
+		  --highlight-style=custom-highlight.theme
 PANDOC_HTML_OPTS = --template template.htm
-PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm --pdf-engine=xelatex
+PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm \
+       	--pdf-engine=xelatex
 
 #***************************************************************************
 ## DEFAULT GOAL
 
 all:	$(HTMLOBJECT) $(PDFOBJECT)
 
+test:
+	echo "$(MDFILES)"
+
 #***************************************************************************
 ## DEPENDENCIES
 
-$(PDFOBJECT): $(MDFILE) template.latex shell.xml custom-highlight.theme
+$(PDFOBJECT): $(MDFILES) template.latex shell.xml custom-highlight.theme
 
-$(HTMLOBJECT): $(MDFILE) template.htm shell.xml custom-highlight.theme style.css
+$(HTMLOBJECT): $(MDFILES) template.htm shell.xml custom-highlight.theme \
+       	style.css
 
 #***************************************************************************
 ## GENERAL RULES
+
+html: $(HTMLOBJECT)
+
+pdf: $(PDFOBJECT)
 
 showhtml: $(HTMLOBJECT)
 	$(HTMLVIEWER) $(HTMLOBJECT)
@@ -62,10 +75,13 @@ help:
 	@echo "make clean        -- clean up generated files"
 
 .md.html :
-	pandoc -s $< $(PANDOC_OPTS) $(PANDOC_HTML_OPTS) -o $(HTMLOBJECT)
+	pandoc -s $(MDFILES) $(PANDOC_OPTS) $(PANDOC_HTML_OPTS) -o $(HTMLOBJECT)
 
 .md.pdf :
-	pandoc -s $< $(PANDOC_OPTS) $(PANDOC_PDF_OPTS) -o $(PDFOBJECT)
+	pandoc -s $(MDFILES) $(PANDOC_OPTS) $(PANDOC_PDF_OPTS) -o $(PDFOBJECT)
+
+#pandoc -s $< $(PANDOC_OPTS) $(PANDOC_HTML_OPTS) -o $(HTMLOBJECT)
+#pandoc -s $< $(PANDOC_OPTS) $(PANDOC_PDF_OPTS) -o $(PDFOBJECT)
 
 ## manually clean up generated files from time to time
 clean:
