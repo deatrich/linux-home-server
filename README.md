@@ -10,8 +10,9 @@ the document (like descriptive lists) do not render correctly in the
 Github flavour.  Nevertheless, you can still 
 [browse the guide](https://github.com/deatrich/linux-home-server/blob/main/linux-server.md) .
 
-A recent [Pandoc-generated PDF version of the guide](https://github.com/deatrich/linux-home-server/blob/main/generated/linux-server.pdf)
-is always available as well.
+A recent [Pandoc-generated PDF version](https://github.com/deatrich/linux-home-server/blob/main/generated/linux-server.pdf)
+is always available as well.  The generated documents will be moved to a web
+site in the near future.
 
 This is a work in progress, so expect more sections of the guide to be
 fleshed out in coming days.
@@ -21,10 +22,12 @@ fleshed out in coming days.
 - [x] Add some getting-started-with-Linux notes
 - [x] Configure Samba
 - [x] Add backup notes
-- [ ] Reinstall Pi to verify the process 
-- [ ] Address general server customization
-- [ ] Add remote desktop configuration notes
-- [ ] Configure an NFS service
+- [x] Reinstall Pi to verify the process 
+- [x] Address general server customization
+- [x] Configure Secure Shell
+- [x] Add remote desktop configuration notes
+- [x] Configure an NFS service
+- [x] Split document into section files
 - [ ] Create a web site
 - [ ] Add a database service
 - [ ] Create a git service
@@ -37,6 +40,6 @@ fleshed out in coming days.
 - [x] Expand on some Linux introductory topics
 - [x] MATE configuration exercise
 - [x] Backup configuration
-- [ ] SSH notes
+- [x] LAN configuration
 - [ ] add more notes as needed
 
