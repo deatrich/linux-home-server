@@ -8,7 +8,7 @@ This guide was written using the Markdown markup language.  The flavour
 of Markdown used in the guide is the Pandoc flavour, so some features in
 the document (like descriptive lists) do not render correctly in the
 Github flavour.  Nevertheless, you can still 
-[browse the guide](https://github.com/deatrich/linux-home-server/blob/main/linux-server.md) .
+browse markdown files in GitHub](https://github.com/deatrich/linux-home-server/).
 
 A recent [Pandoc-generated PDF version](https://github.com/deatrich/linux-home-server/blob/main/generated/linux-server.pdf)
 is always available as well.  The generated documents will be moved to a web
