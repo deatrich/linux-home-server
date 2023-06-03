@@ -650,7 +650,7 @@ $ sudo mkdir /var/local-backups
 $ sudo chown root:adm /var/local-backups
 $ sudo chmod o-rwx /var/local-backups
 
-// copy configuration to /etc/ and script to /root/bin/
+// copy the configuration file to /etc/ and the shell script to /root/bin/
 $ sudo cp /path/to/system-backup.conf /etc
 $ sudo mkdir /root/bin
 $ sudo cp /path/to/system-backup.sh /root/bin/
@@ -660,15 +660,18 @@ $ sudo chmod 755 /root/bin/system-backup.sh
 // edit the configuration file for the backups
 $ sudo nano /etc/system-backup.conf
 
-// create the cronjob and ask cron to list what that job is:
+// create and edit the cronjob -- this example would run at 01:00 hrs
 $ EDITOR=/bin/nano sudo crontab -e
+
+// ( On Ubuntu 'crontab' puts cron-job files in /var/spool/cron/crontabs/ )
+// Ask 'crontab' to list what that job is.
 $ sudo crontab -l | tail -3
 
-0 1 * * * /root/bin/system-backup.sh -Y
+0 1 * * * /root/bin/system-backup.sh -Y -X
 
 // Run the script in debug mode from the command line to make sure
 // that everything is correctly configured:
-$ sudo /root/bin/system-backup.sh -D -Y
+$ sudo /root/bin/system-backup.sh -D -Y -X
 ~~~~
 
 If you have inserted a USB drive, then make a folder at the root of the
@@ -683,12 +686,6 @@ permissions on the USB drive, but should otherwise work.  I need to verify
 this case.
 
 <!-- note to self: verify using a windows-formatted usb drive -->
-
-Test it with:
-
-~~~~ {.shell}
-$ sudo /root/bin/system-backup.sh -D -Y -X
-~~~~
 
 If you ever need to restore files from your backups then you should unpack the
 *tarballs* (compressed 'tar' files) on a Linux system and copy the needed
