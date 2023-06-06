@@ -615,83 +615,120 @@ depending on which mouse-click you use:
 ## An Example Process and Script for Backups {#backups}
 
 There are many ways to do backups - this is just one example.  
-An [example script][backup-script] in my github area can do both
-local system backups; it can also do external backups to a removable drive,
+An [example script][backup-script] in my github 'tools' area can do local
+system backups; it can also do external backups to a removable drive,
 such as an attached USB drive.  If you do only local backups without creating
 a copy elsewhere then you run the risk of losing your data because of a
 major failure (like losing or overwriting the local disk) when you don't
 have another copy.
+
+As well the script can handle large directories by using *rsync* to copy them 
+them to a removable drive.  Though 'rsync' is typically used for remote copies
+it can also be used locally.
+
+The script also allows you to keep an additional copy of your large
+directories on the removable drive.
 
 The example script requires a few configuration entries into a file
 named [*/etc/system-backup.conf*][backup-conf].  You need a designated local
 directory; the files will be compressed so it requires only a few hundred
 megabytes per day for each day of the week.  The provided example
 script also keeps the last week of each month for one year.  If you use 
-the external backup feature of the script then you simply need to provide
-the partition on the drive to use for backups, as well as the mounted
-name of the directory where the files will be copied.
-
-The missing part of this backup scheme is backing up any large data
-partitions, such as Samba or NFS data.  I will provide examples later for this.
+the external backup feature  and/or the large directory backup feature
+then you simply need to provide the partition on the drive to use for
+backups, as well as the mounted name of the directories where the files
+will be copied.
 
 In order to automate your backup script, you also need to create a *cronjob*
 which will automatically run your script in the time slot you pick.  In
 the example below you:
 
-    * create the necessary local directory
+    * create the needed local directories specified in /etc/system-backup.conf
+    * edit the configuration file if you choose different directory names
     * copy the configuration file and the script into place
-    * edit the configuration file
+    * run the script in test mode to check configuration correctness
     * create/edit the cronjob to run the local backup at 1 in the early morning
 
 ~~~~ {.shell}
 // Create local directory with permissions limiting access to
-// backed-up files to users in the 'adm' group 
+// backed-up files to users in the 'adm' group:
 $ sudo mkdir /var/local-backups
 $ sudo chown root:adm /var/local-backups
+$ sudo mkdir /var/log/local-backups
+$ sudo chown root:adm /var/local-backups
+
+// Protect the backup directory by removing permissions for others:
 $ sudo chmod o-rwx /var/local-backups
 
-// copy the configuration file to /etc/ and the shell script to /root/bin/
+// Copy the configuration file to /etc/ and the shell script to /root/bin/
 $ sudo cp /path/to/system-backup.conf /etc
 $ sudo mkdir /root/bin
 $ sudo cp /path/to/system-backup.sh /root/bin/
-// the script must be marked as 'executable'; the chmod command will do that
+// The script must be marked as 'executable'; the chmod command will do that:
 $ sudo chmod 755 /root/bin/system-backup.sh
 
-// edit the configuration file for the backups
+// Edit the configuration file for the backups:
 $ sudo nano /etc/system-backup.conf
-
-// create and edit the cronjob -- this example would run at 01:00 hrs
-$ EDITOR=/bin/nano sudo crontab -e
-
-// ( On Ubuntu 'crontab' puts cron-job files in /var/spool/cron/crontabs/ )
-// Ask 'crontab' to list what that job is.
-$ sudo crontab -l | tail -3
-
-0 1 * * * /root/bin/system-backup.sh -Y -X
 
 // Run the script in debug mode from the command line to make sure
 // that everything is correctly configured:
-$ sudo /root/bin/system-backup.sh -D -Y -X
+$ sudo /root/bin/system-backup.sh --test --local
+
+// Create and edit the cronjob -- this example would run at 01:00 hrs
+$ EDITOR=/bin/nano sudo crontab -e
+
+// ( On Ubuntu 'crontab' puts cron-job files in /var/spool/cron/crontabs/ )
+// Ask 'crontab' to list what that job is:
+$ sudo crontab -l | tail -3
+
+0 1 * * * /root/bin/system-backup.sh --local
 ~~~~
 
-If you have inserted a USB drive, then make a folder at the root of the
-filesystem on the USB drive for backups.  You should edit the configuration
-file with the correct USB partition and mount path; and then edit the
-crontab again and add '-X' to the list of options for external drive
-backups.
+If you will also synchronize backups to a USB drive, then you must make
+directories at the root of the USB filesystem for backups.  The USB partition
+name and the names of the directories must match the configuration file setup.
+(example: your USB partition is /dev/sda1 and so you have set 'usbpartition'
+in the configuration file to 'sda1')
 
-In case your USB drive is formated for Windows then it should be okay.
+~~~~ {.shell}
+// Here we also prepare for doing large directory rsyncs as well:
+$ sudo mount /dev/sda1 /mnt
+$ cd /mnt
+$ sudo mkdir backups rsyncs
+$ sudo mkdir rsyncs/copy
+
+// Be sure to unmount the drive
+$ cd
+$ sudo umount /mnt
+
+// Run the script in debug mode from the command line to make sure
+// that everything is correctly configured for external copies of your
+// local backups (that is, the ones in /var/local-backups/):
+$ sudo /root/bin/system-backup.sh --test --external
+
+// If you will also do large directory backups then test that option
+// as well.  You must have set 'largedirs' in the configuration file:
+$ sudo /root/bin/system-backup.sh --test --rsync-large
+
+// Finally edit the cronjob and add the external backup options to the command:
+$ EDITOR=/bin/nano sudo crontab -e
+$ sudo crontab -l | tail -3
+
+0 1 * * * /root/bin/system-backup.sh --local --external --rsync-large
+~~~~
+
+In case your USB drive is formated for Windows then it should be okay
+for all backups except for the large directories backup; that is,
+with the option '--rsync-large'.
+
 The script might issue some warnings about trying to preserve LINUX
 permissions on the USB drive, but should otherwise work.  I need to verify
-this case.
-
-<!-- note to self: verify using a windows-formatted usb drive -->
+this case.  You may have to change the rsync arguments in the script from
+*-aux* to *-rltux*.   I need to test the Windows-formatted usb drive opton.
 
 If you ever need to restore files from your backups then you should unpack the
 *tarballs* (compressed 'tar' files) on a Linux system and copy the needed
 files into place on the filesystem.
-
-<!-- think about adding a restore-files example -->
 
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
