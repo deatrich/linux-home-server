@@ -14,7 +14,8 @@
 
 TARG		= linux-server.md
 FILELIST	= contents.txt
-GENDIR		= "generated/"
+GENDIR		= "Generated/"
+PUBDIR		= "../deatrich.github.io/linux-home-server/latest-version/"
 MDFILE		= $(TARG)
 MDFILES		= $(shell cat ${FILELIST})
 HTMLOBJECT	= $(MDFILE:.md=.html)
@@ -61,8 +62,12 @@ showpdf: $(PDFOBJECT)
 	$(PDFVIEWER) $(PDFOBJECT)
 
 copies: $(PDFOBJECT) $(HTMLOBJECT)
-	cp -p $(PDFOBJECT) $(GENDIR)$(PDFOBJECT) 
-	cp -p $(HTMLOBJECT) $(GENDIR)$(HTMLOBJECT) 
+	cp -up $(PDFOBJECT) $(GENDIR)$(PDFOBJECT) 
+	cp -up $(HTMLOBJECT) $(GENDIR)$(HTMLOBJECT) 
+
+publish: $(PDFOBJECT) $(HTMLOBJECT)
+	cp -iup $(PDFOBJECT) $(PUBDIR)$(PDFOBJECT) 
+	cp -iup $(HTMLOBJECT) $(PUBDIR)$(HTMLOBJECT) 
 
 help:	
 	@echo ""
@@ -72,6 +77,7 @@ help:
 	@echo "make showhtml     -- show the html file"
 	@echo "make showpdf      -- show the pdf file"
 	@echo "make copies       -- push html and pdf copies to generated area"
+	@echo "make publish      -- push html and pdf copies to web site"
 	@echo "make clean        -- clean up generated files"
 
 .md.html :
@@ -79,9 +85,6 @@ help:
 
 .md.pdf :
 	pandoc -s $(MDFILES) $(PANDOC_OPTS) $(PANDOC_PDF_OPTS) -o $(PDFOBJECT)
-
-#pandoc -s $< $(PANDOC_OPTS) $(PANDOC_HTML_OPTS) -o $(HTMLOBJECT)
-#pandoc -s $< $(PANDOC_OPTS) $(PANDOC_PDF_OPTS) -o $(PDFOBJECT)
 
 ## manually clean up generated files from time to time
 clean:
