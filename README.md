@@ -11,10 +11,8 @@ Github flavour.  Nevertheless, you can still
 [browse markdown files in GitHub]
 (https://github.com/deatrich/linux-home-server/).
 
-A recent [Pandoc-generated PDF version]
-(https://github.com/deatrich/linux-home-server/blob/main/generated/linux-server.pdf)
-is always available as well.  The generated documents will be moved to a web
-site in the near future.
+Recent [Pandoc-generated HTML and PDF files]
+(https://deatrich.github.io/linux-home-server/) are available on github.io.
 
 This is a work in progress, so expect more sections of the guide to be
 fleshed out in coming days.
