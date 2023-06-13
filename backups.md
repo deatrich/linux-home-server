@@ -4,7 +4,7 @@
 Always, always, do some kind of backups on your server.  For
 system backups, very little actually needs to be backed up, yet it is
 important to get into a frame of mind where you think about these things.
-Lets look at what you should back up on your server, and how you might do it.
+Let's look at what you should back up on your server, and how you might do it.
 
 There is no need to back up everything - you can always reinstall and 
 reconfigure.  This is my favourite list of system directories to back up:
