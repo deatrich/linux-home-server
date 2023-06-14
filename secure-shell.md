@@ -1,5 +1,5 @@
 <!-- -->
-# Enabling the Secure Shell Daemon and Using Secure Shell
+# Enabling the Secure Shell Daemon and Using Secure Shell {#sshd}
 
 The [Secure Shell][secure-shell] daemon, ***sshd***, is a very useful and
 important service for connecting between computers near or far.  If you
@@ -26,9 +26,9 @@ daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
 
   * stop the daemon from listening on IPv6: *AddressFamily inet*
   * tell the daemon to use DNS: *UseDNS yes*
-  * limit ssh access to yourself in your LAN;\
-    and block ssh access to the root user except for 'localhost':\
-      *AllowUsers    mylogin@192.168.1.\* \*@localhost*
+  * limit ssh access to yourself in your LAN; and block ssh access\
+     to the root user except for 'localhost':\
+      AllowUsers    myname@192.168.1.\* \*@localhost*
 
 ~~~~ {.shell}
 $ cd /etc/ssh
@@ -49,6 +49,11 @@ $ diff sshd_config.orig sshd_config
 > # note: using @localhost does not work on ubuntu unless you set UseDNS to yes
 > AllowUsers    myname@192.168.1.* *@localhost
 > 
+
+// Another option is to also allow root access to this server from your Linux
+// desktop (eg: 192.168.1.65).  Then the 'AllowUsers' configuration would
+// look like this:
+AllowUsers      myname@192.168.1.* root@192.168.1.65 *@localhost
 ~~~~
 
 ## Configure a Personal SSH Key Pair {#key-pair}
@@ -59,9 +64,9 @@ creating an ssh key pair so that you can connect securely between devices.
 
 We use *ssh-keygen* to create the key pair.  You should treat the private
 key carefully, distributing it to your desktop systems only.  You can copy
-can copy your public key to remote hosts, where 
-you create an *authorized_keys* file that specifies which public keys
-are allowed to connect without using a standard system password.
+your public key to remote hosts, where you create an *authorized_keys* file
+that specifies which public keys are allowed to connect without using a
+standard system password.
 
 Over time the Secure Shell key types have changed.  Some key types are no
 longer considered secure, like SSH-1 or DSA keys.  Here we will use an SSH
@@ -77,7 +82,7 @@ I would not create a passphrase that is less than 16 characters; I would
 certainly never set an empty passphrase.
 
 ~~~~ {.shell}
-// If you do not yet have an .ssh directory in your home directory then
+// If you do not yet have a .ssh directory in your home directory then
 // create one now; and give access to yourself only:
 
 $ cd
@@ -118,7 +123,6 @@ ECDSA key fingerprint is SHA256:iP...
 ECDSA key fingerprint is MD5:79:54:...
 Are you sure you want to continue connecting (yes/no)? yes
 Warning: Permanently added 'pi,192.168.1.90' (ECDSA) to the list of known hosts.
-myname@pi's password:
 
 // On the server create your authorized_keys file if it does not exist
 // inside '~/.ssh', and then 'cat' your public key to the end of the file.
@@ -132,6 +136,8 @@ $ cd ~/.ssh
 $ touch authorized_keys
 $ chmod 600 authorized_keys
 $ cat /path/to/id_rsa.pub >> authorized_keys
+$ tail -1 authorized_keys
+ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
 $ rm /path/to/id_rsa.pub
 // logout from the server session
 $ exit
@@ -143,6 +149,17 @@ Enter passphrase for key '/home/myname/.ssh/id_rsa':
 Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-1027-raspi aarch64)
 ...
 $ exit
+
+// If you want to only allow ssh access to your account from a specific
+// computer in your LAN, than limit the hosts which are allowed by using
+// the 'from=' option.  Edit the authorized_keys file and prepend the 
+// entry like this:
+$ pwd
+/home/myname/.ssh
+// allow from host with IP address 192.168.1.65, and from localhost:
+$ nano authorized_keys
+$ tail -1 authorized_keys
+from="192.168.1.65" ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
 ~~~~
 
 ## Configure an SSH agent
@@ -174,7 +191,7 @@ $ ~/bin/prime-ssh-keys.sh
 Enter passphrase for /home/myname/.ssh/id_rsa: 
 Identity added: /home/myname/.ssh/id_rsa (/home/myname/.ssh/id_rsa)
  
-// The file sets and exports environment variables for the socket and the PID:
+// This file sets and exports environment variables for the socket and the PID:
 $ cat ~/.ssh-agent-info-desktop.home
 SSH_AUTH_SOCK=/tmp/ssh-XXXXXXxRlqsm/agent.21324; export SSH_AUTH_SOCK;
 SSH_AGENT_PID=21325; export SSH_AGENT_PID;
@@ -248,3 +265,4 @@ fi
 [prime-ssh-keys.sh]: https://github.com/deatrich/tools/blob/main/prime-ssh-keys.sh
 [shebang]: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
+<!-- need to show in this section using 'from=' option in authorized_keys --> 
