@@ -75,7 +75,7 @@ $ ssh -Y pi.home
 // Test if X11 forwarding is working:
 $ xhost
 access control enabled, only authorized clients can connect
-SI:localuser:myloginname
+SI:localuser:myname
 
 
 // If remmina is not installed, then install it:
