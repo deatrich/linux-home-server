@@ -148,6 +148,11 @@ Here are a few gparted notes:
   * Expand the second partition, then create the third (data) partition
   * Also use the tool to create an *ext4* file system on the third partition
     once you have created it
+  * Once your new server is up and running you can further split your third
+    partition into a fourth partition.  You only need to unmount the
+    third partition temporarily and use gparted to create another partition,
+    make a file system on it, and alter /etc/fstab.  I did this in order to
+    move my home directory files to the fourth partition.
 
 As always, I show the command-line example in this section. As a bonus
 it shows a common problem of dealing with partition alignment when
@@ -380,7 +385,7 @@ $ sudo tune2fs -l /dev/sde3 | grep -i count
 Reserved block count:     509680
 ~~~~
 
-Lastly, lets add a *label* to this partition to make it easier to mount
+Lastly, let's add a *label* to this partition to make it easier to mount
 the filesystem in the future.  We will use the label *PI-DATA*:
 
 ~~~~ {.shell}
@@ -437,7 +442,7 @@ drwx------  2 root root 16384 Apr 16 10:35 lost+found
 
 $ df -h /data
 Filesystem      Size  Used Avail Use% Mounted on
-/dev/sde3       191G   28K  189G   1% /data (!! put correct dev here)
+/dev/sde3       191G   28K  189G   1% /data
 ~~~~
 
 ## Some Command-line Utilities and Their Purpose {#eg-cmds}
@@ -1050,6 +1055,106 @@ Current DNS Server: 9.9.9.9
 [private]: https://en.wikipedia.org/wiki/Private_network
 [routers]: https://www.techspot.com/guides/287-default-router-ip-addresses/
 [^dns]: Domain Name System -- how we look up hostnames
+
+## Other Ways of Becoming the Superuser in a Restricted Environment {#root}
+
+You might run into a chicken-and-egg problem occasionally because you
+need to do something like:
+
+  * move your home directory files
+  * fix a problem with logging in as a regular user
+  * you accidentally removed the sudo package
+
+Then you realize that you need to be logged in as a regular user to 
+sudo to *root*, but you cannot be logged in to accomplish your task.
+
+### Setting a Password for the Superuser
+
+One solution is to set a password for the *root* user - you can always
+disable the password afterwards.
+
+This is an example of setting a password for root -- as always you set
+a **strong** password:
+
+~~~~ {.shell}
+// Normally password access is locked in /etc/shadow - we unlock it when
+// we set a password:
+$ man passwd
+$ man 5 passwd
+$ sudo /bin/bash
+# id
+uid=0(root) gid=0(root) groups=0(root)
+# head -1 /etc/shadow
+root:!:19476:0:99999:7:::
+# passwd 
+New password: 
+Retype new password: 
+passwd: password updated successfully
+
+// We now see an encrypted password in the password field in the shadow file:
+# head -1 /etc/shadow
+root:$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
+~~~~
+
+Now we can log in directly as root at the server's text console; remember
+that it is foolish to login as 'root' to a graphical environment.  Using
+web browers as 'root' is not smart.
+
+To lock the root user from using a password, use the **-l** option; you can
+unlock it in the future with the **-u** option.
+
+~~~~ {.shell}
+
+// lock it:
+# passwd -l root
+passwd: password expiry information changed.
+
+# head -1 /etc/shadow
+root:!$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
+~~~~
+
+### Allowing Secure-shell Access From Another Device in Your LAN
+
+Another solution is to allow another device in your home network to have
+secure-shell access to the root account on your Ubuntu server or desktop.  It
+is mentioned briefly in the [secure-shell section](#sshd) of this guide, but
+I summarize the main options here.
+
+The secure-shell daemon must be installed and running on the target device.
+In */etc/ssh/sshd_config* add the remote device's IP address with *root@* 
+prefixing it to the 'AllowUsers' rule.  Here access to the root account is
+allowed from 192.168.1.65:
+
+~~~~ {.shell}
+# id
+uid=0(root) gid=0(root) groups=0(root)
+# grep AllowUsers /etc/ssh/sshd_config
+AllowUsers      myname@192.168.1.* root@192.168.1.65 *@localhost
+~~~~
+
+Then root's */root/.ssh/authorized_keys* file must specifically allow the
+remote device; in this case we use the *from=''* option (see the man page for
+'authorized_keys').  As well, if you also allow localhost (127.0.0.1) you would
+allow your login account to ssh locally to root:
+
+~~~~ {.shell}
+# tail -1 ~/.ssh/authorized_keys
+from="127.0.0.1,192.168.1.65" ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
+
+$ whoami
+myname
+
+$ ssh -A -Y root@localhost
+Last login: Tue Jun 13 15:10:42 2023 from desktop.home
+# ps -ef --forest|grep ssh
+root       685       1  May26 ?      00:00:00 sshd: /usr/sbin/sshd -D [listener] ...
+root    395328     685  09:27 ?      00:00:00  \_ sshd: myname [priv]
+myname  395330  395328  09:27 ?      00:00:00  |   \_ sshd: myname@pts/0
+myname  395414  395331  09:29 pts/0  00:00:00  |           \_ ssh -A -Y root@localhost
+root    395415     685  09:29 ?      00:00:00  \_ sshd: root@pts/1
+root    395460  395429  09:30 pts/1  00:00:00          \_ grep --color=auto ssh
+myname    3693       1  May26 ?      00:00:00 ssh-agent
+~~~~
 
 <!-- Yet to do: Command-line Index  -->
 <!-- Yet to do: URL Index  -->
