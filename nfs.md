@@ -206,11 +206,11 @@ $ diff auto.master.orig auto.master
 > /-      /etc/auto.home --timeout 300
 > 
 
-// We create /etc/auto.home
+// We create /etc/auto.home; every regular user you create also needs
+//  an entry in this file.
 $ sudo nano /etc/auto.home
 $ cat /etc/auto.home
-## Every regular user you create needs an entry in this file
-##
+## For every new user you must add their home directory entry to this file
 /home/myname \
   -rw,hard,intr,rsize=32768,wsize=32768,retrans=2,timeo=600,tcp,nfsvers=3 \
   192.168.1.90:/home/myname
@@ -228,8 +228,9 @@ user logged into your home directory while you restart autofs, causing
 your current home directory to disappear.  There is some
 [help on this topic in the appendix](#root).  Perhaps the easiest solution
 if you do not want to fiddle with changes to root access is to
-**reboot your client device**.  Then when the client is back up again you
-should now have a home directory that is served by your server.
+**reboot your client device**.  If there were no mistakes in your configuration
+changes then when the client is back up again you should have a home directory
+that is served by your home server.
 
 ~~~~ {.shell}
 $ pwd

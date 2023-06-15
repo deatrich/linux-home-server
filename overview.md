@@ -56,20 +56,24 @@ of the command-line and technical detail into the appendix.  Thus the flow of
 the document covers the basics, encouraging the reader to see the bigger 
 picture and to avoid being smothered in the detail.
 
-In this guide command-line sessions show two kinds of simplified
-command-line prompts:
+In this guide command-line sessions appear in a pale-yellow box.  Two kinds
+of simplified command-line prompts appear:
 
-Normal Users:\
-**$**
+Normal Users (coloured 'green'):\
+<SPAN STYLE="color:#007020;font-weight:bold">**$**</SPAN>
 
-The root superuser:\
-**#**
+The root superuser (coloured 'red'):\
+<SPAN STYLE="color:#ff0000;font-weight:bold">**#**</SPAN>
 
-Also, command output is sometimes long and/or uninteresting in the context
+Explanatory comments start with two slashes (coloured 'blue); that is:\
+<SPAN STYLE="color:#0000ff;font-style:italic">**//**</SPAN>
+
+Sometimes command output is long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)
 
-Sometimes I add a double-exclamation (**!!**) mark somewhere -- this is only a
-reminder for myself to fix an issue at that point in the documentation.
+Sometimes a double-exclamation (**!!**) mark may appear somewhere -- this
+is only a reminder for myself to fix an issue at that point in the
+documentation.
 
 If you discover issues with instructions in this document, or have other
 comments or suggestions then you can contact me on
