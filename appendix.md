@@ -786,7 +786,7 @@ within the 'localhost' network during installation; we will comment that out.
 Here are the examples:
 
 ~~~~ {.shell}
-// /etc/networks
+// File: /etc/networks
 // You can look at your router's management web page to understand
 // what your network address is - the example used here is: 192.168.1.0
 // You can drop the last octet, that is the '.0', but I leave it in:
@@ -802,7 +802,7 @@ $ diff /etc/networks.orig /etc/networks
 2a3
 > home  192.168.1.0
 
-// /etc/hosts
+// File: /etc/hosts
 // Add your favourite devices with their reserved hostnames to /etc/hosts
 // Each host gets it full name with .home attached, as well as its short name
 // and any aliases:
@@ -1010,7 +1010,7 @@ Now we add some other DNS servers to this configuration using nmcli; it should
 persist after a reboot.  We are adding well-known public IP addresses from
 Cloudflare (1.1.1.1), and from Google (8.8.8.8):
 
-<-- !! I need to check if we need to restart the network.. -->
+<!-- !! I need to check if we need to restart the network.. -->
 
 ~~~~ {.shell}
 $ sudo nmcli connection modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
