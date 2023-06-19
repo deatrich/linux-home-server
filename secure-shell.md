@@ -153,7 +153,7 @@ $ exit
 // If you want to only allow ssh access to your account from a specific
 // computer in your LAN, than limit the hosts which are allowed by using
 // the 'from=' option.  Edit the authorized_keys file and prepend the 
-// entry like this:
+// 'from=' option like this:
 $ pwd
 /home/myname/.ssh
 // allow from host with IP address 192.168.1.65, and from localhost:
@@ -265,4 +265,44 @@ fi
 [prime-ssh-keys.sh]: https://github.com/deatrich/tools/blob/main/prime-ssh-keys.sh
 [shebang]: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
-<!-- need to show in this section using 'from=' option in authorized_keys --> 
+## Personal Configuration in 'config' File
+
+You can configure some personal preferences in a configuration file named
+*$HOME/.ssh/config* 
+
+I have a few favourite settings which have solved issues I have encountered
+in the past (like setting *KeepAlive* and *ServerAliveInterval*).  A new
+favourite is setting **HashKnownHosts** to *no*.  I like seeing the name of
+hosts I have connected to in ~/.ssh/known_hosts.  Debian/Ubuntu set globally
+the *HashKnownHosts* value to *yes*.  The result is that you can no longer
+seeing hostnames or IP addresses in your known_hosts file because they have
+been 'hashed'.`
+
+This is also where you can assign customized per-host ssh key pair filenames
+to particular hosts.
+
+~~~~ {.shell}
+// Create and edit your ssh config file:
+$ cd ~/.ssh/
+$ touch config
+$ chmod 600 config
+$ nano config 
+$ cat config 
+## see:  man ssh_config
+
+## ssh configuration data is parsed in the following order:
+##         1.   command-line options
+##         2.   user's configuration file (~/.ssh/config)
+##         3.   system-wide configuration file (/etc/ssh/ssh_config)
+## Any configuration value is only changed the first time it is seen.
+## Therefore this file overrides system-wide defaults.
+
+Host *
+   KeepAlive yes
+   ServerAliveInterval 60
+   HashKnownHosts no
+
+## Example private key which has a customized key name for github.com
+Host github.com
+   IdentityFile ~/.ssh/id_rsa_github
+~~~~
