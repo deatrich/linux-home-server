@@ -125,7 +125,7 @@ $ chmod 755 ~/bin/addcert.sh
 $ nano addcert.cnf
 $ ~/bin/addcert.sh
 Certificate request self-signature ok
-subject=C = CA, ST = British Columbia, ..., CN = pi.home, emailAddress = some.email@somewhere.com
+subject=C = CA, ST = British Columbia, ... CN = pi.home, emailAddress = some.email@somewhere.com
 -r--r--r-- 1 myname myname 2000 Jun 21 10:00 server.crt
 -r--r--r-- 1 myname myname 1740 Jun 21 10:00 server.csr
 -r-------- 1 myname myname 3272 Jun 21 10:00 server.key
@@ -177,7 +177,7 @@ Module mime already enabled
 Considering dependency socache_shmcb for ssl:
 Enabling module socache_shmcb.
 Enabling module ssl.
-See /usr/share/doc/apache2/README.Debian.gz on how to configure SSL and create self-signed certificates.
+See /usr/share/doc/apache2/README.Debian.gz on how to ... and create self-signed certificates.
 To activate the new configuration, you need to run:
   systemctl restart apache2
 
@@ -216,13 +216,14 @@ apache2  549192     www-data   4u  IPv6 1943852      0t0  TCP *:http (LISTEN)
 apache2  549192     www-data   6u  IPv6 1943856      0t0  TCP *:https (LISTEN)
 ~~~~
 
-Now we want to test the secured web connection connection. 
-Now ask your web browser to accept the certificate; with *firefox* we 
+Now we want to test the secured web connection connection, and 
+ask your web browser to accept the certificate. With *firefox* we 
 select 'Advanced' where we see the message\
 
  *Error code: MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT*
 
 We go ahead and accept the risk and we see our default secured web page.
+You only need to do this once.
 
 Both text mode browsers will warn about self-signed certificates, but
 also will allow you to connect:
@@ -338,13 +339,14 @@ $ ls -l /etc/apache2/sites-enabled/
 total 0
 lrwxrwxrwx 1 root root 26 Jun 22 14:11 pi.conf -> ../sites-available/pi.conf
 lrwxrwxrwx 1 root root 28 Jun 22 14:11 test.conf -> ../sites-available/test.conf
-$ $ systemctl status apache2
+$ sudo systemctl restart apache2
+$ systemctl status apache2
      ...
      Active: active (running) since Thu 2023-06-22 14:14:00 MDT; 2s ago
      ...
 ~~~~
 
-Now test the changed configurations using *links*
+Now test the changed configurations using *links* and the '-source' argument:
 
 ~~~~ {.shell}
 $ links -source http://pi.home/ | grep title
@@ -356,12 +358,14 @@ $ links -source -ssl.certificates 0 https://pi.home/ | grep title
 
 Also, you can always add new sub-directories for web page design,
 rather than changing ownership inside /var/www/html.  For example,
-create a directory owned by yourself named /var/www/sites and add your
+create a sub-directory owned by yourself named /var/www/sites and add your
 own site configuration in */etc/apache2/sites-available/* with your new
 sub-directory path(s) and enable them.  The exercise is very similar to the
 previous example.
 
-<!-- -->
+<!-- !! need to add logging information -->
+<!-- !! need to add a warning note about the 'include' options in the
+        apache main configuration file -->
 <!--
 ~~~~ {.shell}
 ~~~~
