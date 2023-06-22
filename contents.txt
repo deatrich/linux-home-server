@@ -9,5 +9,6 @@ customization.md
 secure-shell.md
 remote-desktop.md
 nfs.md
+web-server.md
 linux-server.md
 appendix.md
