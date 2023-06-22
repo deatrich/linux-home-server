@@ -273,9 +273,9 @@ You can configure some personal preferences in a configuration file named
 I have a few favourite settings which have solved issues I have encountered
 in the past (like setting *KeepAlive* and *ServerAliveInterval*).  A new
 favourite is setting **HashKnownHosts** to *no*.  I like seeing the name of
-hosts I have connected to in ~/.ssh/known_hosts.  Debian/Ubuntu set globally
+hosts I have connected to in *~/.ssh/known_hosts*.  Debian/Ubuntu set globally
 the *HashKnownHosts* value to *yes*.  The result is that you can no longer
-seeing hostnames or IP addresses in your known_hosts file because they have
+see hostnames or IP addresses in your known_hosts file because they have
 been 'hashed'.`
 
 This is also where you can assign customized per-host ssh key pair filenames
