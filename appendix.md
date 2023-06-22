@@ -1156,5 +1156,7 @@ root    395460  395429  09:30 pts/1  00:00:00          \_ grep --color=auto ssh
 myname    3693       1  May26 ?      00:00:00 ssh-agent
 ~~~~
 
+<!-- !! Note about IPv6 -->
 <!-- Yet to do: Command-line Index  -->
 <!-- Yet to do: URL Index  -->
+
