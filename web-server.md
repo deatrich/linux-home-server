@@ -16,7 +16,7 @@ option is to build your own [certificate authority][certauth].
 Finally we will look at configuring ownership of some of the apache directory
 infrastructure for future web projects and configuring a few virtual hosts.
 
-[certauth] https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-a-certificate-authority-ca-on-ubuntu-20-04
+[certauth]: https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-a-certificate-authority-ca-on-ubuntu-20-04
 
 ## Installing and Testing Apache 2.4
 
@@ -105,8 +105,8 @@ $ lynx --dump http://pi.home/ | head
    ...
 ~~~~
 
-[apache] https://ubuntu.com/server/docs/web-servers-apache
-[nginx] https://en.wikipedia.org/wiki/Nginx
+[apache]: https://ubuntu.com/server/docs/web-servers-apache
+[nginx]: https://en.wikipedia.org/wiki/Nginx
 
 ## Generating a Self-Signed Certificate and Enabling https
 
@@ -125,10 +125,10 @@ $ chmod 755 ~/bin/addcert.sh
 $ nano addcert.cnf
 $ ~/bin/addcert.sh
 Certificate request self-signature ok
-subject=C = CA, ST = British Columbia, L = Cranbrook, O = Home, CN = pi.home, emailAddress = some.email@somewhere.com
--r--r--r-- 1 deatrich deatrich 2000 Jun 21 10:00 server.crt
--r--r--r-- 1 deatrich deatrich 1740 Jun 21 10:00 server.csr
--r-------- 1 deatrich deatrich 3272 Jun 21 10:00 server.key
+subject=C = CA, ST = British Columbia, ..., CN = pi.home, emailAddress = some.email@somewhere.com
+-r--r--r-- 1 myname myname 2000 Jun 21 10:00 server.crt
+-r--r--r-- 1 myname myname 1740 Jun 21 10:00 server.csr
+-r-------- 1 myname myname 3272 Jun 21 10:00 server.key
 addcert.sh:  SVP copy server files into place and change ownership to root
 
 // You can query the text version of your certificate:
