@@ -29,10 +29,10 @@ fleshed out in coming days.
 - [x] Configure an NFS service
 - [x] Split document into section files
 - [x] Create a github.io web site and move generated files to it
-- [ ] Add sample config files in 'examples/' -- diff output is not sufficient
-- [ ] Add an apache web service
+- [x] Add an apache web service
 - [ ] Add a database service
 - [ ] Create a git service
+- [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 - [ ] Configure a KVM virtualization service
 - [ ] Configure a targeted Ansible service for local configuration
 - [ ] Document some desktop client topics such as Pandoc
