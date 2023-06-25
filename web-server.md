@@ -178,14 +178,12 @@ Considering dependency socache_shmcb for ssl:
 Enabling module socache_shmcb.
 Enabling module ssl.
 See /usr/share/doc/apache2/README.Debian.gz on how to ... and create self-signed certificates.
-To activate the new configuration, you need to run:
-  systemctl restart apache2
+...
 
 // enable the SSL configuration as a virtual host:
 $ sudo a2ensite default-ssl
 Enabling site default-ssl.
-To activate the new configuration, you need to run:
-  systemctl reload apache2
+...
 
 // Listing the enabled configuration files shows the following:
 $ pwd
@@ -194,7 +192,7 @@ $ ls -l sites-enabled/
 lrwxrwxrwx ... Jun 19 10:47 000-default.conf -> ../sites-available/000-default.conf
 lrwxrwxrwx ... Jun 21 10:19 default-ssl.conf -> ../sites-available/default-ssl.conf
 
-// So we can edit /etc/apache2/sites-available/default-ssl.conf
+// So we can edit '/etc/apache2/sites-available/default-ssl.conf'
 $ cd /etc/apache2/sites-available
 $ sudo cp -p default-ssl.conf default-ssl.conf.orig
 $ sudo nano default-ssl.conf
@@ -323,18 +321,14 @@ $ diff default-ssl.conf pi.conf
 // then restart apache:
 $ sudo a2ensite test
 Enabling site test.
-To activate the new configuration, you need to run:
-  systemctl reload apache2
+...
 $ sudo a2ensite pi
 Enabling site pi.
-To activate the new configuration, you need to run:
-  systemctl reload apache2
-
+...
 $ sudo a2dissite 000-default default-ssl
 Site 000-default disabled.
 Site default-ssl disabled.
-To activate the new configuration, you need to run:
-  systemctl reload apache2
+...
 $ ls -l /etc/apache2/sites-enabled/
 total 0
 lrwxrwxrwx 1 root root 26 Jun 22 14:11 pi.conf -> ../sites-available/pi.conf
@@ -362,6 +356,73 @@ create a sub-directory owned by yourself named /var/www/sites and add your
 own site configuration in */etc/apache2/sites-available/* with your new
 sub-directory path(s) and enable them.  The exercise is very similar to the
 previous example.
+
+## Apache Configuration Issues
+
+For home use the default settings in */etc/apache2/apache2.conf* are fine.
+However these settings are too open in my opinion, and I would never keep
+such a configuration on a publicly-exposed web server.
+
+Be aware of these settings if you plan on using home-grown configurations
+on an internet-exposed site:
+
+   * The configuration for the root of the filesystem allows *FollowSymLinks*
+   * Access to directory */usr/share* is allowed
+   * The base of the web tree, */var/www/*, allows *Indexes* and
+     *FollowSymLinks* -- these settings should be enabled only within site
+     configurations for specific sub-directories on an as-needed basis
+
+When you work on internet-exposed sites you should generally learn enough
+about Apache configurations to cope with installing new packages and 
+safely configuring them, without depending on deliberately loose initial
+configurations that shield you from necessary details.
+
+If you want to configure Apache to listen only for IPv4 connections, then
+alter */etc/apache2/ports.conf* and change instances of *Listen PORTNUMBER*
+to *Listen 0.0.0.0:PORTNUMBER*.  You will also need to change site
+configuration *VirtualHost* settings to use *0.0.0.0:PORTNUMBER*.  By using
+'0.0.0.0' all hardware network interfaces on your machine would serve web
+pages.  On SBC hardware that is not an issue; on complex hardware with
+multiple network interfaces on differing networks this would not necessarily
+be what you wanted - in that case a specific IP address is used instead.
+
+~~~~ {.shell}
+$ cd /etc/apache2
+$ diff ports.conf.orig ports.conf
+5c5
+< Listen 80
+---
+> Listen 0.0.0.0:80
+8c8
+<       Listen 443
+---
+>       Listen 0.0.0.0:443
+12c12
+<       Listen 443
+---
+>       Listen 0.0.0.0:443
+
+$ diff sites-available/000-default.conf.orig sites-available/000-default.conf
+1c1
+< <VirtualHost *:80>
+---
+> <VirtualHost 0.0.0.0:80>
+10a11,12
+>       ServerName pi.home
+>       ServerAlias pi
+12c14,20
+<       DocumentRoot /var/www/html
+---
+>       DocumentRoot /var/www/html/test
+...
+
+$ diff sites-available/default-ssl.conf.orig sites-available/default-ssl.conf
+2c2
+<       <VirtualHost _default_:443>
+---
+>       <VirtualHost 0.0.0.0:443>
+...
+~~~~
 
 <!-- !! need to add logging information -->
 <!-- !! need to add a warning note about the 'include' options in the
