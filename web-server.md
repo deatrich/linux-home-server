@@ -77,9 +77,9 @@ $ sudo lsof -i :443
 
 ~~~~
 
-We can open a web client and look at the default web page with a web client --
-firefox for example.  We can also install a couple of useful *text-based*
-web clients which are useful for doing quick checks:
+We can open a web client (firefox for example) and look at the default web page.
+We can also install a couple of useful *text-based* web clients which are
+useful for doing quick checks:
 
 ~~~~ {.shell}
 $ firefox http://pi.home/
@@ -229,7 +229,7 @@ also will allow you to connect:
 ~~~~ {.shell}
 $ firefox https://pi.home
 
-// This example is with 'links' -- we ignore self-signed certs with 
+// This example is with 'links' -- we ignore self-signed certs when we use 
 // the '-ssl.certicates 0' option
 $ links -dump -ssl.certificates 0  http://pi.home/ | head
    Ubuntu Logo
@@ -287,7 +287,7 @@ test/index.html:    <title>Apache2 Ubuntu Default Page on HTTP (no encryption): 
 $ cd /etc/apache2/sites-available
 $ sudo cp -p 000-default.conf test.conf
 
-// Change the DocumentRoot, and also change the log files names:
+// Change the DocumentRoot, and also change the log files names for this site:
 $ sudo nano test.conf
 $ diff 000-default.conf test.conf 
 12c12
@@ -303,7 +303,7 @@ $ diff 000-default.conf test.conf
 
 $ sudo cp -p default-ssl.conf pi.conf
 
-// Again, change the DocumentRoot, and also change the log files names:
+// Again, change the DocumentRoot, and change the log files names for this site:
 $ sudo nano pi.conf
 $ diff default-ssl.conf pi.conf 
 5c5
@@ -377,6 +377,8 @@ about Apache configurations to cope with installing new packages and
 safely configuring them, without depending on deliberately loose initial
 configurations that shield you from necessary details.
 
+## Disabling IPv6 Access to the Apache Daemon
+
 If you want to configure Apache to listen only for IPv4 connections, then
 alter */etc/apache2/ports.conf* and change instances of *Listen PORTNUMBER*
 to *Listen 0.0.0.0:PORTNUMBER*.  You will also need to change site
@@ -424,9 +426,100 @@ $ diff sites-available/default-ssl.conf.orig sites-available/default-ssl.conf
 ...
 ~~~~
 
+## Installing the PHP Apache Module
+
+If you are interesting in doing some embedded PHP web development then
+you only need to install the PHP Apache module:
+
+~~~~ {.shell}
+$ sudo apt install libapache2-mod-php
+...
+The following additional packages will be installed:
+  libapache2-mod-php8.1 php-common php8.1-cli php8.1-common php8.1-opcache
+  php8.1-readline
+...
+Unpacking libapache2-mod-php (2:8.1+92ubuntu1) ...
+Setting up php-common (2:92ubuntu1) ...
+Created symlink /etc/systemd/system/timers.target.wants/phpsessionclean.timer ...
+...
+Setting up libapache2-mod-php8.1 (8.1.2-1ubuntu2.11) ...
+apache2_invoke: Enable module php8.1
+Setting up libapache2-mod-php (2:8.1+92ubuntu1) ...
+...
+
+// the PHP module is already enabled:
+$ cd /etc/apache2/
+$ find . -iname \*php\*
+./mods-available/php8.1.conf
+./mods-available/php8.1.load
+./mods-enabled/php8.1.conf
+./mods-enabled/php8.1.load
+~~~~
+
+You can quickly test that PHP works; simply create a PHP file in the root of
+your new web tree and point your browser to it:
+
+~~~~ {.shell}
+// Here we assume that the root of your web tree is at /var/www/html/test/
+$ cd /var/www/html/test/
+$ echo "<?php phpinfo() ?>" > info.php
+
+// now use either 'firefox' or 'links' to look at it:
+$ firefox http://pi.home/info.php
+
+$ links -dump http://pi.home/info.php | head
+   PHP logo
+
+   PHP Version 8.1.2-1ubuntu2.11
+
+   System            Linux pi.home 5.15.0-1029-raspi #31-Ubuntu SMP PREEMPT
+                     Sat Apr 22 12:26:40 UTC 2023 aarch64
+   Build Date        Feb 22 2023 22:56:18
+   Build System      Linux
+   Server API        Apache 2.0 Handler
+...
+
+// The PHP function 'phpinfo()' shows all configuration information that
+// you as a developer want to know about.  However, do not expose all this
+// information to others in a publicly available web site.  Remove the file
+// you just created, or hide it from the apache daemon:
+$ cd /var/www/html/test/
+$ rm info.php
+// or set it read-write to yourself only:
+$ chmod 600 info.php
+~~~~
+
+You might want to disable PHP session cleanup until a later time
+when you are actually making use of PHP sessions.  You can reenable this
+later when you think you need it:
+
+~~~~ {.shell}
+$ systemctl list-unit-files | grep php
+phpsessionclean.service                    static          -
+phpsessionclean.timer                      enabled         enabled
+
+$ sudo systemctl mask phpsessionclean.timer
+Created symlink /etc/systemd/system/phpsessionclean.timer → /dev/null.
+
+$ tail -1 /etc/cron.d/php
+09,39 *     * * *     root   [ -x /usr/lib/php/sessionclean ] && if ...
+
+// This is an example case of not making a copy of a file in the same directory.
+// All valid files in '/etc/cron.d/' are subject to being run by the 'cron'
+// daemon.  Instead we put a copy in root's home directory, in case we need it
+// as a reference:
+$ sudo cp -p /etc/cron.d/php /root/php.orig
+
+// When we edit this cron file we comment out the active entry with a '#':
+$ sudo nano /etc/cron.d/php
+$ sudo diff /root/php.orig /etc/cron.d/php
+14c14
+< 09,39 *     * * *     root   [ -x /usr/lib/php/sessionclean ] && if ...
+---
+> #09,39 *     * * *     root   [ -x /usr/lib/php/sessionclean ] && if ...
+~~~~
+
 <!-- !! need to add logging information -->
-<!-- !! need to add a warning note about the 'include' options in the
-        apache main configuration file -->
 <!--
 ~~~~ {.shell}
 ~~~~
