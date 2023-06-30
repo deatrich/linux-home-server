@@ -30,7 +30,7 @@ fleshed out in coming days.
 - [x] Split document into section files
 - [x] Create a github.io web site and move generated files to it
 - [x] Add an apache web service
-- [ ] Add a database service
+- [x] Add a database service
 - [ ] Create a git service
 - [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 - [ ] Configure a KVM virtualization service
