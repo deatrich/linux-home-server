@@ -10,5 +10,5 @@ secure-shell.md
 remote-desktop.md
 nfs.md
 web-server.md
-linux-server.md
+database-server.md
 appendix.md
