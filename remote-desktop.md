@@ -9,12 +9,12 @@ that opportunity.
 For all remote desktop options, first create an *.Xsession* file in your 
 home directory on the server and configure it to start a MATE desktop session:
 
-~~~~ {.shell}
+```shell
 $ cd
 $ nano .Xsession
 $ cat .Xsession
 /usr/bin/mate-session
-~~~~
+```
 
 ## Configure Remote Desktop Protocol (RDP)
 
@@ -28,7 +28,7 @@ home network xrdp is okay.
 
 We install xrdp, tweak the configuration a little, and restart xrdp:
 
-~~~~ {.shell}
+```shell
 $ sudo apt install xrdp
 ...
 The following additional packages will be installed:
@@ -61,14 +61,14 @@ $ diff xrdp.ini.orig xrdp.ini
 
 // restart xrdp
 $ sudo systemctl restart xrdp
-~~~~
+```
 
 You can test the setup from any other linux computer with
 [*remmina*][remmina] installed, or you can secure-shell into
 the Linux server with X11 forwarding using the '-Y' option
 and run 'remmina' from the command-line; that is:
 
-~~~~ {.shell}
+```shell
 // Suppose that your server is named pi.home
 $ ssh -Y pi.home
 
@@ -85,7 +85,7 @@ $ remmina
 // Start remmina and log into the server with your username and password.
 // You can save a connection profile with a custom resolution setting
 // to get the best possible presentation.
-~~~~
+```
 
 There are many web-based tutorials; check out
 [*XRDP on Ubuntu 22.04*][xrdp-tutorial].  This tutorial shows how to connect
@@ -103,7 +103,7 @@ to avoid password use.  Thus I can comfortably connect as a remote desktop
 to remote servers across the continent, and write and test code
 as if I was down the hall from the remote server.
 
-~~~~ {.shell}
+```shell
 // install both the server and the client software
 $ sudo apt install x2goserver x2goclient
 ...
@@ -114,7 +114,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/x2goserver.service
 
 $ systemctl list-unit-files | grep -i x2go
 x2goserver.service                         enabled         enabled
-~~~~
+```
 
 Your local desktop must have *x2goclient* installed so that you can
 start a remote X2Go desktop.  From any Linux desktop running an X.org
@@ -122,11 +122,11 @@ service you can start it from the command-line.  This way the client
 inherits the SSH environment variables (you can also embed a small 
 shell script which provides the environment in a custom application launcher).
 
-~~~~ {.shell}
+```shell
 // Bring up the application window; redirect stderr to /dev/null to ignore
 //  various uninteresting messages.
 $ x2goclient 2>/dev/null
-~~~~
+```
 
 Create and save the session parameters by starting a new session: 
   1. Session -> New Session

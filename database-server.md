@@ -31,7 +31,7 @@ Some of the log files go to */var/log/mysql/* if you configure it in the
 server configuration file.  Otherwise status logging shows up in
 */var/log/syslog*.
 
-~~~~ {.shell}
+```shell
 $ sudo apt install mariadb-server
 ...
 The following additional packages will be installed:
@@ -58,7 +58,7 @@ aria_log.00000001  ib_buffer_pool  multi-master.info    sys/
 aria_log_control   ibdata1         mysql/
 ddl_recovery.log   ib_logfile0     mysql_upgrade_info
 debian-10.6.flag   ibtmp1          performance_schema/
-~~~~
+```
 
 ## Configuring the Server
 
@@ -75,7 +75,7 @@ This utility allows you to do these things:
    * disable mysql root login from any other host
    * remove the test database, which allows anyone access to that database
 
-~~~~ {.shell}
+```shell
 $ mysql_secure_installation
 ...
 Switch to unix_socket authentication [Y/n]
@@ -84,13 +84,13 @@ Remove anonymous users? [Y/n]
 Disallow root login remotely? [Y/n]
 Remove test database and access to it? [Y/n] 
 ...
-~~~~
+```
 
 Since we set a mysql superuser ('root') password, then any user logged into
 our server can connect as the mysql superuser if they know that password.
 Otherwise, users with sudo privileges can connect without needing the password:
 
-~~~~ {.shell}
+```shell
 $ mysql -u root
 ERROR 1698 (28000): Access denied for user 'root'@'localhost'
 
@@ -136,7 +136,7 @@ MariaDB [(none)]> show engines;
 
 MariaDB [(none)]> exit
 Bye
-~~~~
+```
 
 ### Allowing Non-superuser Users to Connect Remotely
 
@@ -146,7 +146,7 @@ it is reasonable to expect users to connect to the database from another
 host.  Here we configure the Mariadb server to listen for LAN connections,
 thus allowing users to connect via our home LAN:
 
-~~~~ {.shell}
+```shell
 $ head /etc/mysql/mariadb.cnf
  # The MariaDB configuration file
  #
@@ -188,7 +188,7 @@ mariadbd 716168 mysql   18u  IPv4 2530211      0t0  TCP *:mysql (LISTEN)
 $ mysql -u root -h pi.home -p
 Enter password: 
 ERROR 1130 (HY000): Host 'desktop.home' is not allowed to connect to this MariaDB server
-~~~~
+```
 
 So let's create an empty database and two users with LAN access to it.
 One user is 'rw' (read-write) with all privileges on its database; the
@@ -203,7 +203,7 @@ are created, not at database creation.
 
 There is extensive help at the database prompt:
 
-~~~~ {.shell}
+```shell
 $ sudo mysql -u root
 ...
 MariaDB [(none)]> help create database;
@@ -245,14 +245,14 @@ MariaDB [(none)]> select concat(user, '@', host) from mysql.global_priv;
 $ mysql -u rw -h pi.home -p webdb
 Enter password: 
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
-~~~~
+```
 
 Now we add a simple table named *mytab* using the older MyISAM engine.
 It is annoying to try to create a table interactively.  It is better to
 create a small text file first.  So I create an sql file 'create_tab.sql',
 and I source it at the database prompt:
 
-~~~~ {.shell}
+```shell
 MariaDB [webdb]> source create_tab.sql
 Query OK, 0 rows affected (0.02 sec)
 
@@ -309,7 +309,7 @@ $ sudo ls -l /var/lib/mysql/webdb/
 -rw-rw---- 1 mysql mysql 1050 Jun 30 16:09 members.frm
 -rw-rw---- 1 mysql mysql   15 Jun 30 16:09 members.MYD
 -rw-rw---- 1 mysql mysql 2048 Jun 30 16:09 members.MYI
-~~~~
+```
 
 [storage-engines]: https://mariadb.com/kb/en/storage-engines/
 
@@ -319,7 +319,7 @@ $ sudo ls -l /var/lib/mysql/webdb/
 (!! to be continued)
 
 <!--
-~~~~ {.shell}
-~~~~
+```shell
+```
  -->
 

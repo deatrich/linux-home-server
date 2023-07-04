@@ -57,16 +57,17 @@ the document covers the basics, encouraging the reader to see the bigger
 picture and to avoid being smothered in the detail.
 
 In this guide command-line sessions appear in a pale-yellow box.  Two kinds
-of simplified command-line prompts appear:
+of simplified command-line prompts appear.  As well, explanatory comments
+starting with two slashes and coloured blue might appear anywhere in the
+session:
 
-Normal Users (coloured 'green'):\
-<SPAN STYLE="color:#007020;font-weight:bold">**$**</SPAN>
+```shell
+// Normal Users'  (coloured 'green'):
+$ some-command
 
-The root superuser (coloured 'red'):\
-<SPAN STYLE="color:#ff0000;font-weight:bold">**#**</SPAN>
-
-Explanatory comments start with two slashes (coloured 'blue); that is:\
-<SPAN STYLE="color:#0000ff;font-style:italic">**//**</SPAN>
+// The root superuser (coloured 'red'):
+# some-other-command
+```
 
 Sometimes command output is long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)

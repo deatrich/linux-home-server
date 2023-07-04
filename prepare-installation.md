@@ -32,7 +32,7 @@ looks like this.  I only show it here so that you are aware of what is going
 on under the hood.  Here is an example of a 256 GB microSD inserted into a
 USB card reader on another Linux computer where the card showed up as /dev/sde:
 
-~~~~ {.shell}
+```shell
 # fdisk -l /dev/sde
 Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
 Disk model: FCR-HS3       -3
@@ -43,7 +43,7 @@ Disk identifier: 0x11d94b9e
 Device     Boot  Start      End  Sectors  Size Id Type
 /dev/sde1  *      2048   499711   497664  243M  c W95 FAT32 (LBA)
 /dev/sde2       499712 12969983 12470272  5.9G 83 Linux
-~~~~
+```
 
 So there are 2 partitions; the first (/dev/sde1) is a small boot partition
 whose type is FAT32, and the second (/dev/sde2) is the minimal 6 GB Linux

@@ -31,7 +31,7 @@ Open a terminal window by selecting:\
    Application -> System Tools -> MATE Terminal\
 and enter the following commands:
 
-~~~~ {.shell}
+```shell
 // This will update the system's knowledge about what should be updated;
 // in other works, the cache of software package names pending for update:
 $ sudo apt update
@@ -39,7 +39,7 @@ $ sudo apt update
 // then update the software; the command is actually 'upgrade', which is odd,
 // at least to me..
 $ sudo apt upgrade
-~~~~
+```
 
 It will take a while.  Once finished reboot the system to get the newer
 kernel.  On the far upper right taskbar, select the powerbutton icon,

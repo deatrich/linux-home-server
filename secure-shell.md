@@ -13,9 +13,9 @@ to some external server -- for that you do not need sshd.
 If you will be needing sshd then first install it, since
 it is not installed by default in the LTS desktop version:
 
-~~~~ {.shell}
+```shell
 $ sudo apt install openssh-server
-~~~~
+```
 
 If you will be using ssh to connect to any local Linux systems, then
 think about configuring your local area network (LAN) to suit your taste.
@@ -30,7 +30,7 @@ daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
      to the root user except for 'localhost':\
       AllowUsers    myname@192.168.1.\* \*@localhost*
 
-~~~~ {.shell}
+```shell
 $ cd /etc/ssh
 $ sudo cp -p sshd_config sshd_config.orig
 
@@ -54,7 +54,7 @@ $ diff sshd_config.orig sshd_config
 // desktop (eg: 192.168.1.65).  Then the 'AllowUsers' configuration would
 // look like this:
 AllowUsers      myname@192.168.1.* root@192.168.1.65 *@localhost
-~~~~
+```
 
 ## Configure a Personal SSH Key Pair {#key-pair}
 
@@ -81,7 +81,7 @@ characters; as the man-page on ssh-keygen says:
 I would not create a passphrase that is less than 16 characters; I would
 certainly never set an empty passphrase.
 
-~~~~ {.shell}
+```shell
 // If you do not yet have a .ssh directory in your home directory then
 // create one now; and give access to yourself only:
 
@@ -103,7 +103,7 @@ Your identification has been saved in /home/myname/.ssh/id_rsa.
 $ ls -l ~/.ssh/id_rsa ~/.ssh/id_rsa.pub
 -rw------- 1 myname myname 3326 May  2 22:34 /home/myname/.ssh/id_rsa
 -rw-r--r-- 1 myname myname  746 May  2 22:34 /home/myname/.ssh/id_rsa.pub
-~~~~
+```
 
 Be sure to back-up important directories like $HOME/.ssh -- in your home
 environment it might not seem important, but once you start using your ssh
@@ -114,7 +114,7 @@ Suppose you created your keys on your desktop, and you want to use them
 to ssh to your Linux home server without using a standard password.  To
 do this you create an authorized keys file on the server:
 
-~~~~ {.shell}
+```shell
 // secure-copy your public key to the linux server (assuming the server is
 named 'pi')
 $ scp ~/.ssh/id_rsa.pub myname@pi:~/
@@ -160,7 +160,7 @@ $ pwd
 $ nano authorized_keys
 $ tail -1 authorized_keys
 from="192.168.1.65" ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
-~~~~
+```
 
 ## Configure an SSH agent
 
@@ -179,7 +179,7 @@ to start the agent. The script saves the environment variables in a file named:
 
 > ~/.ssh-agent-info-YOUR-FULL-HOSTNAME
 
-~~~~ {.shell}
+```shell
 // Copy the shell script to your home 'bin' directory; create it if needed:
 $ cd
 $ mkdir bin
@@ -205,7 +205,7 @@ Welcome to Ubuntu 22.04.2 LTS (GNU/Linux 5.15.0-1027-raspi aarch64)
 ...
 Last login: Thu May 11 23:56:17 2023 from desktop.home
 $ 
-~~~~
+```
 
 #### Script to start an ssh-agent at initial login
 
@@ -223,7 +223,7 @@ an argument.  You can use *mate-terminal*, or if you have installed the
 script invokes a shell (*/bin/sh* is a symbolic link to */bin/bash*, and
 starts with a [shebang][shebang])
 
-~~~~ {.shell}
+```shell
 // make the 'bin' directory if it does not exist:
 $ cd
 $ touch ~/bin/exec-prime-ssh-keys.sh
@@ -235,7 +235,7 @@ $ cat ~/bin/exec-prime-ssh-keys.sh
 #Decide which terminal command you will use:
 exec mate-terminal -e /home/myname/bin/prime-ssh-keys.sh & 2>/dev/null
 #exec xterm -u8 -e /home/myname/bin/prime-ssh-keys.sh & 2>/dev/null
-~~~~
+```
 
 Another useful tactic is to get your personal bash shell configuration
 file to inherit the SSH agent's environment variables.  Create a small
@@ -244,7 +244,7 @@ process that file in your *~/.bashrc* file so that any new terminal window
 you launch will always inherit the variables.  As well, other scripts which
 might need the variables can do the same.
 
-~~~~ {.shell}
+```shell
 // First create .bash_ssh_env; we 'cat' it after to show what it contains:
 $ nano ~/.bash_ssh_env
 $ cat ~/.bash_ssh_env
@@ -258,7 +258,7 @@ fi
 // the following line in ~/.bashrc:
 
 . ~/.bash_ssh_env
-~~~~
+```
 
 [secure-shell]: https://en.wikipedia.org/wiki/Secure_Shell
 [ssh-agent]: https://www.ssh.com/academy/ssh/agent
@@ -281,7 +281,7 @@ been 'hashed'.`
 This is also where you can assign customized per-host ssh key pair filenames
 to particular hosts.
 
-~~~~ {.shell}
+```shell
 // Create and edit your ssh config file:
 $ cd ~/.ssh/
 $ touch config
@@ -305,4 +305,4 @@ Host *
 ## Example private key which has a customized key name for github.com
 Host github.com
    IdentityFile ~/.ssh/id_rsa_github
-~~~~
+```

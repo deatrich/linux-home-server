@@ -24,7 +24,7 @@ Install the apache software. The ssl-cert package allows us to later
 create an SSL certificate for the https service, so we will install it
 as well.
 
-~~~~ {.shell}
+```shell
 // The list of enabled apache modules on an Ubuntu system is also shown
 // for your information:
 $ sudo apt install apache2 ssl-cert
@@ -62,26 +62,25 @@ Enabling site 000-default.
 Created symlink /etc/systemd/system/multi-user.target.wants/apache2.service → ...
 Created symlink /etc/systemd/system/multi-user.target.wants/apache-htcacheclean.service → ...
 ...
-~~~~
+```
 
 As always, systemd starts the daemon.  It is only listening on port 80 at this
 point:
 
-~~~~ {.shell}
+```shell
 $ sudo lsof -i :80
 COMMAND    PID     USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
 apache2 508647     root    4u  IPv6 1799685      0t0  TCP *:http (LISTEN)
 apache2 508650 www-data    4u  IPv6 1799685      0t0  TCP *:http (LISTEN)
 ...
 $ sudo lsof -i :443
-
-~~~~
+```
 
 We can open a web client (firefox for example) and look at the default web page.
 We can also install a couple of useful *text-based* web clients which are
 useful for doing quick checks:
 
-~~~~ {.shell}
+```shell
 $ firefox http://pi.home/
 
 $ sudo apt install links lynx
@@ -103,7 +102,7 @@ $ lynx --dump http://pi.home/ | head
    Apache2 Default Page
    It works!
    ...
-~~~~
+```
 
 [apache]: https://ubuntu.com/server/docs/web-servers-apache
 [nginx]: https://en.wikipedia.org/wiki/Nginx
@@ -116,7 +115,7 @@ which will generate the needed certificate files.  You need to use
 a configuration file named [*addcert.cnf*][addcert.cnf] and edit it 
 to use your certificate details:
 
-~~~~ {.shell}
+```shell
 $ mkdir ~/certs
 $ cd ~/certs
 $ cp /path/to/addcert.cnf .
@@ -144,13 +143,13 @@ Certificate:
             Not Before: Jun 21 16:00:37 2023 GMT
             Not After : Jun 18 16:00:37 2033 GMT
         ...
-~~~~
+```
 
 The server key file and the server key certificate need to be copied into
 the apache configuration area, and the ssl configuration paths need to be
 updated:
 
-~~~~ {.shell}
+```shell
 $ cd /etc/apache2
 $ sudo mkdir certs
 $ cd /home/myname/certs/
@@ -160,14 +159,14 @@ $ sudo chown root:root server.key server.crt
 $ ls -l
 -r--r--r-- 1 root root 2000 Jun 21 10:00 server.crt
 -r-------- 1 root root 3272 Jun 21 10:00 server.key
-~~~~
+```
  
 Now we enable SSL in apache, using a utility named *a2enmod*.  We also
 enable the SSL default configuration using the utility *a2ensite*.  We
 need to edit the configuration file with our path to the certificate and
 key files.  Once we have done that we can restart apache.
 
-~~~~ {.shell}
+```shell
 // enable the module:
 $ sudo a2enmod ssl
 Considering dependency setenvif for ssl:
@@ -212,7 +211,7 @@ apache2  549191     www-data   4u  IPv6 1943852      0t0  TCP *:http (LISTEN)
 apache2  549191     www-data   6u  IPv6 1943856      0t0  TCP *:https (LISTEN)
 apache2  549192     www-data   4u  IPv6 1943852      0t0  TCP *:http (LISTEN)
 apache2  549192     www-data   6u  IPv6 1943856      0t0  TCP *:https (LISTEN)
-~~~~
+```
 
 Now we want to test the secured web connection connection, and 
 ask your web browser to accept the certificate. With *firefox* we 
@@ -226,7 +225,7 @@ You only need to do this once.
 Both text mode browsers will warn about self-signed certificates, but
 also will allow you to connect:
 
-~~~~ {.shell}
+```shell
 $ firefox https://pi.home
 
 // This example is with 'links' -- we ignore self-signed certs when we use 
@@ -237,7 +236,7 @@ $ links -dump -ssl.certificates 0  http://pi.home/ | head
    It works!
 
    This is the default welcome page used to test ...
-~~~~
+```
 
 [addcert.sh]: https://github.com/deatrich/tools/blob/main/addcert.sh
 [addcert.cnf]: https://github.com/deatrich/tools/blob/main/etc/addcert.cnf
@@ -253,17 +252,17 @@ One way to do this is to simply change the ownership of /var/www/html/
 to yourself -- this will also change ownership for any files in the directory.
 This way you can immediately add and change content as a regular user.
 
-~~~~ {.shell}
+```shell
 $ cd /var/www/html
 $ sudo chown -R myname:myname .
-~~~~
+```
 
 Another way to do this is to make sub-directories inside /var/www/html/ and
 assign ownership of them to yourself.  Then you add your own site configuration
 file(s) in */etc/apache2/sites-available/* with your new sub-directory path(s)
 and enable them.
 
-~~~~ {.shell}
+```shell
 // Make a couple of subdirectories and assign them to yourself.  Suppose
 // you want to use http-served pages for development under /var/www/html/test/,
 // and use https-served pages for production under /var/www/html/pi/.
@@ -338,17 +337,17 @@ $ systemctl status apache2
      ...
      Active: active (running) since Thu 2023-06-22 14:14:00 MDT; 2s ago
      ...
-~~~~
+```
 
 Now test the changed configurations using *links* and the '-source' argument:
 
-~~~~ {.shell}
+```shell
 $ links -source http://pi.home/ | grep title
     <title>Apache2 Ubuntu Default Page on HTTP (no encryption): It works</title>
 
 $ links -source -ssl.certificates 0 https://pi.home/ | grep title
     <title>Apache2 Ubuntu Default Page on HTTPS (secure): It works</title>
-~~~~
+```
 
 Also, you can always add new sub-directories for web page design,
 rather than changing ownership inside /var/www/html.  For example,
@@ -388,7 +387,7 @@ pages.  On SBC hardware that is not an issue; on complex hardware with
 multiple network interfaces on differing networks this would not necessarily
 be what you wanted - in that case a specific IP address is used instead.
 
-~~~~ {.shell}
+```shell
 $ cd /etc/apache2
 $ diff ports.conf.orig ports.conf
 5c5
@@ -424,14 +423,14 @@ $ diff sites-available/default-ssl.conf.orig sites-available/default-ssl.conf
 ---
 >       <VirtualHost 0.0.0.0:443>
 ...
-~~~~
+```
 
 ## Installing the PHP Apache Module
 
 If you are interesting in doing some embedded PHP web development then
 you only need to install the PHP Apache module:
 
-~~~~ {.shell}
+```shell
 $ sudo apt install libapache2-mod-php
 ...
 The following additional packages will be installed:
@@ -454,12 +453,12 @@ $ find . -iname \*php\*
 ./mods-available/php8.1.load
 ./mods-enabled/php8.1.conf
 ./mods-enabled/php8.1.load
-~~~~
+```
 
 You can quickly test that PHP works; simply create a PHP file in the root of
 your new web tree and point your browser to it:
 
-~~~~ {.shell}
+```shell
 // Here we assume that the root of your web tree is at /var/www/html/test/
 $ cd /var/www/html/test/
 $ echo "<?php phpinfo() ?>" > info.php
@@ -487,13 +486,13 @@ $ cd /var/www/html/test/
 $ rm info.php
 // or set it read-write to yourself only:
 $ chmod 600 info.php
-~~~~
+```
 
 You might want to disable PHP session cleanup until a later time
 when you are actually making use of PHP sessions.  You can reenable this
 later when you think you need it:
 
-~~~~ {.shell}
+```shell
 $ systemctl list-unit-files | grep php
 phpsessionclean.service                    static          -
 phpsessionclean.timer                      enabled         enabled
@@ -517,10 +516,10 @@ $ sudo diff /root/php.orig /etc/cron.d/php
 < 09,39 *     * * *     root   [ -x /usr/lib/php/sessionclean ] && if ...
 ---
 > #09,39 *     * * *     root   [ -x /usr/lib/php/sessionclean ] && if ...
-~~~~
+```
 
 <!-- !! need to add logging information -->
 <!--
-~~~~ {.shell}
-~~~~
+```shell
+```
  -->

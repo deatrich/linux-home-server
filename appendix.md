@@ -25,7 +25,7 @@ Here is an example of a Pi that has 3 storage disks and a USB card reader with
       of 232 GB.
   * you can use *fdisk* and *parted* to look more closely at the sde device:
 
-~~~~ {.shell}
+```shell
 # lsblk -i 
 NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
 sda           8:0    1 238.5G  0 disk
@@ -61,12 +61,12 @@ Disk Flags:
 Number  Start   End     Size    Type     File system  Flags
  1      1049kB  256MB   255MB   primary  fat16        boot, lba
  2      256MB   6641MB  6385MB  primary  ext4
-~~~~
+```
 
 You can pass options to the *lsblk* command so that you print out 
 columns you are interested in -- try *lsblk \-\-help* to see other options.
 
-~~~~ {.shell}
+```shell
 # lsblk -i -o 'NAME,MODEL,VENDOR,SIZE,MOUNTPOINT,FSTYPE'
 NAME        MODEL       VENDOR     SIZE MOUNTPOINT     FSTYPE
 sda         Extreme Pro SanDisk  238.5G
@@ -80,7 +80,7 @@ sde         FCR-HS3 -3           231.7G
 mmcblk0                           59.4G
 |-mmcblk0p1                        243M /boot/firmware vfat
 `-mmcblk0p2                       59.2G /              ext4
-~~~~
+```
 
 
 ## Installation Disk Creation from the Command-line {#image-cmds}
@@ -88,7 +88,7 @@ mmcblk0                           59.4G
 This is a generic approach to creating an installation image on removable
 media; it generally works for various Linux distributions.
 
-~~~~ {.shell}
+```shell
 // create a directory for downloaded images
 $ mkdir raspberry-pi-images
 $ cd raspberry-pi-images
@@ -109,7 +109,7 @@ ubuntu-mate-22.04-desktop-arm64+raspi.img.xz (1/1)
  5.1 %      95.2 MiB / 404.4 MiB = 0.235    35 MiB/s     0:11   3 min 40 s
  ...
  100 %   1,847.8 MiB / 6,333.0 MiB = 0.292  27 MiB/s     3:50             
-~~~~
+```
 
 Now plug in the microSD card,
 [identify the microSD card device name](#find-device), and then
@@ -118,11 +118,11 @@ device when you are done with the *eject* command.  In this example
 the device name */dev/sdX* is not real; it is a place-holder for your
 real device name:
 
-~~~~ {.shell}
+```shell
 $ img="ubuntu-mate-22.04-desktop-arm64+raspi.img"
 $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
 $ sudo eject /dev/sdX
-~~~~
+```
 
 ## Modify the Partitioning of the Installation Image {#mod-partition}
 
@@ -199,7 +199,7 @@ To be sure this partition is sound I run a check on it with *e2fsck*.
 Then I use *parted* to expand the partition, and then *resize2fs* which can
 adjusts the size of the underlying ext4 filesystem.
 
-~~~~ {.shell}
+```shell
 // run a filesystem check on the target partition:
 $ sudo e2fsck /dev/sde2
 e2fsck 1.46.5 (30-Dec-2021)
@@ -232,7 +232,7 @@ $ sudo resize2fs /dev/sde2
 resize2fs 1.46.5 (30-Dec-2021)
 Resizing the filesystem on /dev/sde2 to 9703161 (4k) blocks.
 The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.
-~~~~
+```
 
 ### Create a New Data Partition
 
@@ -240,7 +240,7 @@ Now we want to create a third large partition.  We run into the problem
 of partition alignment because I chose 40 GB for the second partition 
 expansion without considering alignment for the next partition.
 
-~~~~ {.shell}
+```shell
 // invoke *parted* and print the partition table in sector units:
 $ sudo parted /dev/sde
 ...
@@ -262,7 +262,7 @@ Number  Start    End        Size       Type     File system  Flags
 Warning: The resulting partition is not properly aligned for best performance:
 78125001s % 2048s != 0s
 Ignore/Cancel? c
-~~~~
+```
 
 Disk technology has evolved considerably.  Block devices traditionally
 had a default 512 byte sector size (a sector is the minimum usable unit),
@@ -274,7 +274,7 @@ disk, since 512 bytes * 2048 sectors is 1048576 bytes.  You lose a bit of
 disk space at the 'front' of the disk, but partitioning and file system 
 data structures are better aligned, and disk performance is enhanced.
 
-~~~~ {.shell}
+```shell
 // To calculate the best starting sector number for an aligned new
 //  partition simply calculate: 
 //  TRUNCATE(FIRST_POSSIBLE_SECTOR / 2048) * 2048 + 2048
@@ -302,13 +302,13 @@ Number  Start      End         Size        Type     File system  Flags
  3      78125056s  485869567s  407744512s  primary
 
 (parted) quit
-~~~~
+```
 
 Though we have now a bit of wasted space between partition 2 and 3, we can
 extend partition 2 to use that space.  We need to resize its ext4 file system
 after:
 
-~~~~ {.shell}
+```shell
 // first check the file system:
 $ sudo e2fsck /dev/sde2
 e2fsck 1.46.5 (30-Dec-2021)
@@ -343,14 +343,14 @@ $ sudo resize2fs /dev/sde2
 resize2fs 1.46.5 (30-Dec-2021)
 Resizing the filesystem on /dev/sde2 to 9703168 (4k) blocks.
 The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.
-~~~~
+```
 
 ### Create a Filesystem on the New Data Partition
 
 Ubuntu uses the *ext4* filesystem, so let's create that filesystem on the
 new data partition:
 
-~~~~ {.shell}
+```shell
 $ sudo mkfs.ext4 /dev/sde3
 mke2fs 1.46.5 (30-Dec-2021)
 Creating filesystem with 50968064 4k blocks and 12746752 inodes
@@ -363,7 +363,7 @@ Allocating group tables: done
 Writing inode tables: done                            
 Creating journal (262144 blocks): done
 Writing superblocks and filesystem accounting information: done
-~~~~
+```
 
 By default, the generations of the [*ext* filesystems][ext] reserve 5% of the 
 available space for the *root* user.  On a data partition where most
@@ -371,7 +371,7 @@ files created will belong to ordinary users this reservation is not necessary.
 5% of 200 GB is 10 GB - that is a lot of space.  So it is a good idea
 to reduce the percentage to 1%; do this with the *tune2fs* utility:
 
-~~~~ {.shell}
+```shell
 $ sudo tune2fs -l /dev/sde3 | grep -i count
 ...
 Reserved block count:     2548403
@@ -383,15 +383,16 @@ Setting reserved blocks percentage to 1% (509680 blocks)
 $ sudo tune2fs -l /dev/sde3 | grep -i count
 ...
 Reserved block count:     509680
-~~~~
+```
 
 Lastly, let's add a *label* to this partition to make it easier to mount
 the filesystem in the future.  We will use the label *PI-DATA*:
 
-~~~~ {.shell}
+```shell
 $ sudo tune2fs -L PI-DATA /dev/sde3
 tune2fs 1.46.5 (30-Dec-2021)
-~~~~
+```
+
 [ext]: https://en.wikipedia.org/wiki/Extended_file_system
 
 ## Setting Up a Data Area {#data-area}
@@ -407,15 +408,15 @@ to mount that data partition:
 
 Let's call the directory */data*:
 
-~~~~ {.shell}
+```shell
 $ sudo mkdir /data
-~~~~
+```
 
 For the case with the third (data) partition then we need
 to mount it and make the mount action permanent on reboots.  For this
 we create an entry in the filesystem table, the */etc/fstab* file:
 
-~~~~ {.shell}
+```shell
 // make a backup copy first
 $ sudo cp -p /etc/fstab /etc/fstab.orig
 
@@ -443,7 +444,7 @@ drwx------  2 root root 16384 Apr 16 10:35 lost+found
 $ df -h /data
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/sde3       191G   28K  189G   1% /data
-~~~~
+```
 
 ## Some Command-line Utilities and Their Purpose {#eg-cmds}
 
@@ -654,7 +655,7 @@ the example below you:
     * run the script in test mode to check configuration correctness
     * create/edit the cronjob to run the local backup at 1 in the early morning
 
-~~~~ {.shell}
+```shell
 // Create local directory with permissions limiting access to
 // backed-up files to users in the 'adm' group:
 $ sudo mkdir /var/local-backups
@@ -687,7 +688,7 @@ $ EDITOR=/bin/nano sudo crontab -e
 $ sudo crontab -l | tail -3
 
 0 1 * * * /root/bin/system-backup.sh --local
-~~~~
+```
 
 If you will also synchronize backups to a USB drive, then you must make
 directories at the root of the USB filesystem for backups.  The USB partition
@@ -695,7 +696,7 @@ name and the names of the directories must match the configuration file setup.
 (example: your USB partition is /dev/sda1 and so you have set 'usbpartition'
 in the configuration file to 'sda1')
 
-~~~~ {.shell}
+```shell
 // Here we also prepare for doing large directory rsyncs as well:
 $ sudo mount /dev/sda1 /mnt
 $ cd /mnt
@@ -720,7 +721,7 @@ $ EDITOR=/bin/nano sudo crontab -e
 $ sudo crontab -l | tail -3
 
 0 1 * * * /root/bin/system-backup.sh --local --external --rsync-large
-~~~~
+```
 
 In case your USB drive is formated for Windows then it should be okay
 for all backups except for the large directories backup; that is,
@@ -785,7 +786,7 @@ within the 'localhost' network during installation; we will comment that out.
 
 Here are the examples:
 
-~~~~ {.shell}
+```shell
 // File: /etc/networks
 // You can look at your router's management web page to understand
 // what your network address is - the example used here is: 192.168.1.0
@@ -822,14 +823,14 @@ $ # diff /etc/hosts.orig /etc/hosts
 > 192.168.1.80	odroid.home odroid
 > 192.168.1.81	laptop.home laptop
 > 192.168.1.86	inkjet.home inkjet
-~~~~
+```
 
 ### Changing the Server's Hostname
 
 Now that we have a *.home* domain we can rename our official server's hostname.
 Suppose the server was originally named *pi* during the installation:
 
-~~~~ {.shell}
+```shell
 // look at what you set your hostname to during the installation:
 $ hostname
 pi
@@ -841,7 +842,7 @@ $ sudo hostnamectl hostname pi.home
 
 $ hostname
 pi.home
-~~~~
+```
 
 ### The Resolver and Looking Up Your Local Hostnames
 
@@ -858,11 +859,11 @@ Of course, external DNS servers know nothing about your private local network.
 So, when you try querying a private host using one of the above utilities,
 you might see:
 
-~~~~ {.shell}
+```shell
 $ host pi.home
 pi.home has address 192.168.1.90
 Host pi.home not found: 3(NXDOMAIN)
-~~~~
+```
 
 The 'host' command looked at the /etc/hosts file, but
 might also consulted the listed nameservers.  This is because it consults an
@@ -870,28 +871,28 @@ important file named */etc/nsswitch.conf* which configures the order to try
 when looking up host and other data.  Because 'files' is first, the
 daemon consults /etc/hosts before doing any dns request:
 
-~~~~ {.shell}
+```shell
 $ grep hosts /etc/nsswitch.conf
 hosts:          files mdns4_minimal [NOTFOUND=return] dns
-~~~~
+```
 
 
 There is another command-line tool -- *getent* -- for looking up local dns data,
 and does not consult nameservers:
 
-~~~~ {.shell}
+```shell
 $ getent hosts pi
 192.168.1.90   pi.home pi web
 $ getent hosts 192.168.1.90
 192.168.1.90   pi.home pi
-~~~~
+```
 
 Contemporary Linux version's using systemd-resolvd handle this case better
 since it acts as a local nameserver that handles local DNS lookups, especially
 local IP address lookups.  However it still whines about hostname looks, though
 it returns the correct local lookup anyway:
 
-~~~~ {.shell}
+```shell
 // Try from another ubuntu host:
 
 $ hostname
@@ -917,7 +918,7 @@ $ host pi
 pi has address 192.168.1.90
 $ echo $?
 0
-~~~~
+```
 
 ### Modifying the Resolver's List of Nameservers
 
@@ -930,7 +931,7 @@ differently than in older Linux versions.  Recent Ubuntu LTS versions
 use a systemd service named *systemd-resolved* which by default manages
 the resolver file, and it runs a local DNS server:
 
-~~~~ {.shell}
+```shell
 // list open network connections and find a name match for 'resolve'
 # lsof -i -P -n +c0 | grep resolve
 systemd-resolve  568 systemd-resolve   13u  IPv4  20701      0t0  UDP 127.0.0.53:53 
@@ -958,7 +959,7 @@ Link 2 (ens3)
          Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
 Current DNS Server: 192.168.1.254
        DNS Servers: 192.168.1.254 75.153.171.67
-~~~~
+```
 
 Sometimes you want to modify the list of external DNS servers -- for example --
 the DNS servers used by *my* router have 'slow' days, so I like to have
@@ -967,7 +968,7 @@ at the process.
 
 Create a local copy of the resolver file - do not pollute systemd space:
 
-~~~~ {.shell}
+```shell
 // Remove the current resolver file (we don't want to edit systemd's file).
 // This just removes the symbolic link:
 $ sudo rm /etc/resolv.conf
@@ -982,14 +983,14 @@ $ tail -3 /etc/resolv.conf
 nameserver 127.0.0.53
 options edns0 trust-ad
 search .
-~~~~
+```
 
 By default this version of Ubuntu uses NetworkManager for network configuration,
 and the local systemd-resolved for DNS service.  To make a permanent change
 to the DNS information known to systemd we configure NetworkManager using
 its management utility *nmcli*:
 
-~~~~ {.shell}
+```shell
 $ nmcli connection show
 NAME                UUID                                  TYPE      DEVICE 
 Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0   
@@ -1004,7 +1005,7 @@ ipv4.dns-options:                       --
 ...
 IP4.DNS[1]:                             192.168.1.254
 IP4.DNS[2]:                             75.153.171.67
-~~~~
+```
 
 Now we add some other DNS servers to this configuration using nmcli; it should
 persist after a reboot.  We are adding well-known public IP addresses from
@@ -1012,7 +1013,7 @@ Cloudflare (1.1.1.1), and from Google (8.8.8.8):
 
 <!-- !! I need to check if we need to restart the network.. -->
 
-~~~~ {.shell}
+```shell
 $ sudo nmcli connection modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
 $ nmcli connection show 'Wired connection 1' | grep -i dns
 connection.mdns:                        -1 (default)
@@ -1029,12 +1030,12 @@ IP4.DNS[4]:                             75.153.171.67
 $ resolvectl status|grep 'DNS Serv'
 Current DNS Server: 1.1.1.1
        DNS Servers: 1.1.1.1 8.8.8.8 192.168.1.254 75.153.171.67
-~~~~
+```
 
 If ever you want to make a temporary change, use 'resolvctl' to do that; it
 will not persist after a reboot:
 
-~~~~ {.shell}
+```shell
 // Here the Pi's ethernet device name is 'eth0'
 $ sudo resolvectl dns eth0 9.9.9.9 8.8.4.4 75.153.171.67
 
@@ -1049,7 +1050,7 @@ Link 2 (eth0)
          Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
 Current DNS Server: 9.9.9.9
        DNS Servers: 9.9.9.9 8.8.4.4 75.153.171.67
-~~~~
+```
 
 [tld]: https://data.iana.org/TLD/tlds-alpha-by-domain.txt
 [private]: https://en.wikipedia.org/wiki/Private_network
@@ -1076,7 +1077,7 @@ disable the password afterwards.
 This is an example of setting a password for root -- as always you set
 a **strong** password:
 
-~~~~ {.shell}
+```shell
 // Normally password access is locked in /etc/shadow - we unlock it when
 // we set a password:
 $ man passwd
@@ -1094,7 +1095,7 @@ passwd: password updated successfully
 // We now see an encrypted password in the password field in the shadow file:
 # head -1 /etc/shadow
 root:$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
-~~~~
+```
 
 Now we can log in directly as root at the server's text console; remember
 that it is foolish to login as 'root' to a graphical environment.  Using
@@ -1103,7 +1104,7 @@ web browers as 'root' is not smart.
 To lock the root user from using a password, use the **-l** option; you can
 unlock it in the future with the **-u** option.
 
-~~~~ {.shell}
+```shell
 
 // lock it:
 # passwd -l root
@@ -1111,7 +1112,7 @@ passwd: password expiry information changed.
 
 # head -1 /etc/shadow
 root:!$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
-~~~~
+```
 
 ### Allowing Secure-shell Access From Another Device in Your LAN
 
@@ -1125,19 +1126,19 @@ In */etc/ssh/sshd_config* add the remote device's IP address with *root@*
 prefixing it to the 'AllowUsers' rule.  Here access to the root account is
 allowed from 192.168.1.65:
 
-~~~~ {.shell}
+```shell
 # id
 uid=0(root) gid=0(root) groups=0(root)
 # grep AllowUsers /etc/ssh/sshd_config
 AllowUsers      myname@192.168.1.* root@192.168.1.65 *@localhost
-~~~~
+```
 
 Then root's */root/.ssh/authorized_keys* file must specifically allow the
 remote device; in this case we use the *from=''* option (see the man page for
 'authorized_keys').  As well, if you also allow localhost (127.0.0.1) you would
 allow your login account to ssh locally to root:
 
-~~~~ {.shell}
+```shell
 # tail -1 ~/.ssh/authorized_keys
 from="127.0.0.1,192.168.1.65" ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
 
@@ -1154,7 +1155,7 @@ myname  395414  395331  09:29 pts/0  00:00:00  |           \_ ssh -A -Y root@loc
 root    395415     685  09:29 ?      00:00:00  \_ sshd: root@pts/1
 root    395460  395429  09:30 pts/1  00:00:00          \_ grep --color=auto ssh
 myname    3693       1  May26 ?      00:00:00 ssh-agent
-~~~~
+```
 
 <!-- !! Note about IPv6 -->
 <!-- Yet to do: Command-line Index  -->

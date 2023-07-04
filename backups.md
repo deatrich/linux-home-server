@@ -37,7 +37,7 @@ empty directory with adequate space.  In this example we recover files from
 a compressed tar file.  We unpack the tarball in the empty directory, and
 then move or copy any files into place in the file system.  Example:
 
-~~~~ {.shell}
+```shell
 // This example unpacks home.tgz and etc.tgz
 $ sudo mkdir /var/local-recovery
 
@@ -55,12 +55,12 @@ drwxr-xr-x 152 root root 12288 Jun  1 10:56 etc
 drwxr-xr-x   3 root root  4096 May 25 10:45 home
 $ ls -l home/
 drwxr-x--- 25 myname myname 4096 Jun  1 21:12 myname
-~~~~
+```
 
 If you need to recover files from large directory backups then you can
 copy the files directly from the removable media to your target directories.
 
-~~~~ {.shell}
+```shell
 // This example recovers a directory inside the large directory backup of
 // /home.  First mount the USB drive -- the example partition here is at
 // /dev/sda1:
@@ -83,5 +83,5 @@ $ sudo umount /mnt
 $ pwd
 /home/myname
 $ diff -r bin bin.recovered
-~~~~
+```
 

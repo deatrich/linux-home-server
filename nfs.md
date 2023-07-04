@@ -15,7 +15,7 @@ First install the needed packages.  The *nfs-common* package contains both
 client and server elements; the *nfs-kernel-server* contains the server 
 daemons *rpc.mountd* and *rpc.nfsd*.
 
-~~~~ {.shell}
+```shell
 $ sudo apt install nfs-common nfs-kernel-server
 ...
 The following NEW packages will be installed:
@@ -63,12 +63,12 @@ root      272298       2  0 10:46 ?        00:00:00 [nfsd]
 root      272299       2  0 10:46 ?        00:00:00 [nfsd]
 root      272300       2  0 10:46 ?        00:00:00 [nfsd]
 root      272301       2  0 10:46 ?        00:00:00 [nfsd]
-~~~~
+```
 
 There are a few files to configure.  We remove IPv6 RPC services by commenting
 out *udp6* and *tcp6* from /etc/netconfig:
 
-~~~~ {.shell}
+```shell
 $ sudo cp -p /etc/netconfig /etc/netconfig.orig
 $ sudo nano /etc/netconfig
 $ diff /etc/netconfig.orig /etc/netconfig
@@ -78,11 +78,11 @@ $ diff /etc/netconfig.orig /etc/netconfig
 ---
 > #udp6       tpi_clts      v     inet6    udp     -       -
 > #tcp6       tpi_cots_ord  v     inet6    tcp     -       -
-~~~~
+```
 
 Before restarting the daemons we see various IPv6 processes running:
 
-~~~~ {.shell}
+```shell
 $ sudo lsof -i | grep rpc | grep IPv6
 systemd        1      root  144u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
 systemd        1      root  145u  IPv6 899100    0t0  UDP :sunrpc 
@@ -99,8 +99,7 @@ rpc.mount 272286      root   15u  IPv6 902372    0t0  TCP :52705 (LISTEN)
 
 // restart the daemons (only the rpcbind ports still report IPv6)
 $ sudo systemctl restart rpcbind nfs-server rpc-statd
-
-~~~~
+```
 
 Finally, the NFS shares need to be published and shared.  It is best to
 export */home* so that logins on both the server and any clients use the
@@ -109,7 +108,7 @@ change the home directory path in the password file, or create a symbolic
 link from */home* to the new directory -- though we can do this, it is
 a bit messy.
 
-~~~~ {.shell}
+```shell
 // Edit the exports file on the NFS server:
 $ sudo cp -p /etc/exports /etc/exports.orig
 $ sudo nano /etc/exports
@@ -124,13 +123,13 @@ $ diff /etc/exports.orig /etc/exports
 > /home   192.168.1.65(rw,sync,no_subtree_check) \
 >         192.168.1.85(rw,sync,no_subtree_check)
 >
-~~~~
+```
 
 Then export the share.  It can then be mounted on other clients.
 
-~~~~ {.shell}
+```shell
 $ sudo exportfs -a
-~~~~
+```
 
 ## Configure NFS Clients on Other Hosts
 
@@ -144,7 +143,7 @@ Consider migrating the content of /home to the server.
 This example uses another Ubuntu host as the NFS client.  We install autofs
 on it and then edit the automount map files as needed.
 
-~~~~ {.shell}
+```shell
 // install the autofs package
 $ sudo apt install autofs
 The following additional packages will be installed:
@@ -214,14 +213,14 @@ $ cat /etc/auto.home
 /home/myname \
   -rw,hard,intr,rsize=32768,wsize=32768,retrans=2,timeo=600,tcp,nfsvers=3 \
   192.168.1.90:/home/myname
-~~~~
+```
 
 Now, you would normally restart autofs - but do not do this immediately:
 
-~~~~ {.shell}
+```shell
 // restart autofs:
 $ sudo systemctl restart autofs
-~~~~
+```
 
 Consider your impending 'chicken-and-egg' issue regarding being a regular
 user logged into your home directory while you restart autofs, causing
@@ -232,11 +231,11 @@ if you do not want to fiddle with changes to root access is to
 changes then when the client is back up again you should have a home directory
 that is served by your home server.
 
-~~~~ {.shell}
+```shell
 $ pwd
 /home/myname
 $ df -h .
 Filesystem                    Size  Used Avail Use% Mounted on
 192.168.1.90:/home/myname      50G  464M   50G   1% /home/myname
-~~~~
+```
 

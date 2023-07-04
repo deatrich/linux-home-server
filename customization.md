@@ -29,7 +29,7 @@ You will need to eventually reboot the server once you have make this change.
 If you also disable WiFi then wait until you have finished the next task, or
 any other tasks in this chapter.
 
-~~~~ {.shell}
+```shell
 // List bluetooth devices:
 $ hcitool dev
 Devices:
@@ -47,8 +47,7 @@ $ sudo nano config.txt
 $ tail -3 config.txt
 
 dtoverlay=disable-bt
-
-~~~~
+```
 
 ## Turn Off Wireless
 
@@ -61,7 +60,7 @@ server on wireless then skip this task.
 You will need to reboot the server once you have make this change, but 
 **remember to connect the ethernet cable** on the Pi to your home router first!
 
-~~~~ {.shell}
+```shell
 // List wireless devices - after making this change you will not see this
 // information:
 $ iw dev
@@ -92,7 +91,7 @@ dtoverlay=disable-wifi
 // After rebooting the Pi disable the wireless authentication service
 $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
-~~~~
+```
 
 ## Enable Boot-up Console Messages
 
@@ -103,12 +102,11 @@ the 'quiet' argument.  On my system this one line file nows ends in:\
 instead of\
   '... fixrtc quiet splash':
 
-~~~~ {.shell}
+```shell
 $ cd /boot/firmware
 $ sudo cp -p cmdline.txt cmdline.txt.orig
 $ sudo nano cmdline.txt
-
-~~~~
+```
 
 ## Disable the Graphical Login Interface
 
@@ -117,7 +115,7 @@ keyboardless, and sit in the semi-darkness.  A graphics-based console
 is therefore useless.  Though your home server might not be as lonely as a
 data centre server, you might want to try a text-based console:
 
-~~~~ {.shell}
+```shell
 $ sudo systemctl set-default multi-user
 $ sudo systemctl stop display-manager
 
@@ -128,7 +126,7 @@ $ sudo systemctl stop display-manager
 
 $ sudo apt install gpm
 $ sudo systemctl enable gpm
-~~~~
+```
 
 ## Disable Snap Infrastructure
 
@@ -154,9 +152,9 @@ packages and the snapd daemon:
 You should close firefox if it is running in a desktop setting.  Then
 disable the snapd services and socket:
 
-~~~~ {.shell}
+```shell
 $ sudo systemctl disable snapd snapd.seeded snapd.socket
-~~~~
+```
 
 #### Remove the packages
 
@@ -166,7 +164,7 @@ remove packages one at a time and watch for messages warning about
 dependencies.  This is my list of Snap packages; your list might be different
 depending on what you have installed:
 
-~~~~ {.shell}
+```shell
 $ snap list
 Name                       Version           ...  Publisher      Notes
 bare                       1.0               ...  canonical     base
@@ -197,7 +195,7 @@ $ sudo snap remove snapd
 
 $ snap list
 No snaps are installed yet. Try 'snap install hello-world'.
-~~~~
+```
 
 #### Clean up and add a new firefox dpkg source
 
@@ -205,7 +203,7 @@ Completely remove snapd and its cache files from the system.  Then add
 configuration files for *apt* access to firefox *dpkg-based* packages.
 Finally install firefox from the Mozilla Personal Package Archive (PPA):
 
-~~~~ {.shell}
+```shell
 $ sudo apt autoremove --purge snapd
 $ sudo rm -rf /root/snap
 $ rm -rf ~/snap
@@ -229,7 +227,7 @@ Support for Ubuntu 16.04 ESM is included.
 
 // Install firefox
 $ sudo apt install firefox
-~~~~
+```
 
 [remove-snap]: https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204
 
@@ -252,7 +250,7 @@ Here we create another 1 GB file -- it can be much larger if needed; but
 if you need a lot of swap then you should investigate to see what is eating
 memory.
 
-~~~~ {.shell}
+```shell
 // check to see what the current swap usage is; in this case it is 0
 $ free -t
            total       used        free    shared  buff/cache   available
@@ -304,8 +302,7 @@ NAME           TYPE  SIZE USED PRIO
 $ systemctl --type swap 
   UNIT               LOAD   ACTIVE SUB    DESCRIPTION   
   swap-swapfile.swap loaded active active /swap/swapfile
-
-~~~~
+```
 
 [OOM]: https://docs.memset.com/cd/Linux%27s-OOM-Process-Killer.199066633.html
 [swap]: https://help.ubuntu.com/community/SwapFaq
@@ -320,10 +317,10 @@ have another mechanism called *anacron* which trys to run periodic
 cron-configured commands while the computer is still running.  Since we 
 are creating a 24x7 server we do not also need anacron -- delete it:
 
-~~~~ {.shell}
+```shell
 $ sudo apt remove anacron
 $ sudo apt purge anacron
-~~~~
+```
 
 ## Disable Various Unused Services
 
@@ -336,7 +333,7 @@ doing them individually allows you to watch for any feedback.  You can also
 simply disable these services without stopping them.  They will not run
 on the next reboot.
 
-~~~~ {.shell}
+```shell
 // If you want to run a series of commands as root you can sudo to the bash
 // shell, run your commands, and then exit the shell.  Be careful to
 // always exit immediately after running your commands.
@@ -374,7 +371,7 @@ $ sudo /bin/bash
 // If you want to disable other apport-based crash reporting then remove apport
 // from your server:
 # apt autoremove --purge apport
-~~~~
+```
 
 [sssd]: https://ubuntu.com/server/docs/service-sssd
 
@@ -390,7 +387,7 @@ In this example the locale setting is generic English with a region code
 for Canada.  Because the British English locale uses a 24 hour clock then
 changing only the time locale will show datestrings with a 24 hour clock:
 
-~~~~ {.shell}
+```shell
 // Show your current locale settings
 $ locale
 LANG=en_CA.UTF-8
@@ -417,7 +414,7 @@ Thu 11 May 08:44:00 MDT 2023
 // you inherit the older locale environment at login, then you will not see
 // the change until you logout, and then back in.
 $ sudo localectl set-locale LC_TIME="en_GB.UTF-8"
-~~~~
+```
 
 [locale]: https://en.wikipedia.org/wiki/Locale_(computer_software)
 
@@ -430,34 +427,34 @@ resulting files are rotated through a specified rotation, and the oldest
 compressed log is deleted; for example here are 4 weeks worth of rotated
 auth.log files:
 
-~~~~ {.shell}
+```shell
 $ ls -ltr /var/log/ | grep auth.log
 -rw-r-----  1 syslog     adm      3498 Apr 15 23:17 auth.log.4.gz
 -rw-r-----  1 syslog     adm      8178 Apr 22 23:17 auth.log.3.gz
 -rw-r-----  1 syslog     adm      7225 Apr 30 01:09 auth.log.2.gz
 -rw-r-----  1 syslog     adm     58810 May  7 00:22 auth.log.1
 -rw-r-----  1 syslog     adm     46426 May 11 09:17 auth.log
-~~~~
+```
 
 A better scheme is to use the 'dateext' option in */etc/logrotate.conf*
 so that older compressed logs keep their compressed and dated names until
 they are deleted:
 
-~~~~ {.shell}
+```shell
 $ ls -ltr /var/log/ | grep auth.log
 -rw-r----- 1 syslog      adm      3287 Apr 17 07:30 auth.log-20230417.gz
 -rw-r----- 1 syslog      adm      2494 Apr 23 07:30 auth.log-20230423.gz
 -rw-r----- 1 syslog      adm      4495 May  1 07:30 auth.log-20230501.gz
 -rw-r----- 1 syslog      adm     35715 May  7 07:30 auth.log-20230507
 -rw-r----- 1 syslog      adm     29500 May 11 09:55 auth.log
-~~~~
+```
 
 To make this change /etc/logrotate.conf is modified.  We also set the
 number of rotations to keep to 12 weeks instead of 4 weeks.  Note that
 per-service log file customization is possible; look at examples in
 */etc/logrotate.d/*
 
-~~~~ {.shell}
+```shell
 $ cd /etc
 $ sudo cp -p logrotate.conf logrotate.conf.orig
 $ sudo nano logrotate.conf
@@ -471,7 +468,7 @@ $ diff logrotate.conf.orig logrotate.conf
 < #dateext
 ---
 > dateext
-~~~~
+```
 
 ### Other Configuration Issues
 

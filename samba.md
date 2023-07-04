@@ -29,12 +29,12 @@ to use for guest access to Samba shares.
 
 We set the access permissions using chmod[^chmod] and chown[^chown].
 
-~~~~ {.shell}
+```shell
 $ cd /data
 $ sudo mkdir shared
 $ sudo chown nobody:nogroup shared
 $ sudo chmod g+ws shared
-~~~~
+```
 
 Here are 3 example directories to create for differing purposes:\
  'Music', 'Protected' and 'Test'\
@@ -46,23 +46,23 @@ your other devices as well.
 I use the Test area initially for testing from various devices; that is,
 create and delete files in the test directory.
 
-~~~~ {.shell}
+```shell
 $ cd /data/shared
 $ sudo mkdir Test
 $ sudo chown nobody:nogroup Test
 $ sudo chmod g+ws Test
-~~~~
+```
 
 I like having a general 'Protected' area that others can access but
 cannot change.  I use secure-shell access to that area for dumping files
 that I manage without using Samba tools.
 
-~~~~ {.shell}
+```shell
 $ cd /data/shared
 $ sudo mkdir Protected
 $ sudo chown myname:mygroup Protected
 $ sudo chmod g+ws Protected
-~~~~
+```
 
 As an example I put my old Music files in 'Music' so that it could be
 accessed from various devices 24x7. You can either keep the permissions
@@ -70,7 +70,7 @@ as *nobody:nogroup*, allowing other people in your home network to help
 manage the collection, or you can change ownership so that only you manage
 them locally.  In this example my login name is 'myname' with group 'mygroup':
 
-~~~~ {.shell}
+```shell
 $ du -sh /data/shared/Music/
 7.4G    /data/shared/Music/
 $ ls -la /data/shared/Music/
@@ -86,7 +86,7 @@ drwxr-xr-x 13 myname mygroup   4096 Feb 26  2022 Pop
 -rw-r--r--  1 myname mygroup  10065 Feb 27  2022 Pop.m3u
 drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock
 -rw-r--r--  1 myname mygroup  41656 Feb 27  2022 Rock.m3u
-~~~~
+```
 
 [chmod-help]: https://en.wikipedia.org/wiki/Chmod
 
@@ -100,7 +100,7 @@ drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock
 
 Simply install the *samba* package; *apt* will pull in any dependencies:
 
-~~~~ {.shell}
+```shell
 $ sudo apt install samba
 ...
 0 upgraded, 21 newly installed, 0 to remove and 3 not upgraded.
@@ -108,7 +108,7 @@ Need to get 7,870 kB of archives.
 After this operation, 44.1 MB of additional disk space will be used.
 Do you want to continue? [Y/n] 
 ...
-~~~~
+```
 
 ## Modify the Samba configuration file
 
@@ -136,7 +136,7 @@ Here are the specifics:
 
 The [modified smb.conf file][smb-conf] is in github.
 
-~~~~ {.shell}
+```shell
 $ cd /etc/samba
 $ sudo cp -p smb.conf smb.conf.orig
 $ sudo nano smb.conf
@@ -169,14 +169,14 @@ $ diff smb.conf.orig smb.conf
 >     guest ok = yes
 >     create mask = 0664
 >     directory mask = 0775
-~~~~
+```
 
 [vfs]: https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html
 [smb-conf]: https://raw.githubusercontent.com/deatrich/linux-home-server/main/examples/smb.conf
 
 ## Start the Service and Run Some Tests
 
-~~~~ {.shell}
+```shell
 // enable the samba daemons
 $ sudo systemctl enable smbd nmbd
 $ sudo systemctl restart smbd nmbd
@@ -185,7 +185,7 @@ $ systemctl status smbd | grep Status:
 
 $ systemctl  status nmbd | grep Status:
      Status: "nmbd: ready to serve connections..."
-~~~~
+```
 
 Testing will depend on your device and client.
 
