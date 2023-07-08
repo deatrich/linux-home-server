@@ -1157,6 +1157,91 @@ root    395460  395429  09:30 pts/1  00:00:00          \_ grep --color=auto ssh
 myname    3693       1  May26 ?      00:00:00 ssh-agent
 ```
 
+## Creating a New Git Repository {#new-git-repo}
+
+This is a list of small tasks that you as the git manager must do for
+each new repository that you host on your Git server:
+
+   * Initialize the repository
+   * Create a symbolic link to the repository's name without the '.git' extension
+   * Edit the 'description' file with a one-line description
+   * Touch the git-daemon-export-ok file to enable exporting the repository
+   * Add the repository name and author to the projects list file
+
+```shell
+$ sudo -u git /bin/bash
+
+// Let's go ahead and create a git repository named 'test'.
+// We do this by using the git 'init' command:
+$ cd /git
+$ git --bare init test.git
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint: 
+hint:   git config --global init.defaultBranch <name>
+hint: 
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint: 
+hint:   git branch -m <name>
+Initialized empty Git repository in /var/www/git/test.git/
+
+$ ls -l
+drwxr-xr-x 7 git git 4096 Jul  6 14:52 test.git
+
+// Create the symbolic link without the 'git' extension
+$ ln -s test.git test
+
+// We create a repository description, and we export the repository so that
+// it is visible:
+$ nano test.git/description
+$ cat test.git/description
+This is just a test.
+
+$ cd test.git/
+$ ls
+branches  config  description  HEAD  hooks  info  objects  refs
+
+$ touch git-daemon-export-ok
+
+// Finally we add the repository name and author to the projects list file.
+// This file is used by 'gitweb', and it's name is in '/etc/gitweb.conf'
+// You must create the file the first time you create a new repository:
+$ cd /git
+$ touch projects_list_for_homegit
+$ nano projects_list_for_homegit
+$ cat projects_list_for_homegit 
+test MyFirstName+MyLastName
+
+$ exit
+```
+
+## Allowing a New User SSH Access to the Git Server {#new-git-user}
+
+One time only we set up the authorized keys file.
+
+```shell
+$ sudo -u git /bin/bash
+$ cd
+$ pwd
+/home/git
+$ mkdir .ssh
+$ chmod go-rwx .ssh
+$ touch .ssh/authorized_keys
+$ chmod 600 .ssh/authorized_keys
+```
+
+Then for each new user whom we allow to use ssh access to git repositories
+we need to add their designated public ssh key.
+
+```shell
+// add public keys for allowed users, starting with yourself
+$ nano .ssh/authorized_keys
+$ tail -1 authorized_keys
+ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
+```
+
 <!-- !! Note about IPv6 -->
 <!-- Yet to do: Command-line Index  -->
 <!-- Yet to do: URL Index  -->
