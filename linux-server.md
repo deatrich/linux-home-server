@@ -1,20 +1,7 @@
 <!-- -->
-# Topics To Document
+# This file is no longer used
 
-These topics are not yet documented.  This is a placeholder for now.
+But the Makefile likes this file :o)  In fact, it needs to exist
+for my Makefile to work.
 
-
-#### Enabling a Git Service and Browsing It on Your Web Site
-
-description here.
-
-
-#### Other Possible Services 
-
-Other services will be added to this document in the future;\
-- some examples: bind DNS, MySQL, KVM virtualization, Ansible, ...
-
-<!-- Yet to do: add section concerning local user configurations; 
- eg: careless ubuntu path settings, junk in path, etc. -->
-<!--  -->
 
