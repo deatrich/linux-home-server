@@ -11,4 +11,5 @@ remote-desktop.md
 nfs.md
 web-server.md
 database-server.md
+git-server.md
 appendix.md
