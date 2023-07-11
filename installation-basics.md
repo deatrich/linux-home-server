@@ -41,8 +41,37 @@ $ sudo apt update
 $ sudo apt upgrade
 ```
 
-It will take a while.  Once finished reboot the system to get the newer
-kernel.  On the far upper right taskbar, select the powerbutton icon,
+It will take a while.  Once finished there is one more update to do before
+you reboot the system -- the Raspberry Pi bootloader EEPROM update if there 
+are pending updates to apply:
+
+```shell
+// You can check the current state of firmware updates without being root.
+// Here we see that the firmware is up-to-date, but the default bootloader
+// could be set to use the latest firmware:
+$ rpi-eeprom-update
+*** UPDATE AVAILABLE ***
+BOOTLOADER: update available
+   CURRENT: Thu 29 Apr 16:11:25 UTC 2021 (1619712685)
+    LATEST: Tue 25 Jan 14:30:41 UTC 2022 (1643121041)
+   RELEASE: default (/lib/firmware/raspberrypi/bootloader/default)
+            Use raspi-config to change the release.
+
+  VL805_FW: Using bootloader EEPROM
+     VL805: up to date
+   CURRENT: 000138a1
+    LATEST: 000138a1
+
+// no we need to be root since we go ahead and apply the update:
+$ sudo rpi-eeprom-update -a
+*** INSTALLING EEPROM UPDATES ***
+...
+EEPROM updates pending. Please reboot to apply the update.
+To cancel a pending update run "sudo rpi-eeprom-update -r".
+```
+
+Now reboot the server to get the newer kernel, and to complete the firmware
+update.  On the far upper right taskbar, select the powerbutton icon,
 and then select  *Switch Off* -> *Restart*.
 
 <!-- (!!) add a note about unmounting the PI-DATA volume at some point after
