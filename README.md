@@ -31,11 +31,9 @@ fleshed out in coming days.
 - [x] Create a github.io web site and move generated files to it
 - [x] Add an apache web service
 - [x] Add a database service
-- [ ] Create a git service
-- [ ] Add more sample config files in 'examples/' -- diff output is insufficient
+- [x] Create a git service
 - [ ] Configure a KVM virtualization service
-- [ ] Configure a targeted Ansible service for local configuration
-- [ ] Document some desktop client topics such as Pandoc
+- [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 
 ## Task lists for appendix ##
 - [x] Block device details and partitioning before installation
