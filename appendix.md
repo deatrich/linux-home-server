@@ -739,7 +739,9 @@ files into place on the filesystem.
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
 
-## LAN (Local Area Network) Configuration files {#lan}
+## LAN (Local Area Network) Configuration {#lan}
+
+### Common Network-related Files
 
 There are some common networking files that are interesting to configure
 especially if you have more than one Linux computer on your home network.
@@ -954,7 +956,7 @@ Global
        Protocols: -LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
 resolv.conf mode: stub
 
-Link 2 (ens3)
+Link 2 (eth0)
     Current Scopes: DNS
          Protocols: +DefaultRoute +LLMNR -mDNS -DNSOverTLS DNSSEC=no/unsupported
 Current DNS Server: 192.168.1.254
@@ -1056,6 +1058,55 @@ Current DNS Server: 9.9.9.9
 [private]: https://en.wikipedia.org/wiki/Private_network
 [routers]: https://www.techspot.com/guides/287-default-router-ip-addresses/
 [^dns]: Domain Name System -- how we look up hostnames
+
+### Statically Configuring Your Server's IP Address {#static-ip}
+
+Sometimes you just want full control of your Linux server's network 
+setup and you decide to eliminate the DHCP network configuration and 
+statically configure your network parameters.  Remember though that
+you can only configure specific IP addresses if you have reserved them
+in your home router.
+
+```shell
+// Look at the current connection information:
+$ nmcli con show
+NAME                UUID                                  TYPE      DEVICE 
+Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0
+
+// Create a new connection definition with the NetworkManager configuration
+// tool.  Here we add the IPv4 address with the usual '/24' subnet indicator
+// for common home 'Class C' networks, the gateway and your list of DNS
+// servers.  In this case my IP address is 192.168.1.90 and my gateway is
+// 192.168.1.254
+
+$ sudo nmcli con add \
+ type ethernet \
+ con-name 'ethernet-eth0' \
+ ifname eth0 \
+ ipv4.method manual \
+ ipv4.addresses 192.168.1.90/24 \
+ gw4 192.168.1.254 \
+ ipv4.dns "1.1.1.1 8.8.8.8 192.168.1.254 75.153.171.67"
+Connection 'ethernet-eth0' (bc6badb3-3dde-4009-998d-2dee20831670) successfully added.
+
+$ nmcli con show
+NAME                UUID                                  TYPE      DEVICE 
+Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0   
+ethernet-eth0       bc6badb3-3dde-4009-998d-2dee20831670  ethernet  --
+
+// Now we bring up the new connection; this automatically sets the old
+// connection method as 'not active':
+// We reboot -- we want to be sure that it comes up fine.
+$ sudo /bin/bash
+# nmcli con up id ethernet-eth0
+# nmcli con show
+NAME                UUID                                  TYPE      DEVICE 
+ethernet-eth0       bc6badb3-3dde-4009-998d-2dee20831670  ethernet  eth0   
+Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  -- 
+# nmcli con del 'Wired connection 1'
+// reboot to test subsequent network state:
+# reboot
+```
 
 ## Other Ways of Becoming the Superuser in a Restricted Environment {#root}
 
