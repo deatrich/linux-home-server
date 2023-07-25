@@ -12,4 +12,5 @@ nfs.md
 web-server.md
 database-server.md
 git-server.md
+virtualization-server.md
 appendix.md
