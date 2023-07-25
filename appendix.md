@@ -993,12 +993,15 @@ to the DNS information known to systemd we configure NetworkManager using
 its management utility *nmcli*:
 
 ```shell
+// Look at current network connection configurations - I have not yet deleted
+// my old wireless network configuration (it is not active).
+// You can delete it with:  nmcli con del 'MY-SSID'
 $ nmcli connection show
 NAME                UUID                                  TYPE      DEVICE 
 Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0   
 MY-SSID             924de702-7f7e-4e31-8dff-4bc968148f2b  wifi      --
 
-$ nmcli connection show 'Wired connection 1' | grep -i dns
+$ nmcli con show 'Wired connection 1' | grep -i dns
 connection.mdns:                        -1 (default)
 connection.dns-over-tls:                -1 (default)
 ipv4.dns:                               --
@@ -1016,8 +1019,8 @@ Cloudflare (1.1.1.1), and from Google (8.8.8.8):
 <!-- !! I need to check if we need to restart the network.. -->
 
 ```shell
-$ sudo nmcli connection modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
-$ nmcli connection show 'Wired connection 1' | grep -i dns
+$ sudo nmcli con modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
+$ nmcli con show 'Wired connection 1' | grep -i dns
 connection.mdns:                        -1 (default)
 connection.dns-over-tls:                -1 (default)
 ipv4.dns:                               1.1.1.1,8.8.8.8
@@ -1029,7 +1032,7 @@ IP4.DNS[3]:                             192.168.1.254
 IP4.DNS[4]:                             75.153.171.67
 
 // Check it with resolvectl:
-$ resolvectl status|grep 'DNS Serv'
+$ resolvectl status | grep 'DNS Serv'
 Current DNS Server: 1.1.1.1
        DNS Servers: 1.1.1.1 8.8.8.8 192.168.1.254 75.153.171.67
 ```
@@ -1069,7 +1072,7 @@ in your home router.
 
 ```shell
 // Look at the current connection information:
-$ nmcli con show
+$ nmcli con show --active
 NAME                UUID                                  TYPE      DEVICE 
 Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0
 
@@ -1095,8 +1098,7 @@ Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  eth0
 ethernet-eth0       bc6badb3-3dde-4009-998d-2dee20831670  ethernet  --
 
 // Now we bring up the new connection; this automatically sets the old
-// connection method as 'not active':
-// We reboot -- we want to be sure that it comes up fine.
+// connection method as 'not active'.  We delete the old connection method:
 $ sudo /bin/bash
 # nmcli con up id ethernet-eth0
 # nmcli con show
@@ -1104,7 +1106,7 @@ NAME                UUID                                  TYPE      DEVICE
 ethernet-eth0       bc6badb3-3dde-4009-998d-2dee20831670  ethernet  eth0   
 Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  -- 
 # nmcli con del 'Wired connection 1'
-// reboot to test subsequent network state:
+// We reboot to test subsequent network state:
 # reboot
 ```
 

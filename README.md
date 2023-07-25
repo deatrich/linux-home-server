@@ -6,7 +6,7 @@ for home use.  Here we configure the server with Ubuntu LTS.
 
 This guide was written using the Markdown markup language.  The flavour
 of Markdown used in the guide is the Pandoc flavour, so some features in
-the document (like descriptive lists) do not render correctly in the
+the document (like definition lists) do not render correctly in the
 Github flavour.  Nevertheless, you can still 
 [browse markdown files in GitHub]
 (https://github.com/deatrich/linux-home-server/).

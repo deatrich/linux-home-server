@@ -73,7 +73,7 @@ phy#0
         Interface wlan0
                 ifindex 3
                 wdev 0x1
-                addr e4:5f:01:a7:71:0d
+                addr e4:5f:01:a7:22:55
                 ssid MYNET
                 type managed
                 channel 104 (5520 MHz), width: 80 MHz, center1: 5530 MHz
@@ -92,6 +92,12 @@ dtoverlay=disable-wifi
 $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
 ```
+### Consider Enabling a Static IP Configuration
+Normally you get your network configuration from your home router via its DHCP
+service.  If you are using a wired connection then consider statically
+configuring the IP address information on your server -- there is
+[a description of the process](#static-ip) in the appendix in case you
+want to see how it is done.
 
 ## Enable Boot-up Console Messages
 
@@ -475,6 +481,7 @@ $ diff logrotate.conf.orig logrotate.conf
 These topics will be documented soon: 
 
   * automatically or manually managing software updates
+  * point to LAN configuration, in particular, static configuration for your server 
   * explore firewall issues - ufw seems lacking
   * getting rid of ESM messages in terminal logins
   * local time configuration and ntp configuration
