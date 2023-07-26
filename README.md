@@ -32,7 +32,7 @@ fleshed out in coming days.
 - [x] Add an apache web service
 - [x] Add a database service
 - [x] Create a git service
-- [ ] Configure a KVM virtualization service
+- [x] Configure a KVM virtualization service
 - [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 
 ## Task lists for appendix ##
