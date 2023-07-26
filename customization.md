@@ -92,6 +92,59 @@ dtoverlay=disable-wifi
 $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
 ```
+
+### Install A Simulated Hardware Clock
+
+SBC's like the Raspberry Pi do not have a [real-time clock (RTC)][rtc], whereas
+more complex systems like desktops and laptops do.
+
+You can [buy an RTC for the Pi][rtc-for-pi], or you can install a package that
+fakes some of the functionality of a hardware clock:
+
+```shell
+$ sudo apt install fake-hwclock
+...
+Setting up fake-hwclock (0.12) ...
+Created symlink /etc/systemd/system/sysinit.target.wants/fake-hwclock.service ...
+update-rc.d: warning: start and stop actions are no longer supported; falling back to defaults
+
+// The package complains about unsupported start/stop actions, so it does
+// not start the fake clock; simply start it yourself:
+$ systemctl status fake-hwclock
+  fake-hwclock.service - Restore / save the current clock
+     Loaded: loaded (/lib/systemd/system/fake-hwclock.service; enabled; vendor >
+     Active: inactive (dead)
+       Docs: man:fake-hwclock(8)
+$ sudo systemctl start fake-hwclock
+```
+
+Without this package you will notice that the timestamps at startup are wildly
+wrong.  For example when you look at snippets of the 'last' logged in users, the
+logs about reboots are always odd, but once you have installed the fake clock
+then reboot times are in line with real world time:
+
+```shell
+// without fake-hwclock:
+$ last | less
+...
+myname   pts/1        desktop.home     Wed Jul 12 14:34 - 15:51  (01:17)
+myname   pts/0        desktop.home     Wed Jul 12 14:28 - 14:46  (00:17)
+reboot   system boot  5.15.0-1033-rasp Mon Mar 20 08:33 - 09:30 (115+00:56)
+myname   pts/4        desktop.home     Tue Jul 11 18:13 - 23:44  (05:31)
+myname   pts/2        desktop.home     Tue Jul 11 16:29 - 18:21  (01:52)
+myname   pts/2        desktop.home     Tue Jul 11 16:10 - 16:24  (00:14)
+
+// with fake-hwclock:
+...
+root     pts/0        ubuntu.home      Wed Jul 26 10:39   still logged in
+reboot   system boot  5.15.0-1034-rasp Wed Jul 26 10:38   still running
+myname   pts/2        desktop.home     Wed Jul 26 10:37 - 10:37  (00:00)
+root     pts/1        ubuntu.home      Wed Jul 26 10:15 - down   (00:23)
+myname   pts/0        desktop.home     Wed Jul 26 10:11 - 10:38  (00:27)
+```
+[rtc]: https://en.wikipedia.org/wiki/Real-time_clock
+[rtc-for-pi]: [https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/|
+
 ### Consider Enabling a Static IP Configuration
 Normally you get your network configuration from your home router via its DHCP
 service.  If you are using a wired connection then consider statically
