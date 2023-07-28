@@ -24,7 +24,7 @@ which directories and/or data exports should be added and/or used for backups.
 Note that when you have create a Samba or an NFS server you will have other
 data directories to back up, and these directories might be large.
 
-A [backup process and a link to an example backup script](#backups) is
+A [backup process and a link to an example backup script](#backups) are
 in the appendix.  We look at backing up both system and data directories,
 including the backup of large directories.  Compressed system directories
 are typically small. But /home and /data/shared might be large.  Be aware
@@ -34,11 +34,13 @@ of your space needs, and adjust backups accordingly.
 
 Recovering files from backups is fairly easy.  It is best to use an
 empty directory with adequate space.  In this example we recover files from
-a compressed tar file.  We unpack the tarball in the empty directory, and
-then move or copy any files into place in the file system.  Example:
+compressed tar files.  We unpack the tar files *etc.tgz* and *home.tgz*
+in the empty directory, and then move or copy any files into place in the
+file system.  Example:
 
 ```shell
-// This example unpacks home.tgz and etc.tgz
+// This example unpacks home.tgz and etc.tgz.  Do this with sudo so that
+// files are unpacked with the correct permissions.
 $ sudo mkdir /var/local-recovery
 
 // We can copy files from the local backup tree: /var/local-backups/
@@ -59,6 +61,8 @@ drwxr-x--- 25 myname myname 4096 Jun  1 21:12 myname
 
 If you need to recover files from large directory backups then you can
 copy the files directly from the removable media to your target directories.
+For large directory backups we do not compress the backed up files, since
+it takes some time and may introduce an additional disk space problem.
 
 ```shell
 // This example recovers a directory inside the large directory backup of
@@ -73,11 +77,13 @@ $ ls
 bin  doc  downloads  etc  git  icons  inc  lib  src
 
 // Since the files are my files then I do not need to use 'sudo'.
+// Here I am recovering my 'bin' directory.
 // Note that I copy it to a different directory name so that I have the
 // option of comparing any existing 'bin' directory in my home.
 $ cp -a bin ~/bin.recovered
 
-// Change directories to away from the USB drive so that you can unmount it:
+// Change directories away from the USB drive so that you can unmount it.
+// You cannot unmount a file system if you are parked in it:
 $ cd 
 $ sudo umount /mnt
 $ pwd

@@ -3,7 +3,7 @@
 
 Once you have prepared your microSD card then insert it in your Raspberry Pi.
 Note that the card pushes in easily.  It will only go in one way.
-To eject it gently push *in* on it once and it will pop out enough to handle it.
+To eject it, gently *push in* on it once and it will pop out enough to grab it.
 There is no need to pull on it to remove it because it essentially pops out.
 
 Turn the power on with the Pi connected to a monitor, USB keyboard and mouse.
@@ -37,13 +37,13 @@ and enter the following commands:
 $ sudo apt update
 
 // then update the software; the command is actually 'upgrade', which is odd,
-// at least to me..
+// at least to me.. I like 'yum check-update' and 'yum update' much better...
 $ sudo apt upgrade
 ```
 
 It will take a while.  Once finished there is one more update to do before
-you reboot the system -- the Raspberry Pi bootloader EEPROM update if there 
-are pending updates to apply:
+you reboot the system -- the Raspberry Pi bootloader EEPROM update, in case
+there are pending updates to apply:
 
 ```shell
 // You can check the current state of firmware updates without being root.
@@ -73,7 +73,4 @@ To cancel a pending update run "sudo rpi-eeprom-update -r".
 Now reboot the server to get the newer kernel, and to complete the firmware
 update.  On the far upper right taskbar, select the powerbutton icon,
 and then select  *Switch Off* -> *Restart*.
-
-<!-- (!!) add a note about unmounting the PI-DATA volume at some point after
-installation -->
 

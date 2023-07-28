@@ -33,7 +33,7 @@ on under the hood.  Here is an example of a 256 GB microSD inserted into a
 USB card reader on another Linux computer where the card showed up as /dev/sde:
 
 ```shell
-# fdisk -l /dev/sde
+$ sudo fdisk -l /dev/sde
 Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
 Disk model: FCR-HS3       -3
 ...

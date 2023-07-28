@@ -174,28 +174,59 @@ $ diff smb.conf.orig smb.conf
 [vfs]: https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html
 [smb-conf]: https://raw.githubusercontent.com/deatrich/linux-home-server/main/examples/smb.conf
 
-## Start the Service and Run Some Tests
+## Retart the Service and Check Log Files
 
 ```shell
-// enable the samba daemons
-$ sudo systemctl enable smbd nmbd
 $ sudo systemctl restart smbd nmbd
 $ systemctl status smbd | grep Status:
      Status: "smbd: ready to serve connections..."
 
 $ systemctl  status nmbd | grep Status:
      Status: "nmbd: ready to serve connections..."
+
+// 
+$ cd /var/log/samba
+$ ls -ltr
+total 2168
+drwx------ 5 root root    4096 May  7 09:45 cores/
+-rw-r--r-- 1 root root     369 May  7 10:03 log.desktop
+-rw-r--r-- 1 root root       0 May  7 10:08 log.ubuntu
+-rw-r--r-- 1 root root    9000 May  7 10:51 log.192.168.1.82
+
+$ tail log.192.168.1.82
+[2023/05/07 10:51:01.059310,  3] ../../source3/auth/auth.c:201(auth_check_ntlm_password)
+  check_ntlm_password:  Checking password for unmapped user ... with the new password interface
+[2023/05/07 10:51:01.059391,  3] ../../source3/auth/auth.c:204(auth_check_ntlm_password)
+  check_ntlm_password:  mapped user is: [LINUX]\[guest]@[UBUNTU]
 ```
 
+## Run Some Tests
+
+Tests to run to validate functionality include the following:
+
+   1. Create a folder for your personal use
+   2. Browse to the Test folder
+   3. Copy and Paste a file from your device here
+   4. Create a folder here too, and copy your file into that folder
+   5. Delete all files and folders inside the Test folder
+
 Testing will depend on your device and client.
+
+*Suppose you have an Android phone*.  Download the App named
+[Cx File Explorer][cx] from your App Store.  Under its *Network* tab
+you can open a 'remote' Samba share in your home network.  You enter in
+the IP address of the Pi server and select 'Anonymous' as the user
+instead of user/pass.
+
+(!! get an example from Windows and from an iphone)
 
 *Suppose you have a MATE desktop session* on your Pi server or on another
 Linux device.  Open a file browser:
 
   Applications -> Accessories -> Files
 
-The Files browser File menu has an option: *Connect to Server*.  If you have an
-older version of Mate then find the help option and search for
+The Files browser 'File' menu has an option: *Connect to Server*.  If you
+have an older version of Mate then find the help option and search for
  'Connect to Server'.
 
 A small connection window pops up.  It is a bit annoying, so select any
@@ -222,21 +253,6 @@ For the connection request, fill in this data:
   * tick 'add bookmark' and give it a name
 
 and finally connect.
-
-*Suppose you have an Android phone*.  Download the App:
- [Cx File Explorer][cx] from your App Store.  Under its *Network* tab
-you can open a 'remote' Samba share in your home network.  You enter in
-the IP address and select 'Anonymous' instead of user/pass.
-
-(!! get an example from Windows and from an iphone)
-
-Tests to run to validate functionality include the following:
-
-   1. Create a folder for your personal use
-   2. Browse to the Test folder
-   3. Copy and Paste a file from your device here
-   4. Create a folder here too, and copy your file into that folder
-   5. Delete all files and folders inside the Test folder
 
 [cx]: https://cxfileexplorer.com/
 [seahorse]: https://wiki.gnome.org/Apps/Seahorse

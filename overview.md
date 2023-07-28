@@ -56,25 +56,34 @@ of the command-line and technical detail into the appendix.  Thus the flow of
 the document covers the basics, encouraging the reader to see the bigger 
 picture and to avoid being smothered in the detail.
 
-In this guide command-line sessions appear in a pale-yellow box.  Two kinds
-of simplified command-line prompts appear.  As well, explanatory comments
-starting with two slashes and coloured blue might appear anywhere in the
-session:
+In this guide command-line sessions appear in a pale-yellow box, using a 
+customized *.shell* Markdown syntax highlighting convention which I modified
+for command-line output.  Two kinds of simplified command-line prompts appear.
+As well, explanatory comments starting with two slashes are coloured blue:
 
 ```shell
-// Normal Users'  (coloured 'green'):
+// Usually your prompt would be more complex, something like this:
+//    myname@ubuntu:~/.vim/syntax$
+// or like this:
+//    [desktop /tmp]$ 
+// But I simplify its appearance when illustrating command-line sessions.
+// Normal Users' command-line prompt, coloured 'green':
 $ some-command
 
-// The root superuser (coloured 'red'):
+// The root superuser's prompt, simplifed also, and coloured 'red':
 # some-other-command
 ```
+
+In the near future I will provide a link to another Git repository
+containing examples of the Markdown documentation style and support files 
+used in this guide.
 
 Sometimes command output is long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)
 
 Sometimes a double-exclamation (**!!**) mark may appear somewhere -- this
 is only a reminder for myself to fix an issue at that point in the
-documentation.
+documentation.  These reminders will eventually disappear.
 
 If you discover issues with instructions in this document, or have other
 comments or suggestions then you can contact me on
