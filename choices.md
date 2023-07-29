@@ -1,6 +1,8 @@
 <!-- -->
 # Picking the OS (Operating System) and the Window Manager {#environment}
 
+## Ubuntu LTS
+
 Though many Raspberry Pi owners run the Raspberry Pi OS (formerly known
 as Raspbian), in this guide I chose to use Ubuntu.  [Ubuntu LTS][ubuntu-lts] 
 is a long-term support Debian-based Linux OS. Ubuntu is renowned for
@@ -37,6 +39,20 @@ At the time of writing this guide I used version 22.04 of Ubuntu LTS
 (also known as **Jammy Jellyfish**). It was first released in April 2022,
 as indicated by the release number.
 
+## Subscribing To a Few Mailing Lists
+
+If you are a going to be using Ubuntu then it is wise to subscribe to a few
+mailing lists.  There are [lots of them][ubmail-lists], but a few low volume
+ones like these are a good idea:
+
+  * [Ubuntu Security Announce][ubmail-security]
+     * Low-traffic announcement list for notifications of security updates for Ubuntu
+
+  * [Ubuntu Announce][ubmail-announce]
+     * Low-traffic Ubuntu Announcements
+
+## MATE Desktop
+
 I also opt to use an installation image which uses the
 [MATE desktop system][mate-desktop]  -- at the bottom of that
 linked website is a note about why it is called MATE (pronounced mat-ay).
@@ -60,6 +76,10 @@ better left to the X.org protocol for now.
 
 [ubuntu-lts]: https://releases.ubuntu.com/
 [advantage]: https://ubuntu.com/pro/tutorial
+[ubmail-lists]: https://lists.ubuntu.com/
+[ubmail-security]: https://lists.ubuntu.com/mailman/listinfo/ubuntu-security-announce
+[ubmail-announce]: https://lists.ubuntu.com/mailman/listinfo/ubuntu-announce
+
 [mate-desktop]: https://mate-desktop.org/
 [x.org]: https://en.wikipedia.org/wiki/X.Org_Server
 [wayland]: https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors
