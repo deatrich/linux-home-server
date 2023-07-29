@@ -104,6 +104,16 @@ $ lynx --dump http://pi.home/ | head
    ...
 ```
 
+Log files for the apache daemon are stored under */var/log/apache2/*:
+```shell
+$ head /var/log/apache2/access.log
+192.168.1.82 - -  ... "GET / HTTP/1.1" 200 3460 "-" "Mozilla/5.0 ... Firefox/113.0"
+192.168.1.82 - -  ... "GET /icons/ubuntu-logo.png HTTP/1.1" 200 3607 "... Firefox/113.0"
+192.168.1.82 - -  ... "GET /favicon.ico HTTP/1.1" 404 485 "http://pi.home/" ... Firefox/113.0"
+192.168.1.100 - - ... "GET / HTTP/1.1" 200 3460 "-" "Links ... text)"
+192.168.1.100 - - ... "GET / HTTP/1.0" 200 3423 "-" "Lynx/2.9.0dev.10 ... GNUTLS/3.7.1"
+```
+
 [apache]: https://ubuntu.com/server/docs/web-servers-apache
 [nginx]: https://en.wikipedia.org/wiki/Nginx
 

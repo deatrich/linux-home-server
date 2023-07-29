@@ -115,8 +115,7 @@ to ssh to your Linux home server without using a standard password.  To
 do this you create an authorized keys file on the server:
 
 ```shell
-// secure-copy your public key to the linux server (assuming the server is
-named 'pi')
+// secure-copy your public key to the linux server (assuming the server is named 'pi')
 $ scp ~/.ssh/id_rsa.pub myname@pi:~/
 The authenticity of host 'pi (192.168.1.90)' can't be established.
 ECDSA key fingerprint is SHA256:iP...
