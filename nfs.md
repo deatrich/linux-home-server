@@ -7,7 +7,8 @@ inaccessible.  If you also have a Linux laptop then it would be nice to
 have the same home directory available on both the desktop and the laptop.
 
 Putting your home directory on the Linux server would solve this issue.
-Here we look at installing an NFS service for 24x7 availability.
+Here we look at installing an NFS service for 24x7 availability.  If you
+have no other Linux devices then skip this chapter.
 
 ## Configure the NFS Daemons
 
@@ -209,7 +210,8 @@ $ diff auto.master.orig auto.master
 //  an entry in this file.
 $ sudo nano /etc/auto.home
 $ cat /etc/auto.home
-## For every new user you must add their home directory entry to this file
+## For every new user you must add their home directory entry to this file.
+## The IP address belongs to the Linux Server of course...
 /home/myname \
   -rw,hard,intr,rsize=32768,wsize=32768,retrans=2,timeo=600,tcp,nfsvers=3 \
   192.168.1.90:/home/myname
@@ -238,4 +240,103 @@ $ df -h .
 Filesystem                    Size  Used Avail Use% Mounted on
 192.168.1.90:/home/myname      50G  464M   50G   1% /home/myname
 ```
+
+## Some Factors To Consider
+
+### What If the Server Fails
+
+Once you NFS-mount your home directory on your clients, then if for any reason
+your server is down you will not be able to log in as a regular user.  This
+would be a rare condition, but it would affect your ability to work from your
+other devices.  You need to be able to login locally so that you can address
+the problem.
+
+You could give your local root user a good password, or you could create
+another local user on each device and give them administrative rights
+so that they can use sudo for root access locally:
+
+```shell
+// Suppose the other user is called 'helper'
+// We will give the helper user another home directory
+$ sudo mkdir /var/home
+$ sudo groupadd -g 1100 helper
+$ sudo useradd -u 1100 -g helper -m -d /var/home/helper -c 'Helper Account' helper
+$ sudo usermod -aG sudo helper
+$ grep sudo /etc/group
+sudo:x:27:myname,helper
+
+// Don't forget to set a password - presumably it would be the same as your password..
+$ sudo passwd helper
+[sudo] password for myname: 
+New password: 
+Retype new password: 
+passwd: password updated successfully
+```
+
+### Doing Maintenance on the Linux Server
+
+The main benefit of letting the automounter unmount your directory when you
+log out is that you can easily do maintenance on the server without disturbing
+the state of your clients - that is, your desktop or laptop or other devices
+which might still be turned on.
+
+When you log out of a client then the automounter should unmount your directory 
+at the configured time limit - in our case - 5 minutes.   But there are some
+misbehaved software which insists on staying around, and you might want to 
+watch out for that software and investigate what you can do with it.  Indeed,
+your *ssh-agent* (if you are using it) is not going to go away unless you kill
+it before logging out.  This process alone will keep your home directory
+mounted on the client.
+
+One solution is to let the display manager clean up for you.  If you are using
+the *lightdm* display manager then you need to make a root-owned script on your
+Linux client that will do the job:
+
+```shell
+$ cd /etc/lightdm
+$ sudo /bin/bash
+# touch lightdm.conf
+# nano lightdm.conf
+# cat lightdm.conf
+
+[Seat:*]
+session-cleanup-script=/root/bin/clean-up-user.sh
+
+# cd /root
+// make a bin directory if you don't have one
+# mkdir bin
+# touch clean-up-user.sh
+# chmod 755 clean-up-user.sh
+# nano clean-up-user.sh
+# cat clean-up-user.sh
+#!/bin/sh
+
+## This script is called by the lightdm window manager.  It finds processes
+## owned by users on logout, and kills them.  Don't use this script if your
+## users need to leave any of these processes running on logout.
+
+procs=$(ps -ef | grep -v grep | grep '/lib/systemd/systemd --user' | grep -v '^root')
+
+echo "$procs" | while read user process rest ; do
+  #echo debug: user is $user, proc is $process
+  if [ "$user" != "" ] ; then
+    #echo debug: kill $process
+    kill $process
+  fi
+done
+
+procs=$(ps -ef | grep -v grep | grep ssh-agent | grep -v '^root')
+echo "$procs" | while read user process rest ; do
+  #echo debug: user is $user, proc is $process
+  if [ "$user" != "" ] ; then
+    #echo debug: kill $process
+    kill $process
+  fi
+done
+```
+
+If you are using an X2go remote desktop session then you will not go through
+the display manager.  Therefore the above script will not be called.  You can
+always create a copy of this script in your own ~/bin/ directory and run it
+from a terminal session just before logging out.
 
