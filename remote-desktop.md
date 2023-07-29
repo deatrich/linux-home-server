@@ -129,28 +129,32 @@ $ x2goclient 2>/dev/null
 ```
 
 Create and save the session parameters by starting a new session: 
-  1. Session -> New Session
-    a. Give the session a name
-    b. Add the host name
-    c. Add your login name
-    d. Check auto login
-  2. Change tabs to the Input/Output tab
-    a. Select a useful custom display geometry (e.g. Width: 1152 Height: 864)
-  3. Change tabs to the Media tab
-    a. Disable sound and client-side printing
-  4. Click on the 'OK' button to save the session data
-  5. Start the client connection by clicking on the session name on the right
+
+   1. Session -> New Session
+      *  Give the session a name
+      *  Add the host name or IP address
+      *  Add your login name
+      *  Check auto login
+      *  Change 'Session type' to *MATE*
+   2. Change tabs to the Input/Output tab
+      *  Select a useful custom display geometry (e.g. Width: 1152 Height: 864)
+   3. Change tabs to the Media tab
+      *  Disable sound and client-side printing
+   4. Click on the 'OK' button to save the session data
+   5. Start the client connection by clicking on the session name on the right
 
 If you are using X2Go between different Linux varieties you might need to
 solve a few problems like font paths.
 
 At the time of documenting this setup I found that starting the x2goclient
 from an older Linux system like CentOS 7 to this Ubuntu system needed a tweak
-in the Ubuntu Pi's Secure Shell /etc/ssh/sshd_config configuration; it was
+in the Ubuntu Pi's sshd configuration in /etc/ssh/sshd_config; it was
 fixed by adding 'PubkeyAcceptedAlgorithms +ssh-rsa'.  This was not needed
 between similar Ubuntu setups.
 
 [X2Go]: https://en.wikipedia.org/wiki/X2Go
 
-<!-- Also describe startx? -->
+<!-- Also describe startx? !! in a future client doc point out pkgs
+      to install for traditional X fonts
+  -->
 
