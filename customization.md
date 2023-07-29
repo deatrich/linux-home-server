@@ -93,7 +93,7 @@ $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
 ```
 
-### Install A Simulated Hardware Clock
+## Install A Simulated Hardware Clock
 
 SBC's like the Raspberry Pi do not have a [real-time clock (RTC)][rtc], whereas
 more complex systems like desktops and laptops do.
@@ -145,18 +145,11 @@ myname   pts/0        desktop.home     Wed Jul 26 10:11 - 10:38  (00:27)
 [rtc]: https://en.wikipedia.org/wiki/Real-time_clock
 [rtc-for-pi]: [https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/|
 
-### Consider Enabling a Static IP Configuration
-Normally you get your network configuration from your home router via its DHCP
-service.  If you are using a wired connection then consider statically
-configuring the IP address information on your server -- there is
-[a description of the process](#static-ip) in the appendix in case you
-want to see how it is done.
-
 ## Enable Boot-up Console Messages
 
 Maybe like me you like seeing informational messages as a computer boots up.
 In that case you need to edit */boot/firmware/cmdline.txt* and remove
-the 'quiet' argument.  On my system this one line file nows ends in:\
+the *quiet* argument.  On my system this one line file nows ends in:\
   '... fixrtc splash'\
 instead of\
   '... fixrtc quiet splash':
@@ -184,7 +177,7 @@ $ sudo systemctl stop display-manager
 // paste process numbers for the kill command.
 
 $ sudo apt install gpm
-$ sudo systemctl enable gpm
+$ sudo systemctl status gpm
 ```
 
 ## Disable Snap Infrastructure
@@ -197,13 +190,15 @@ of Ubuntu LTS 22.04 I also ran into the problem of firefox not able to
 start, and like others I traced it back to snap (firefox is installed
 from a Snap package).
 
-I don't think 'Snaps' are meant for a server environment, and so I remove
-the associated software.  I certainly find it distasteful to have more
-than a dozen mounted loop devices cluttering up output of block device commands
-for just a handful of snap packages.  I would rather free up the memory
-footprint and inodes for other purposes.
+My opinion is that 'Snaps' are not meant for a server environment, and
+so I remove the associated software.  I certainly find it distasteful
+to have more than a dozen mounted loop devices cluttering up
+output of block device commands for just a handful of snap packages.
+I would rather free up the memory footprint and inodes for other purposes.
 
-So here is a quick summary on removing Snap support, that is, all snap
+But if you like 'Snaps' then skip to the next topic.
+
+Here is a quick summary on removing Snap support, that is, all snap
 packages and the snapd daemon:
 
 #### Disable the daemon
@@ -218,7 +213,7 @@ $ sudo systemctl disable snapd snapd.seeded snapd.socket
 #### Remove the packages
 
 List the Snap packages installed, and then delete them.  Leave *base* and
-*snapd* packages until the end.  As noted in [Erica's instructions][snap-remove]
+*snapd* packages until the end.  As noted in [Erica's instructions][remove-snap]
 remove packages one at a time and watch for messages warning about 
 dependencies.  This is my list of Snap packages; your list might be different
 depending on what you have installed:
@@ -256,17 +251,54 @@ $ snap list
 No snaps are installed yet. Try 'snap install hello-world'.
 ```
 
-#### Clean up and add a new firefox dpkg source
+#### Clean up SNAP loose-ends and add a new firefox dpkg source
 
-Completely remove snapd and its cache files from the system.  Then add 
-configuration files for *apt* access to firefox *dpkg-based* packages.
-Finally install firefox from the Mozilla Personal Package Archive (PPA):
+Completely remove snapd and its cache files from the system.
 
 ```shell
 $ sudo apt autoremove --purge snapd
 $ sudo rm -rf /root/snap
 $ rm -rf ~/snap
+```
 
+As well, you can clean up 'PATH' environment variables and remove 'snap' from
+them.  I also take the opportunity to fix issues that bother me.  I have never
+overly trusted binaries in /usr/local/ (having supported them in the old
+commerical UNIX world) so I either push those paths to the end, or I remove
+them.  I know that all directories in /usr/local/ are empty anyway, so I
+remove them:
+
+```shell
+$ cd /etc
+$ sudo cp -p environment environment.orig
+$ sudo nano environment
+$ diff environment.orig environment
+1c1
+< PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+---
+> PATH="/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
+
+$ sudo cp -p manpath.config manpath.config.orig
+$ sudo nano manpath.config
+$ diff manpath.config.orig manpath.config
+22d21
+< MANDATORY_MANPATH                     /usr/local/share/man
+33,36d31
+< MANPATH_MAP   /usr/local/bin          /usr/local/man
+< MANPATH_MAP   /usr/local/bin          /usr/local/share/man
+< MANPATH_MAP   /usr/local/sbin         /usr/local/man
+< MANPATH_MAP   /usr/local/sbin         /usr/local/share/man
+68,69d62
+< MANDB_MAP     /usr/local/man          /var/cache/man/oldlocal
+< MANDB_MAP     /usr/local/share/man    /var/cache/man/local
+72d64
+< MANDB_MAP     /snap/man               /var/cache/man/snap
+```
+
+Then add configuration files for *apt* access to firefox *dpkg-based* packages.
+Finally install firefox from the Mozilla Personal Package Archive (PPA):
+
+```shell
 // Create the necessary apt configurations for firefox:
 
 $ sudo nano /etc/apt/preferences.d/firefox-no-snap
@@ -392,6 +424,8 @@ doing them individually allows you to watch for any feedback.  You can also
 simply disable these services without stopping them.  They will not run
 on the next reboot.
 
+#### Disable ModemManager, hciuart, openvpn and cups
+
 ```shell
 // If you want to run a series of commands as root you can sudo to the bash
 // shell, run your commands, and then exit the shell.  Be careful to
@@ -405,18 +439,39 @@ $ sudo /bin/bash
 # systemctl disable hciuart
 
 // disable VPN and printing services - you can print without running
-// a local printer daemon (!!maybe document using one tho )
+// a local printer daemon (!!maybe document using one though )
 # systemctl stop openvpn
 # systemctl disable openvpn
 # systemctl stop cups-browsed cups
 # systemctl disable cups-browsed cups
+```
 
-// disable System Security Services Daemon ([sssd][sssd]) if you don't need it
+#### Disable [sssd][sssd], secureboot-db, whoopsie, kerneloops, apport and [apparmor][apparmor]
+
+Note that it is possible to enable [some form of secure boot][secure-boot]
+with OTP (One Time Programmable Memory) on a Raspberry Pi 4, but it is not
+yet for the faint of heart.
+
+```shell
+// disable System Security Services Daemon (sssd) if you don't need it
 # systemctl disable sssd
 
 // Disable UEFI Secure Boot (secureboot-db)
-// 
+// To be sure, install mokutil and take a look:
+
+# apt install mokutil
+# man mokutil
+// --sb-state means:  Show SecureBoot State
+# mokutil --sb-state
+EFI variables are not supported on this system
+
+# systemctl status secureboot-db
+- secureboot-db.service - Secure Boot updates for DB and DBX
+     Loaded: loaded (/lib/systemd/system/secureboot-db.service; enabled; vendor>
+     Active: inactive (dead)
+
 # systemctl disable secureboot-db
+# apt autoremove --purge secureboot-db
 
 // disable whoopsie and kerneloops if you don't want to be sending
 // information to outside entities
@@ -430,9 +485,37 @@ $ sudo /bin/bash
 // If you want to disable other apport-based crash reporting then remove apport
 // from your server:
 # apt autoremove --purge apport
+
+// Apparmor (like SELinux) provides another layer of security to systems.
+// If you are new to Linux you should keep it around to learn about it.
+// For a home server I think it can be disabled; you must previously have
+// removed 'Snaps':
+# aa-status
+apparmor module is loaded.
+50 profiles are loaded.
+41 profiles are in enforce mode.
+...
+# aa-teardown
+Unloading AppArmor profiles 
+
+# aa-status
+apparmor module is loaded.
+
+# systemctl disable apparmor 
+...
+Removed /etc/systemd/system/sysinit.target.wants/apparmor.service.
+
+# apt autoremove --purge apparmor
+dpkg: warning: while removing apparmor, directory '/etc/apparmor.d/abstractions/ubuntu-browsers.d' not empty so not removed
+
+# cd /etc
+root@pi:/etc# mv apparmor.d apparmor.d.old
 ```
 
+[swissbit]: https://www.swissbit.com/en/products/security-products/secure-boot-solution/
 [sssd]: https://ubuntu.com/server/docs/service-sssd
+[secure-boot]: https://news.ycombinator.com/item?id=35815382
+[apparmor]: https://en.wikipedia.org/wiki/AppArmor
 
 ## Miscellaneous Configuration Tweaks
 
@@ -528,14 +611,113 @@ $ diff logrotate.conf.orig logrotate.conf
 ---
 > dateext
 ```
+### Consider Enabling a Static IP Configuration
+Normally you get your network configuration from your home router via its DHCP
+service.  If you are using a wired connection then consider statically
+configuring the IP address information on your server -- there is
+[a description of the process](#static-ip) in the appendix in case you
+want to see how it is done.
+
+### Setting Up Software Package Updates
+
+By default the *unattended-upgrades* package is installed on Ubuntu LTS,
+and it is configured to run in an unattended manner.  Its configuration files
+are in */etc/apt/apt.conf.d/*, and the log files are in
+*/var/log/unattended-upgrades/*.
+
+If you are accustomed to monitoring and applying patches yourself, then you
+can delete the automatic update infrastructure, and do the patching yourself.
+Many work-place servers cannot be automatically updated without some risk, so
+if you support Linux at work you are probably used to configuring and managing
+your own software update policy.
+
+If you decide to manage updates yourself then you could remove this package
+and its components.  Of course, you should not do this until you are sure
+that you will follow through with doing your own updates:
+
+```shell
+$ systemctl status unattended-upgrades
+     Loaded: loaded (/lib/systemd/system/unattended-upgrades.service; enabled
+...
+$ sudo apt remove update-notifier-common unattended-upgrades
+...
+The following packages will be REMOVED:
+  ubuntu-release-upgrader-gtk unattended-upgrades update-manager update-notifier
+  update-notifier-common
+...
+
+$ sudo systemctl disable apt-daily-upgrade.timer apt-daily.timer
+Removed /etc/systemd/system/timers.target.wants/apt-daily.timer.
+Removed /etc/systemd/system/timers.target.wants/apt-daily-upgrade.timer.
+```
+
+### Getting Rid of *motd* Terminal Output
+
+Regardless of whether you have registered for and configured the free ESM 
+update program or not, you might get tired of seeing your terminal windows
+with any kind of messages.
+
+One way to get rid of messages is to comment out these message properties in
+[PAM (Pluggable Authentication Modules)][pam] configuration files.  In the
+example session below I comment out dynamic *motd* (message of the day) and
+*last login* messages in 2 modules:  *sshd* and *login*
+
+```shell
+$ cd /etc/pam.d
+$ sudo cp -p sshd sshd.orig
+// comment out the dynamic motd configuration
+$ sudo nano sshd
+$ diff sshd.orig sshd
+33c33
+< session    optional     pam_motd.so  motd=/run/motd.dynamic
+---
+> #session    optional     pam_motd.so  motd=/run/motd.dynamic
+
+$ sudo cp -p login login.orig
+// comment out the dynamic motd configuration and the last login configuration
+$ sudo nano login
+$ diff login.orig login
+33c33
+< session    optional   pam_motd.so motd=/run/motd.dynamic
+---
+> #session    optional   pam_motd.so motd=/run/motd.dynamic
+82c82
+< session    optional   pam_lastlog.so
+---
+> #session    optional   pam_lastlog.so
+
+// For sshd, you need to edit /etc/ssh/sshd_config and set 'PrintLastLog' to no
+// We won't do that here; instead we will do it in the secure-shell chapter.
+```
+
+The other kind of optional pam session type of *motd* will still be
+displayed in your terminal window whenever you create a file named */etc/motd*,
+since we did not comment it out.
+
+```shell
+$ grep -h motd /etc/pam.d/login /etc/pam.d/login | grep -v '^#'
+session    optional   pam_motd.so noupdate
+session    optional   pam_motd.so noupdate
+```
+
+It is unlikely that you will create a message that way
+for yourself.  However, it is an interesting idea to drop an information file
+named */etc/motd* on your server if your daily backups fail ... 
+
+```shell
+// Somewhere in your script you have:
+echo "Your backups failed at `date`" >>/etc/motd
+
+// then when you log in the next day:
+$ ssh pi.home
+Your backups failed at Fri 28 Jul 01:19:45 MDT 2023 
+```
+[pam]: https://en.wikipedia.org/wiki/Linux_PAM
 
 ### Other Configuration Issues
 
-These topics will be documented soon: 
+These topics are still to be documented: 
 
-  * automatically or manually managing software updates
-  * point to LAN configuration, in particular, static configuration for your server 
   * explore firewall issues - ufw seems lacking
-  * getting rid of ESM messages in terminal logins
-  * local time configuration and ntp configuration
+  * local time configuration and ntp configuration options
 
