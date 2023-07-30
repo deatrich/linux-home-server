@@ -618,12 +618,46 @@ configuring the IP address information on your server -- there is
 [a description of the process](#static-ip) in the appendix in case you
 want to see how it is done.
 
-### Setting Up Software Package Updates
+### Addressing Software Package Updates
 
 By default the *unattended-upgrades* package is installed on Ubuntu LTS,
 and it is configured to run in an unattended manner.  Its configuration files
 are in */etc/apt/apt.conf.d/*, and the log files are in
 */var/log/unattended-upgrades/*.
+
+In particular the log files */var/log/unattended-upgrades-dpkg.log\** contain
+the list of all upgraded packages:
+
+```shell
+// list files in time reverse order, then for each file find the date & package
+$ ls -tr unattended-upgrades-dpkg.log* | \
+  while read f ; do \
+    echo "Log File $f:" \
+    zegrep '^Log started:|^Unpacking ' $f \
+    echo ""; \
+  done
+
+Log File unattended-upgrades-dpkg.log.1.gz:
+Log started: 2023-05-10  06:05:40
+Unpacking librados2 (17.2.5-0ubuntu0.22.04.3) over (17.2.5-0ubuntu0.22.04.2) ...
+Log started: 2023-05-10  06:05:52
+Unpacking libcephfs2 (17.2.5-0ubuntu0.22.04.3) over (17.2.5-0ubuntu0.22.04.2) ...
+Log started: 2023-05-10  06:06:03
+Unpacking libfreetype6:arm64 (2.11.1+dfsg-1ubuntu0.2) over (2.11.1+dfsg-1ubuntu0.1) ...
+
+Log File unattended-upgrades-dpkg.log-20230601.gz:
+Log started: 2023-05-12  06:40:40
+Unpacking linux-modules-5.15.0-1028-raspi (5.15.0-1028.30) ...
+Unpacking linux-image-5.15.0-1028-raspi (5.15.0-1028.30) ...
+Unpacking linux-modules-extra-5.15.0-1028-raspi (5.15.0-1028.30) ...
+Unpacking linux-modules-extra-raspi (5.15.0.1028.25) over (5.15.0.1027.24) ...
+Log started: 2023-05-12  06:42:58
+Unpacking linux-image-raspi (5.15.0.1028.25) over (5.15.0.1027.24) ...
+Log started: 2023-05-12  06:43:10
+Log started: 2023-05-17  06:28:44
+Unpacking linux-libc-dev:arm64 (5.15.0-72.79) over (5.15.0-71.78) ...
+...
+```
 
 If you are accustomed to monitoring and applying patches yourself, then you
 can delete the automatic update infrastructure, and do the patching yourself.
