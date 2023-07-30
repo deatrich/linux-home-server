@@ -17,6 +17,7 @@ $endif$
   <style>
     $styles.html()$
   </style>
+  <link rel="stylesheet" href="https://latex.now.sh/style.css" />
 $for(css)$
   <link rel="stylesheet" href="$css$" />
 $endfor$
@@ -38,11 +39,15 @@ $if(subtitle)$
 <p class="subtitle">$subtitle$</p>
 $endif$
 $for(author)$
-<p class="author">$author$</p>
-$endfor$
+<p class="author">$author$
 $if(date)$
-<p class="date">$date$</p>
+  <br />Created: $date$
 $endif$
+$if(lastupdate)$
+  <br />Last update: $lastupdate$
+$endif$
+</p>
+$endfor$
 </header>
 $endif$
 $if(toc)$
