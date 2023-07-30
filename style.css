@@ -1,20 +1,22 @@
 /*
  * style.css - used with pandoc generation of markdown files to html
+ *           - some of these settings override https://latex.now.sh/style.css
  */
 
+:root {
+  --pre-bg-color: hsl(60, 56%, 91%);
+}
+
+body {
+    max-width: 80%;
+}
+
 #TOC {
-    background-color: #ffffcc;
+    background-color: #f5f5dc;
     border: thick solid gray;
     padding: .5em;
     margin: .5em;
 }
-
-
-/*
-removed from pre:
-    color: #444444;
-    background-color: #ffffcc;
- */
 
 pre {
     font-family: fixed;
