@@ -26,9 +26,10 @@ daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
 
   * stop the daemon from listening on IPv6: *AddressFamily inet*
   * tell the daemon to use DNS: *UseDNS yes*
-  * limit ssh access to yourself in your LAN; and block ssh access\
-     to the root user except for 'localhost':\
-      AllowUsers    myname@192.168.1.\* \*@localhost*
+  * stop the daemon from printing the last login info: *PrintLastLog no*
+  * limit ssh access to yourself in your LAN; and block ssh access to the
+    root user except for 'localhost':\
+      *AllowUsers    myname@192.168.1.\* @localhost*
 
 ```shell
 $ cd /etc/ssh
@@ -40,9 +41,11 @@ $ sudo nano sshd_config
 $ diff sshd_config.orig sshd_config
 15a16
 > AddressFamily inet
-101a103
+95a97
+> PrintLastLog no
+101a104
 > UseDNS yes
-122a125,130
+122a126,131
 > 
 > # Limit access to root user; only local users can connect via ssh
 > # to root only if root's authorized_keys file allows them.
