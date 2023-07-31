@@ -8,11 +8,9 @@ This guide was written using the Markdown markup language.  The flavour
 of Markdown used in the guide is the Pandoc flavour, so some features in
 the document (like definition lists) do not render correctly in the
 Github flavour.  Nevertheless, you can still 
-[browse markdown files in GitHub]
-[https://github.com/deatrich/linux-home-server/].
+[browse markdown files in GitHub][mygithub.com].
 
-Recent [Pandoc-generated HTML and PDF files]
-[https://deatrich.github.io/linux-home-server/] are available on github.io.
+Recent [Pandoc-generated HTML and PDF files][mygithub.io] are available on github.io.
 
 This is a work in progress, so expect more sections of the guide to be
 fleshed out in coming days.
@@ -43,3 +41,5 @@ fleshed out in coming days.
 - [x] LAN configuration
 - [ ] add more notes as needed
 
+[mygithub.com]:https://github.com/deatrich/linux-home-server/
+[mygithub.io]: https://deatrich.github.io/linux-home-server/
