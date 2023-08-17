@@ -1,5 +1,5 @@
 <!-- -->
-# Creating a Samba File Sharing Service
+# Creating a Samba file sharing service
 
 We are going to create a Samba file sharing service on our server.  Other
 devices like mobile phones, tablets, laptops and desktops running a variety
@@ -174,7 +174,7 @@ $ diff smb.conf.orig smb.conf
 [vfs]: https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html
 [smb-conf]: https://raw.githubusercontent.com/deatrich/linux-home-server/main/examples/smb.conf
 
-## Retart the Service and Check Log Files
+## Restart the service and check log files
 
 ```shell
 $ sudo systemctl restart smbd nmbd
@@ -200,7 +200,7 @@ $ tail log.192.168.1.82
   check_ntlm_password:  mapped user is: [LINUX]\[guest]@[UBUNTU]
 ```
 
-## Run Some Tests
+## Run some tests
 
 Tests to run to validate functionality include the following:
 

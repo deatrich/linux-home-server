@@ -1,5 +1,5 @@
 <!-- -->
-# Picking the OS (Operating System) and the Window Manager {#environment}
+# Picking the OS (Operating System) and the window manager {#environment}
 
 ## Ubuntu LTS
 
@@ -39,7 +39,7 @@ At the time of writing this guide I used version 22.04 of Ubuntu LTS
 (also known as **Jammy Jellyfish**). It was first released in April 2022,
 as indicated by the release number.
 
-## Subscribing To a Few Mailing Lists
+## Subscribing to a few mailing lists
 
 If you are a going to be using Ubuntu then it is wise to subscribe to a few
 mailing lists.  There are [lots of them][ubmail-lists], but a few low volume
@@ -51,7 +51,7 @@ ones like these are a good idea:
   * [Ubuntu Announce][ubmail-announce]
      * Low-traffic Ubuntu Announcements
 
-## MATE Desktop
+## MATE desktop
 
 I also opt to use an installation image which uses the
 [MATE desktop system][mate-desktop]  -- at the bottom of that

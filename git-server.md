@@ -1,5 +1,5 @@
 <!-- -->
-# Starting Your Own Git Service
+# Starting your own Git service
 
 Services like [github.com][github] are wonderful, but sometimes it is useful
 and necessary to create your own Git server.  You might have extremely
@@ -9,7 +9,7 @@ public internet, and you might want to play with git at home to learn about
 running your own server.
 
 Here we look at installing and configuring a Git service.  We will also 
-install *gitweb* so that we have a web interface for browing the git
+install *gitweb* so that we have a web interface for browsing the git
 repositories.  It will not be as funky as *github*, but it will still be
 useful.
 
@@ -28,7 +28,7 @@ repositories.  Of course, these services are for our home LAN:
 
 [github]: https://github.com/
 
-## Installing and Configuring Git Services
+## Installing and configuring Git services
 
 If 'git' is not yet installed, then do it.  The Debian git package also
 includes a git server binary, and a git 'shell':
@@ -78,7 +78,7 @@ will install *xinetd* and then the xinet daemon will listen for requests
 and respond.  Note that if you do not want a read-only git pull service then
 you can skip the section on *Setting up the Git Protocol*.
 
-### Setting Up the Repository
+### Setting up the repository
 
 First we need a user, as well as a defined group for that user:
 
@@ -105,7 +105,7 @@ $ sudo chown git:git /var/www/git
 // link to the repository's top directory:
 $ sudo ln -s /var/www/git /git
 ```
-#### Adding a Test Repository
+#### Adding a test repository
 
 To do some testing we need an initial repository.  We need to become
 the **git user** with sudo.  For each repository that we create we go
@@ -133,7 +133,7 @@ drwxr-xr-x 5 root root   45 Jul  7 16:11 ..
 $ rm .bash* .profile
 ```
 
-### Setting Up the *Git* Protocol
+### Setting up the *Git* protocol
 
 Do not bother with this service is you will not use read-only git pulls.
 
@@ -180,6 +180,7 @@ Jul 06 13:41:59 pi.home xinetd[175277]: Started working: 1 available service
 ```
 Let's give it a test.  We will clone the *test* repository, even though it is
 pretty much empty:
+<!-- add 'new to git' footnote about .gitconfig ? -->
 
 ```shell
 // I clone it on my 'desktop' host.  Since the configuration of the Git service
@@ -198,7 +199,7 @@ $ cd ..
 $ rm -rf test
 ```
 
-### Setting Up the *SSH* Protocol
+### Setting up the *SSH* protocol
 
 First we become the 'git' user and do 2 things:
 
@@ -268,8 +269,10 @@ warning: You appear to have cloned an empty repository.
 $ cd test
 $ git ls-remote
 From ssh://git@pi.home/git/test
-254c31c6342ca189693ef3fab211c071b460f163        HEAD
-254c31c6342ca189693ef3fab211c071b460f163        refs/heads/master
+
+// If you don't like using 'master' as the initial branch name, then you
+// can change it.  I did not do that here, but you could change it to 'main'
+// with this command:    git config --global init.defaultBranch main
 
 // Let's add something to the test repo:
 $ cp -p /path/to/myxt .
@@ -302,7 +305,7 @@ $ git status
 nothing to commit, working directory clean
 ```
 
-## Setting Up **gitweb** For Web Access to Git Repositories
+## Setting up **gitweb** for web access to Git repositories
 
 Note that *gitweb* requires a functioning web service on the server; here I
 assume that the [Apache server is installed and running](#web-server).

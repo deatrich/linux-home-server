@@ -8,7 +8,7 @@ This guide was written using the Markdown markup language.  The flavour
 of Markdown used in the guide is the Pandoc flavour, so some features in
 the document (like definition lists) do not render correctly in the
 Github flavour.  Nevertheless, you can still 
-[browse markdown files in GitHub][mygithub.com].
+[browse Markdown files in GitHub][mygithub.com].
 
 Recent [Pandoc-generated HTML and PDF files][mygithub.io] are available on github.io.
 
@@ -31,6 +31,7 @@ fleshed out in coming days.
 - [x] Add a database service
 - [x] Create a git service
 - [x] Configure a KVM virtualization service
+- [ ] Switch all .shell fenced code blocks to .console
 - [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 
 ## Task lists for appendix ##

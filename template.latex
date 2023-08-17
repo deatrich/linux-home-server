@@ -434,7 +434,7 @@ $if(beamer)$
 $if(toc-title)$
   \frametitle{$toc-title$}
 $endif$
-  \pdfbookmark{\contentsname}{toc}
+  \pdfbookmark[0]{\contentsname}{toc}
   \tableofcontents[hideallsubsections]
 \end{frame}
 $else$
@@ -443,7 +443,7 @@ $if(colorlinks)$
 \hypersetup{linkcolor=$if(toccolor)$$toccolor$$else$$endif$}
 $endif$
 \setcounter{tocdepth}{$toc-depth$}
-\pdfbookmark{\contentsname}{toc}
+\pdfbookmark[0]{\contentsname}{toc}
 \tableofcontents
 }
 $endif$

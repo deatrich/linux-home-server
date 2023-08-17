@@ -1,9 +1,9 @@
 <!-- -->
-# Creating a Database Server
+# Creating a database server
 
 Linux is a great platform for databases.  There are lots of options if
 you want to dabble in database technology -- take a look at an example list of
-[well-known Open Source database offerings][dbsoftware] on zenarmor.com.
+[well-known open source database offerings][dbsoftware] on zenarmor.com.
 Ubuntu packages and supports PostgreSQL, SQLite, MariaDB and Redis mentioned
 on that list.
 
@@ -16,14 +16,14 @@ maintainers -- that package is named *mysql-server*.
 [dbsoftware]: https://www.zenarmor.com/docs/linux-tutorials/best-open-source-database-software
 [lamp]: https://en.wikipedia.org/wiki/LAMP_(software_bundle)
 
-## Installing the Server
+## Installing the server
 
 The main package for a MariaDB server is *mariadb-server*.  It pulls in
 additional support packages, including the client software used to query
 the server databases.  Once up and running it listens on port 3306, which 
 is defined in *mariadb.cnf*.  That file is found with other MySQL configuration
 files residing in */etc/mysql/* on a Debian-based system.  Note that there
-is also a file named *my.cnf* in the configration area.  When
+is also a file named *my.cnf* in the configuration area.  When
 you install MariaDB the file 'my.cnf' is a symbolic link, pointing through
 /etc/alternatives to 'mariadb.cnf'.
 
@@ -60,7 +60,7 @@ ddl_recovery.log   ib_logfile0     mysql_upgrade_info
 debian-10.6.flag   ibtmp1          performance_schema/
 ```
 
-## Configuring the Server
+## Configuring the server
 
 The very first thing to do is secure the default configuration.   There is
 a utility named *mysql_secure_installation* which helps you do this.
@@ -138,7 +138,7 @@ MariaDB [(none)]> exit
 Bye
 ```
 
-### Allowing Non-superuser Users to Connect Remotely
+### Allowing non-superuser users to connect remotely
 
 Most users who use MySQL databases interact with their own databases,
 and do not need to touch the administrative server mysql databases.  So
@@ -314,7 +314,7 @@ $ sudo ls -l /var/lib/mysql/webdb/
 [storage-engines]: https://mariadb.com/kb/en/storage-engines/
 
 
-## Backing Up a MariaDB Database
+## Backing up a MariaDB database
 
 (!! to be continued)
 

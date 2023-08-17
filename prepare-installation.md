@@ -1,5 +1,5 @@
 <!-- -->
-# Creating the Installation Disk {#image}
+# Creating the installation disk {#image}
 
 You will need a new or repurposed microSD card with a capacity of at
 least 32 GB -- since this is a server we might want to store lots of photos

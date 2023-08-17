@@ -29,7 +29,7 @@ sections of this guide.
 
 [odroid]: https://www.hardkernel.com/
 
-## A Few Issues Before You Begin {#reserved-address}
+## A few issues before you begin {#reserved-address}
 
 You should look into assigning a permanent network IP address for your server
 in your home network so that you can easily connect to it from any of your
@@ -42,10 +42,10 @@ your server to your router.
 
 <!-- mention in document somewhere about getting MAC addrs early -->
 
-## About this Document {#doc}
+## About this document {#doc}
 
 This guide was created in the [*Markdown*][md] markup language (the
-Pandoc flavour of markdown).  Markdown is wonderfully simple.  Then,
+Pandoc flavour of Markdown).  Markdown is wonderfully simple.  Then,
 using the versatile [Pandoc][pandoc] command set, both HTML and PDF formats of
 the document were generated.  In fact this document was created using the home
 server as a remote desktop.  The server served as a git, web and NFS server;

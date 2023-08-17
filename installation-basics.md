@@ -1,5 +1,5 @@
 <!-- -->
-# Installation and First Experience
+# Installation and first experience
 
 Once you have prepared your microSD card then insert it in your Raspberry Pi.
 Note that the card pushes in easily.  It will only go in one way.

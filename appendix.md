@@ -1,6 +1,6 @@
 # Appendix {#appendix}
 
-## Identifying Device Names for Storage Devices {#find-device}
+## Identifying device names for storage devices {#find-device}
 
 In a Linux system it is important to correctly identify storage devices,
 especially when you want to repartition or reformat them.  If you pick
@@ -83,7 +83,7 @@ mmcblk0                           59.4G
 ```
 
 
-## Installation Disk Creation from the Command-line {#image-cmds}
+## Installation disk creation from the command-line {#image-cmds}
 
 This is a generic approach to creating an installation image on removable
 media; it generally works for various Linux distributions.
@@ -124,7 +124,7 @@ $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
 $ sudo eject /dev/sdX
 ```
 
-## Modify the Partitioning of the Installation Image {#mod-partition}
+## Modify the partitioning of the installation image {#mod-partition}
 
 If you modify the microSD's partioning *before* you start the installation
 then you can reserve a portion of the disk for
@@ -184,23 +184,23 @@ Here are some utilities used to find disk information:
 
 [gparted]: https://www.dedoimedo.com/computers/gparted.html#mozTocId133810
 
-### Identify the Main Linux Partition on the microSD
+### Identify the main Linux partition on the microSD
 
 First we need to [identify the device name](#find-device), and then we use that
 device name in the partitioning tool.  In my test situation I am using
 */dev/sde* and I am targeting the main Linux (second) partition: */dev/sde2*.
 
-### Expand the Main Linux Partition on the microSD
+### Expand the main Linux partition on the microSD
 
 40 GB is lots of space for future system needs, so I decide to expand the
 second partition from 6 up to 40 GB.
 
 To be sure this partition is sound I run a check on it with *e2fsck*.
 Then I use *parted* to expand the partition, and then *resize2fs* which can
-adjusts the size of the underlying ext4 filesystem.
+adjusts the size of the underlying ext4 file system.
 
 ```shell
-// run a filesystem check on the target partition:
+// run a file system check on the target partition:
 $ sudo e2fsck /dev/sde2
 e2fsck 1.46.5 (30-Dec-2021)
 writable: clean, 224088/390144 files, 1485804/1558784 blocks
@@ -227,14 +227,14 @@ Number  Start   End     Size    Type     File system  Flags
 
 (parted) quit
 
-// Now expand the underlying filesystem to the end of the partition
+// Now expand the underlying file system to the end of the partition
 $ sudo resize2fs /dev/sde2
 resize2fs 1.46.5 (30-Dec-2021)
 Resizing the filesystem on /dev/sde2 to 9703161 (4k) blocks.
 The filesystem on /dev/sde2 is now 9703161 (4k) blocks long.
 ```
 
-### Create a New Data Partition
+### Create a new data partition
 
 Now we want to create a third large partition.  We run into the problem
 of partition alignment because I chose 40 GB for the second partition 
@@ -345,9 +345,9 @@ Resizing the filesystem on /dev/sde2 to 9703168 (4k) blocks.
 The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.
 ```
 
-### Create a Filesystem on the New Data Partition
+### Create a file system on the new data partition
 
-Ubuntu uses the *ext4* filesystem, so let's create that filesystem on the
+Ubuntu uses the *ext4* file system, so let's create that file system on the
 new data partition:
 
 ```shell
@@ -365,7 +365,7 @@ Creating journal (262144 blocks): done
 Writing superblocks and filesystem accounting information: done
 ```
 
-By default, the generations of the [*ext* filesystems][ext] reserve 5% of the 
+By default, the generations of the [*ext* file systems][ext] reserve 5% of the 
 available space for the *root* user.  On a data partition where most
 files created will belong to ordinary users this reservation is not necessary.
 5% of 200 GB is 10 GB - that is a lot of space.  So it is a good idea
@@ -386,7 +386,7 @@ Reserved block count:     509680
 ```
 
 Lastly, let's add a *label* to this partition to make it easier to mount
-the filesystem in the future.  We will use the label *PI-DATA*:
+the file system in the future.  We will use the label *PI-DATA*:
 
 ```shell
 $ sudo tune2fs -L PI-DATA /dev/sde3
@@ -395,15 +395,15 @@ tune2fs 1.46.5 (30-Dec-2021)
 
 [ext]: https://en.wikipedia.org/wiki/Extended_file_system
 
-## Setting Up a Data Area {#data-area}
+## Setting up a data area {#data-area}
 
 If you did not [modify the initial partitioning](#mod-partition) of your
 microSD card then you will simply make a directory in the root of
-your filesystem where we will store any data associated with a Samba
+your file system where we will store any data associated with a Samba
 service or with an NFS service -- that is all.
 
 In case you did make a data partition on the microSD card then
-we *still* need to make a directory in the root of the filesystem
+we *still* need to make a directory in the root of the file system
 to mount that data partition: 
 
 Let's call the directory */data*:
@@ -414,7 +414,7 @@ $ sudo mkdir /data
 
 For the case with the third (data) partition then we need
 to mount it and make the mount action permanent on reboots.  For this
-we create an entry in the filesystem table, the */etc/fstab* file:
+we create an entry in the file system table, the */etc/fstab* file:
 
 ```shell
 // make a backup copy first
@@ -423,13 +423,13 @@ $ sudo cp -p /etc/fstab /etc/fstab.orig
 // There are 6 fields in an fstab entry:
 //    1. the partition name, the partition label or the partition uuid
 //    2. the directory to use for the mount point
-//    3. the filesystem type
+//    3. the file system type
 //    4. any mount options recognized by the mount command
 //    5. use a zero here, it is a legacy option for the 'dump' command
 //    6. the file system check ordering, use '2' here
 
 // Edit the file, adding a mount entry line to the end of the file;
-// recall that we added the label 'PI-DATA' to its filesystem:
+// recall that we added the label 'PI-DATA' to its file system:
 $ sudo nano /etc/fstab
 $ tail -2 /etc/fstab
 LABEL=PI-DATA		/data           ext4	defaults  0  2
@@ -446,7 +446,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/sde3       191G   28K  189G   1% /data
 ```
 
-## Some Command-line Utilities and Their Purpose {#eg-cmds}
+## Some command-line utilities and their purpose {#eg-cmds}
 
 -----------------------------------------------------------------------------
 Command              Purpose
@@ -512,7 +512,7 @@ as the input for the next command.  It is a hallmark of the UNIX way of
 doing things - create small programs that do one thing well, and string
 the commands together to accomplish a larger task.
 
-## A MATE Configuration Exercise {#mate-exercise}
+## A MATE configuration exercise {#mate-exercise}
 
 Here are a series of exercises you can try on a fresh installation of the
 MATE desktop.  By default, the initial mate configuration has 2 panels
@@ -532,7 +532,7 @@ MATE desktop.  By default, the initial mate configuration has 2 panels
 You may like this setup; but here is a small exercise to give you a quick
 start in making modifications.
 
-### Modify the Top Panel
+### Modify the top panel
 
  1. Get rid of the bottom panel:
       - Right click on it and selecting 'Delete This Panel'.  We will add
@@ -585,11 +585,11 @@ shell as well.  If you are interested look at the secure shell example
 further in the appendix.
 -->
 
-### Other Changes Done From the Control Center
+### Other changes done from the control center
 
  1. Find the Control Center in the System Menu.
  2. Under the 'Look and Feel' section select 'Screensaver':
-      - Chanage the theme to something else, for example: 'Cosmos'.
+      - Change the theme to something else, for example: 'Cosmos'.
       - Disable the 'lock screen' option if you wish.
  3. Under the 'Look and Feel' section select 'Windows':
       - Change the 'Titlebar Action' to 'Roll up'
@@ -601,7 +601,7 @@ further in the appendix.
       - Select 'Show hidden' and look at what is lurking underneath,
         disable things that clearly are not important to you.
 
-### Here are a Few Notes About Window Actions:
+### Here are a few notes about window actions:
 
 The 'Maximize Window' button (between the 'Minimize Window' button and
 the 'Close Window' on the right of each window) has difference actions
@@ -618,9 +618,9 @@ depending on which mouse-click you use:
     previous size.
 
 
-## An Example Process and Script for Backups {#backups}
+## An example process and script for backups {#backups}
 
-There are many ways to do backups - this is just one example.  
+There are many ways to do backups - this is one example.  
 An [example script][backup-script] in my github 'tools' area can do local
 system backups; it can also do external backups to a removable drive,
 such as an attached USB drive.  If you do only local backups without creating
@@ -691,7 +691,7 @@ $ sudo crontab -l | tail -3
 ```
 
 If you will also synchronize backups to a USB drive, then you must make
-directories at the root of the USB filesystem for backups.  The USB partition
+directories at the root of the USB file system for backups.  The USB partition
 name and the names of the directories must match the configuration file setup.
 (example: your USB partition is /dev/sda1 and so you have set 'usbpartition'
 in the configuration file to 'sda1')
@@ -723,7 +723,7 @@ $ sudo crontab -l | tail -3
 0 1 * * * /root/bin/system-backup.sh --local --external --rsync-large
 ```
 
-In case your USB drive is formated for Windows then it should be okay
+In case your USB drive is formatted for Windows then it should be okay
 for all backups except for the large directories backup; that is,
 with the option '--rsync-large'.
 
@@ -733,15 +733,15 @@ this case.  You may have to change the rsync arguments in the script from
 *-aux* to *-rltux*.   I need to test the Windows-formatted usb drive opton.
 
 If you ever need to restore files from your backups then you should unpack the
-*tarballs* (compressed 'tar' files) on a Linux system and copy the needed
-files into place on the filesystem.
+*tar file* (compressed 'tar' files are sometimes called *tarballs*) on a
+Linux system and copy the needed files into place on the file system.
 
 [backup-script]: https://github.com/deatrich/tools/blob/main/system-backup.sh
 [backup-conf]: https://github.com/deatrich/tools/blob/main/etc/system-backup.conf
 
-## LAN (Local Area Network) Configuration {#lan}
+## LAN (Local Area Network) configuration {#lan}
 
-### Common Network-related Files
+### Common network-related files
 
 There are some common networking files that are interesting to configure
 especially if you have more than one Linux computer on your home network.
@@ -827,7 +827,7 @@ $ # diff /etc/hosts.orig /etc/hosts
 > 192.168.1.86	inkjet.home inkjet
 ```
 
-### Changing the Server's Hostname
+### Changing the server's hostname
 
 Now that we have a *.home* domain we can rename our official server's hostname.
 Suppose the server was originally named *pi* during the installation:
@@ -846,7 +846,7 @@ $ hostname
 pi.home
 ```
 
-### The Resolver and Looking Up Your Local Hostnames
+### The resolver and looking up your local hostnames
 
 Well-known traditional command-line tools for querying DNS [^dns] are:
 
@@ -922,7 +922,7 @@ $ echo $?
 0
 ```
 
-### Modifying the Resolver's List of Nameservers
+### Modifying the resolver's list of nameservers
 
 The resolver file would typically be created at bootup when your computer
 makes a DHCP request to the home router asking for an IP address and the
@@ -971,8 +971,7 @@ at the process.
 Create a local copy of the resolver file - do not pollute systemd space:
 
 ```shell
-// Remove the current resolver file (we don't want to edit systemd's file).
-// This just removes the symbolic link:
+// Remove the current resolver file, which is a symbolic link:
 $ sudo rm /etc/resolv.conf
 
 // Get a copy of /usr/lib/systemd/resolv.conf for manual control of the resolver
@@ -1062,9 +1061,9 @@ Current DNS Server: 9.9.9.9
 [routers]: https://www.techspot.com/guides/287-default-router-ip-addresses/
 [^dns]: Domain Name System -- how we look up hostnames
 
-### Statically Configuring Your Server's IP Address {#static-ip}
+### Statically configuring your server's IP address {#static-ip}
 
-Sometimes you just want full control of your Linux server's network 
+Sometimes you want full control of your Linux server's network 
 setup and you decide to eliminate the DHCP network configuration and 
 statically configure your network parameters.  Remember though that
 you can only configure specific IP addresses if you have reserved them
@@ -1110,7 +1109,7 @@ Wired connection 1  91591311-3c9a-3541-8176-29a8b639fffa  ethernet  --
 # reboot
 ```
 
-## Other Ways of Becoming the Superuser in a Restricted Environment {#root}
+## Other ways of becoming the superuser in a restricted environment {#root}
 
 You might run into a chicken-and-egg problem occasionally because you
 need to do something like:
@@ -1122,7 +1121,7 @@ need to do something like:
 Then you realize that you need to be logged in as a regular user to 
 sudo to *root*, but you cannot be logged in to accomplish your task.
 
-### Setting a Password for the Superuser
+### Setting a password for the superuser
 
 One solution is to set a password for the *root* user - you can always
 disable the password afterwards.
@@ -1152,7 +1151,7 @@ root:$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
 
 Now we can log in directly as root at the server's text console; remember
 that it is foolish to login as 'root' to a graphical environment.  Using
-web browers as 'root' is not smart.
+web browsers as 'root' is not smart.
 
 To lock the root user from using a password, use the **-l** option; you can
 unlock it in the future with the **-u** option.
@@ -1167,7 +1166,7 @@ passwd: password expiry information changed.
 root:!$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
 ```
 
-### Allowing Secure-shell Access From Another Device in Your LAN
+### Allowing secure-shell access from another device in your LAN
 
 Another solution is to allow another device in your home network to have
 secure-shell access to the root account on your Ubuntu server or desktop.  It
@@ -1210,7 +1209,7 @@ root    395460  395429  09:30 pts/1  00:00:00          \_ grep --color=auto ssh
 myname    3693       1  May26 ?      00:00:00 ssh-agent
 ```
 
-## Creating a New Git Repository {#new-git-repo}
+## Creating a new Git repository {#new-git-repo}
 
 This is a list of small tasks that you as the git manager must do for
 each new repository that you host on your Git server:
@@ -1270,7 +1269,7 @@ test MyFirstName+MyLastName
 $ exit
 ```
 
-## Allowing a New User SSH Access to the Git Server {#new-git-user}
+## Allowing a new user SSH access to the Git server {#new-git-user}
 
 One time only we set up the authorized keys file.
 

@@ -1,5 +1,5 @@
 <!-- -->
-# Enabling the Secure Shell Daemon and Using Secure Shell {#sshd}
+# Enabling the Secure Shell daemon and using Secure Shell {#sshd}
 
 The [Secure Shell][secure-shell] daemon, ***sshd***, is a very useful and
 important service for connecting between computers near or far.  If you
@@ -8,7 +8,7 @@ within your network then do NOT install the daemon.  You can always
 use the secure shell client, ***ssh***, to initiate a connection
 to some external server -- for that you do not need sshd.
 
-## Configure the sshd Daemon
+## Configure the sshd daemon
 
 If you will be needing sshd then first install it, since
 it is not installed by default in the LTS desktop version:
@@ -59,7 +59,7 @@ $ diff sshd_config.orig sshd_config
 AllowUsers      myname@192.168.1.* root@192.168.1.65 *@localhost
 ```
 
-## Configure a Personal SSH Key Pair {#key-pair}
+## Configure a personal SSH key pair {#key-pair}
 
 If you use the Linux command-line for work between computers you soon 
 understand the usefulness of ssh.  Here we go through the exercise of

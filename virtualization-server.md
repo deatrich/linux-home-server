@@ -1,5 +1,5 @@
 <!-- -->
-# Setting up a Virtualization Service with QEMU/KVM
+# Setting up a virtualization service with QEMU/KVM
 
 Running multiple hosts virtually from the same hardware is very convenient
 and useful; you might want to:
@@ -23,7 +23,7 @@ Systems like the Raspberry Pi with a Broadcom-based SoC[^soc] and [ARM][arm]
 processors are relatively new to hardware-based virtualization.
 
 Though there are [many choices for virtualization software][virt-software],
-here we use the combination of three integrated open-source software projects
+here we use the combination of three integrated open source software projects
 to build and manage running virtual hosts:
 
 [QEMU][qemu]
@@ -49,7 +49,7 @@ to build and manage running virtual hosts:
 [libvirt]: https://en.wikipedia.org/wiki/Libvirt
 [kvm]: https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine
 
-## Verifying Kernel Support
+## Verifying kernel support
 
 Before installing virtualization software packages we can check to be sure
 that our kernel supports KVM:
@@ -111,7 +111,7 @@ vermagic:       5.19.0-46-generic SMP preempt mod_unload modversions
 ...
 ```
 
-## Changing the Network Interface to Bridging Mode
+## Changing the network interface to bridging mode
 
 Before we go further, it is really useful to configure *bridge networking*.
 If the host server has a bridging network configuration then any virtual
@@ -194,7 +194,7 @@ br0             8000.e45f01a7110d       no              eth0
 [^nat]: Network Address Translation, used to hide internal device IP addresses
 from external devices 
 
-## Installing the Software
+## Installing the software
 
 Now we are ready to install the required software.  First we install
 *qemu-system-arm*.  You could also install *qemu-kvm*, a virtual package, and
@@ -250,7 +250,7 @@ of binaries on x86 hardware; that is, i386 and x86_64.  However there is no
 hardware acceleration for those architectures on a Raspberry Pi, so it is
 too slow to use in any practical way.
 
-## Disabling the Default Virtual Network
+## Disabling the default virtual network
 
 ```shell
 // We will not be using the default virtual network, which operates behind
@@ -286,7 +286,7 @@ Network default has been undefined
 
 ```
 
-## Setting Up a Disk Area For Clients and Boot Images
+## Setting up a disk area for clients and boot images
 
 The default location for virtual hosts' disks and boot images in in:
 
@@ -356,7 +356,7 @@ $ sudo virsh pool-edit default.xml
 
 ```
 
-## Creating Some Virtual Hosts
+## Creating some virtual hosts
 
 There are 2 ways to install virtual machines (VMs):
 

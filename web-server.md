@@ -1,5 +1,5 @@
 <!-- -->
-# Creating a Web Server {#web-server}
+# Creating a web server {#web-server}
 
 Setting up an [Apache][apache] web server is a great way to learn about
 web technologies.  [Nginx][nginx] is another web server available on 
@@ -13,14 +13,14 @@ network it is tricky to get an official web certificate.  Instead we will
 create a self-signed certificate, and coax web clients to trust it.  Another
 option is to build your own [certificate authority][certauth].
 
-Finally we will look at configuring ownership of some of the apache directory
+Finally we will look at configuring ownership of some of the Apache directory
 infrastructure for future web projects and configuring a few virtual hosts.
 
 [certauth]: https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-a-certificate-authority-ca-on-ubuntu-20-04
 
-## Installing and Testing Apache 2.4
+## Installing and testing Apache 2.4
 
-Install the apache software. The ssl-cert package allows us to later
+Install the Apache software. The ssl-cert package allows us to later
 create an SSL certificate for the https service, so we will install it
 as well.
 
@@ -104,7 +104,7 @@ $ lynx --dump http://pi.home/ | head
    ...
 ```
 
-Log files for the apache daemon are stored under */var/log/apache2/*:
+Log files for the Apache daemon are stored under */var/log/apache2/*:
 ```shell
 $ head /var/log/apache2/access.log
 192.168.1.82 - -  ... "GET / HTTP/1.1" 200 3460 "-" "Mozilla/5.0 ... Firefox/113.0"
@@ -117,7 +117,7 @@ $ head /var/log/apache2/access.log
 [apache]: https://ubuntu.com/server/docs/web-servers-apache
 [nginx]: https://en.wikipedia.org/wiki/Nginx
 
-## Generating a Self-Signed Certificate and Enabling https
+## Generating a self-signed certificate and enabling HTTPS
 
 Before we enable listening on port 443 we will generate a self-signed
 SSL certificate.  I have a script named [*addcert.sh*][addcert.sh]
@@ -156,7 +156,7 @@ Certificate:
 ```
 
 The server key file and the server key certificate need to be copied into
-the apache configuration area, and the ssl configuration paths need to be
+the Apache configuration area, and the ssl configuration paths need to be
 updated:
 
 ```shell
@@ -251,7 +251,7 @@ $ links -dump -ssl.certificates 0  http://pi.home/ | head
 [addcert.sh]: https://github.com/deatrich/tools/blob/main/addcert.sh
 [addcert.cnf]: https://github.com/deatrich/tools/blob/main/etc/addcert.cnf
 
-## Apache Directory Infrastructure
+## Apache directory infrastructure
 
 When developing web infrastructure and editing web pages you should always
 work as a regular user, and never as root.  The best way to proceed is to
@@ -366,7 +366,7 @@ own site configuration in */etc/apache2/sites-available/* with your new
 sub-directory path(s) and enable them.  The exercise is very similar to the
 previous example.
 
-## Apache Configuration Issues
+## Apache configuration issues
 
 For home use the default settings in */etc/apache2/apache2.conf* are fine.
 However these settings are too open in my opinion, and I would never keep
@@ -375,7 +375,7 @@ such a configuration on a publicly-exposed web server.
 Be aware of these settings if you plan on using home-grown configurations
 on an internet-exposed site:
 
-   * The configuration for the root of the filesystem allows *FollowSymLinks*
+   * The configuration for the root of the file system allows *FollowSymLinks*
    * Access to directory */usr/share* is allowed
    * The base of the web tree, */var/www/*, allows *Indexes* and
      *FollowSymLinks* -- these settings should be enabled only within site
@@ -386,7 +386,7 @@ about Apache configurations to cope with installing new packages and
 safely configuring them, without depending on deliberately loose initial
 configurations that shield you from necessary details.
 
-## Disabling IPv6 Access to the Apache Daemon
+## Disabling IPv6 access to the Apache daemon
 
 If you want to configure Apache to listen only for IPv4 connections, then
 alter */etc/apache2/ports.conf* and change instances of *Listen PORTNUMBER*
@@ -435,7 +435,7 @@ $ diff sites-available/default-ssl.conf.orig sites-available/default-ssl.conf
 ...
 ```
 
-## Installing the PHP Apache Module
+## Installing the PHP Apache module
 
 If you are interesting in doing some embedded PHP web development then
 you only need to install the PHP Apache module:
@@ -490,8 +490,8 @@ $ links -dump http://pi.home/info.php | head
 
 // The PHP function 'phpinfo()' shows all configuration information that
 // you as a developer want to know about.  However, do not expose all this
-// information to others in a publicly available web site.  Remove the file
-// you just created, or hide it from the apache daemon:
+// information to others in a publicly available web site.  Remove the 
+// info.php file after use, or hide it from the apache daemon:
 $ cd /var/www/html/test/
 $ rm info.php
 // or set it read-write to yourself only:
@@ -499,7 +499,7 @@ $ chmod 600 info.php
 ```
 
 You might want to disable PHP session cleanup until a later time
-when you are actually making use of PHP sessions.  You can reenable this
+when you are actually making use of PHP sessions.  You can re-enable this
 later when you think you need it:
 
 ```shell

@@ -1,5 +1,5 @@
 <!-- -->
-# Backing up Your Server
+# Backing up your server
 
 Always, always, do some kind of backups on your server.  For
 system backups, very little actually needs to be backed up, yet it is
@@ -30,7 +30,7 @@ including the backup of large directories.  Compressed system directories
 are typically small. But /home and /data/shared might be large.  Be aware
 of your space needs, and adjust backups accordingly.
 
-## Recovering Files from Backups
+## Recovering files from backups
 
 Recovering files from backups is fairly easy.  It is best to use an
 empty directory with adequate space.  In this example we recover files from

@@ -1,5 +1,5 @@
 <!-- -->
-# Server Customization
+# Server customization
 
 Here is a list of tasks you can apply to your server for 24x7 service.
 Ubuntu installations are more common on laptops and desktops which
@@ -14,7 +14,7 @@ By all means, ignore all of this if you don't want to be bothered with
 disabling extraneous software.  I have spent 3 decades managing UNIX and
 Linux systems, so I can be a bit picky about what runs on my systems.
 
-## Turn Off Bluetooth
+## Turn off Bluetooth
 
 If you won't be using it on your server then turn Bluetooth off.
 
@@ -49,7 +49,7 @@ $ tail -3 config.txt
 dtoverlay=disable-bt
 ```
 
-## Turn Off Wireless
+## Turn Off wireless
 
 If you will use the built-in ethernet interface for networking on your server
 then turn WiFi off.  I prefer wired connections for servers, especially since
@@ -93,7 +93,7 @@ $ sudo systemctl stop wpa_supplicant
 $ sudo systemctl disable wpa_supplicant
 ```
 
-## Install A Simulated Hardware Clock
+## Install A simulated hardware clock
 
 SBC's like the Raspberry Pi do not have a [real-time clock (RTC)][rtc], whereas
 more complex systems like desktops and laptops do.
@@ -145,11 +145,11 @@ myname   pts/0        desktop.home     Wed Jul 26 10:11 - 10:38  (00:27)
 [rtc]: https://en.wikipedia.org/wiki/Real-time_clock
 [rtc-for-pi]: [https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/|
 
-## Enable Boot-up Console Messages
+## Enable boot-up console messages
 
 Maybe like me you like seeing informational messages as a computer boots up.
 In that case you need to edit */boot/firmware/cmdline.txt* and remove
-the *quiet* argument.  On my system this one line file nows ends in:\
+the *quiet* argument.  On my system this one line file now ends in:\
   '... fixrtc splash'\
 instead of\
   '... fixrtc quiet splash':
@@ -160,7 +160,7 @@ $ sudo cp -p cmdline.txt cmdline.txt.orig
 $ sudo nano cmdline.txt
 ```
 
-## Disable the Graphical Login Interface
+## Disable the graphical login interface
 
 Simpler is better for a server.  Normally 24x7 servers are headless, mouseless,
 keyboardless, and sit in the semi-darkness.  A graphics-based console
@@ -180,7 +180,7 @@ $ sudo apt install gpm
 $ sudo systemctl status gpm
 ```
 
-## Disable Snap Infrastructure
+## Disable Snap infrastructure
 
 Ubuntu promotes another kind of software packaging called **Snaps** (which
 includes an *App* store).  Some users are not pleased with issues introduced
@@ -193,7 +193,7 @@ from a Snap package).
 My opinion is that 'Snaps' are not meant for a server environment, and
 so I remove the associated software.  I certainly find it distasteful
 to have more than a dozen mounted loop devices cluttering up
-output of block device commands for just a handful of snap packages.
+output of block device commands for a handful of snap packages.
 I would rather free up the memory footprint and inodes for other purposes.
 
 But if you like 'Snaps' then skip to the next topic.
@@ -322,9 +322,9 @@ $ sudo apt install firefox
 
 [remove-snap]: https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204
 
-## Modify the Swap Setup
+## Modify the swap setup
 
-There is a big 1 GB [swapfile][swap] in the root of the filesystem - I find
+There is a big 1 GB [swapfile][swap] in the root of the file system - I find
 that offensive, so I moved it.  If you are not as easily offended as I am
 then skip this topic.
 
@@ -399,7 +399,7 @@ $ systemctl --type swap
 [swap]: https://help.ubuntu.com/community/SwapFaq
 
 
-## Remove **anacron** Service
+## Remove **anacron** service
 
 UNIX and Linux has a mechanism called *cron* allowing servers to run
 commands at specific times and days.  However personal and mobile computing is
@@ -413,7 +413,7 @@ $ sudo apt remove anacron
 $ sudo apt purge anacron
 ```
 
-## Disable Various Unused Services
+## Disable various unused services
 
 Here are some services which normally can be disabled.  Of course, if any
 of these services are interesting to you then keep them.  Note that server
@@ -517,9 +517,9 @@ root@pi:/etc# mv apparmor.d apparmor.d.old
 [secure-boot]: https://news.ycombinator.com/item?id=35815382
 [apparmor]: https://en.wikipedia.org/wiki/AppArmor
 
-## Miscellaneous Configuration Tweaks
+## Miscellaneous configuration tweaks
 
-### Change Local Time Presentation Globally
+### Change local time presentation globally
 
 If you prefer to see time in 24 hour format, or if you prefer to tweak
 other [locale][locale] settings, then use *localectl* to set global
@@ -560,7 +560,7 @@ $ sudo localectl set-locale LC_TIME="en_GB.UTF-8"
 
 [locale]: https://en.wikipedia.org/wiki/Locale_(computer_software)
 
-### Change Log Rotation File Naming
+### Change log rotation file naming
 
 Ubuntu installs a log rotation package which controls how log files are
 rotated on your server.  This package typically once a week compresses log
@@ -611,14 +611,14 @@ $ diff logrotate.conf.orig logrotate.conf
 ---
 > dateext
 ```
-### Consider Enabling a Static IP Configuration
+### Consider enabling a static IP configuration
 Normally you get your network configuration from your home router via its DHCP
 service.  If you are using a wired connection then consider statically
 configuring the IP address information on your server -- there is
 [a description of the process](#static-ip) in the appendix in case you
 want to see how it is done.
 
-### Addressing Software Package Updates
+### Addressing software package updates
 
 By default the *unattended-upgrades* package is installed on Ubuntu LTS,
 and it is configured to run in an unattended manner.  Its configuration files
@@ -685,7 +685,7 @@ Removed /etc/systemd/system/timers.target.wants/apt-daily.timer.
 Removed /etc/systemd/system/timers.target.wants/apt-daily-upgrade.timer.
 ```
 
-### Getting Rid of *motd* Terminal Output
+### Getting rid of *motd* terminal output
 
 Regardless of whether you have registered for and configured the free ESM 
 update program or not, you might get tired of seeing your terminal windows
@@ -748,7 +748,7 @@ Your backups failed at Fri 28 Jul 01:19:45 MDT 2023
 ```
 [pam]: https://en.wikipedia.org/wiki/Linux_PAM
 
-### Other Configuration Issues
+### Other configuration issues
 
 These topics are still to be documented: 
 

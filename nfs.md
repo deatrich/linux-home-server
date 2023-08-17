@@ -1,5 +1,5 @@
 <!-- -->
-# Starting Up an NFS Service for Other Linux Devices
+# Starting Up an NFS service for other Linux devices
 
 Usually your home directory on your Linux desktop is where most of your
 important files reside.  When you shutdown your desktop then those files are 
@@ -10,7 +10,7 @@ Putting your home directory on the Linux server would solve this issue.
 Here we look at installing an NFS service for 24x7 availability.  If you
 have no other Linux devices then skip this chapter.
 
-## Configure the NFS Daemons
+## Configure the NFS daemons
 
 First install the needed packages.  The *nfs-common* package contains both
 client and server elements; the *nfs-kernel-server* contains the server 
@@ -132,7 +132,7 @@ Then export the share.  It can then be mounted on other clients.
 $ sudo exportfs -a
 ```
 
-## Configure NFS Clients on Other Hosts
+## Configure NFS clients on other hosts
 
 We will use *autofs* on other Linux hosts to automatically mount and
 unmount the home directory on demand.  Note that any current directories
@@ -241,9 +241,9 @@ Filesystem                    Size  Used Avail Use% Mounted on
 192.168.1.90:/home/myname      50G  464M   50G   1% /home/myname
 ```
 
-## Some Factors To Consider
+## Some factors To consider
 
-### What If the Server Fails
+### What if the server fails
 
 Once you NFS-mount your home directory on your clients, then if for any reason
 your server is down you will not be able to log in as a regular user.  This
@@ -273,7 +273,7 @@ Retype new password:
 passwd: password updated successfully
 ```
 
-### Doing Maintenance on the Linux Server
+### Doing maintenance on the Linux server
 
 The main benefit of letting the automounter unmount your directory when you
 log out is that you can easily do maintenance on the server without disturbing

@@ -1,5 +1,5 @@
 <!-- -->
-# Enabling Remote Desktop Services
+# Enabling remote desktop services
 
 In case you have various devices at home that you would like to use in a Linux
 desktop fashion, but you do not want to change the current environment
@@ -132,7 +132,7 @@ Create and save the session parameters by starting a new session:
 
    1. Session -> New Session
       *  Give the session a name
-      *  Add the host name or IP address
+      *  Add the hostname or IP address
       *  Add your login name
       *  Check auto login
       *  Change 'Session type' to *MATE*
