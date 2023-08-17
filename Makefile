@@ -12,11 +12,11 @@
 #***************************************************************************
 ## get object file names from source file names
 
-TARG		= linux-server.md
+PROJECT		= linux-server
 FILELIST	= contents.txt
 GENDIR		= "Generated/"
 PUBDIR		= "../deatrich.github.io/linux-home-server/latest-version/"
-MDFILE		= $(TARG)
+MDFILE		= $(PROJECT).md
 MDFILES		= $(shell cat ${FILELIST})
 HTMLOBJECT	= $(MDFILE:.md=.html)
 PDFOBJECT	= $(MDFILE:.md=.pdf)
@@ -25,12 +25,12 @@ HTMLVIEWER	= firefox
 
 #***************************************************************************
 PRINTOPT	= 
-PANDOC_OPTS	= -c style.css --toc --toc-depth=3 \
-		  --syntax-definition=shell.xml \
-		  --highlight-style=custom-highlight.theme
-PANDOC_HTML_OPTS = --template template.htm -V lastupdate="`date +'%d %B %Y'`"
+PANDOC_OPTS	= --toc --toc-depth=3 --syntax-definition=shell.xml \
+		 --highlight-style=custom-highlight.theme
+PANDOC_HTML_OPTS = -c style.css --template template.htm \
+		 -V lastupdate="`date +'%d %B %Y'`"
 PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm \
-       	--pdf-engine=xelatex
+		 --pdf-engine=xelatex
 
 #***************************************************************************
 ## DEFAULT GOAL
