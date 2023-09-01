@@ -33,7 +33,7 @@ repositories.  Of course, these services are for our home LAN:
 If 'git' is not yet installed, then do it.  The Debian git package also
 includes a git server binary, and a git 'shell':
 
-```shell
+```console
 $ sudo apt install git
 ...
 Selecting previously unselected package liberror-perl.
@@ -62,7 +62,7 @@ There are a couple of envelope packages for *git-daemon* offered by Ubuntu:
 
 The documentation for *git-daemon-run* claims: 
 
-```shell
+```console
 $ apt show git-daemon-run
 ...
  git-daemon, as provided by the git package, is a simple server for git
@@ -74,7 +74,7 @@ $ apt show git-daemon-run
 ```
 
 We will not use either package for a read-only git pull service; instead we
-will install *xinetd* and then the xinet daemon will listen for requests
+will install *xinetd* and then the daemon will listen for requests
 and respond.  Note that if you do not want a read-only git pull service then
 you can skip the section on *Setting up the Git Protocol*.
 
@@ -82,7 +82,7 @@ you can skip the section on *Setting up the Git Protocol*.
 
 First we need a user, as well as a defined group for that user:
 
-```shell
+```console
 // I picked an unused uid and gid less than 1000 (regular users start at uid 1000):
 $ sudo groupadd -g 600 git
 $ sudo useradd -u 600 -g git -m -s '/usr/bin/git-shell' -c 'Code Versioning' git
@@ -97,7 +97,7 @@ Then we need a directory for the repositories.  I decide to put it in /var/www/.
 Since I already back up that directory then I don't need to change my backup
 configuration.
 
-```shell
+```console
 $ sudo mkdir /var/www/git
 $ sudo chown git:git /var/www/git
 
@@ -117,7 +117,7 @@ Here we do a one-time clean of the 'git' user's directory - we want to avoid
 unneeded login configuration files since no one is allowed to login as git
 except yourself via sudo.
 
-```shell
+```console
 $ sudo -u git /bin/bash
 $ cd
 $ id
@@ -139,7 +139,7 @@ Do not bother with this service is you will not use read-only git pulls.
 
 We install *xinetd* and configure it to listen for git requests:
 
-```shell
+```console
 // Install xinetd:
 $ sudo apt install xinetd
 
@@ -182,7 +182,7 @@ Let's give it a test.  We will clone the *test* repository, even though it is
 pretty much empty:
 <!-- add 'new to git' footnote about .gitconfig ? -->
 
-```shell
+```console
 // I clone it on my 'desktop' host.  Since the configuration of the Git service
 // already knows the base path to the repositories then we do not add its path
 // to the clone URL:
@@ -210,7 +210,7 @@ First we become the 'git' user and do 2 things:
 
 We add access to the git user in */etc/ssh/sshd_config*:
 
-```shell
+```console
 $ sudo nano /etc/ssh/sshd_config
 $ sudo tail -2 /etc/ssh/sshd_config
 AllowUsers  myname@192.168.1.* git@192.168.1.* ...
@@ -220,7 +220,7 @@ $ sudo systemctl reload sshd
 By default 'git-shell' does not allow users to ssh into the git server and get
 access to the command-line -- here is an example:
 
-```shell
+```console
 $ ssh git@pi.home
 fatal: Interactive git shell is not enabled.
 hint: ~/git-shell-commands should exist and have read and execute access.
@@ -229,7 +229,7 @@ Connection to pi.home closed.
 
 So we create a script that gives a more informational message:
 
-```shell
+```console
 $ whoami
 git
 $ cd
@@ -247,7 +247,7 @@ $ exit
 
 So we try to ssh into the server again from the desktop host:
 
-```shell
+```console
 $ ssh git@pi.home
 Hi git! You've successfully authenticated, but I do not
 provide interactive shell access.
@@ -260,7 +260,7 @@ to this file.  This process is [detailed in the appendix](#new-git-user).
 
 Finally we test the ssh protocol for access to git services:
 
-```shell
+```console
 $ hostname
 desktop.home
 $ git clone ssh://git@pi.home/git/test
@@ -314,7 +314,7 @@ First we install and configure gitweb.  The Ubuntu *gitweb* package is just
 a wrapper for gitweb -- instead the actual gitweb files are part of the *git*
 package:
 
-```shell
+```console
 
 $ dpkg -S /usr/share/gitweb
 git: /usr/share/gitweb
@@ -338,7 +338,7 @@ $ diff /etc/gitweb.conf.orig /etc/gitweb.conf
 
 Before trying to access gitweb in the browser we want to enable the cgi module.
 
-```shell
+```console
 $ sudo a2enmod cgi
 Enabling module cgi.
 To activate the new configuration, you need to run:
@@ -350,6 +350,6 @@ thing that you do for each new repository, so [its description](#new-git-repo)
 is found in the appendix.
 
 <!--
-```shell
+```console
 ```
  -->

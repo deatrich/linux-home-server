@@ -29,7 +29,7 @@ You will need to eventually reboot the server once you have make this change.
 If you also disable WiFi then wait until you have finished the next task, or
 any other tasks in this chapter.
 
-```shell
+```console
 // List bluetooth devices:
 $ hcitool dev
 Devices:
@@ -60,7 +60,7 @@ server on wireless then skip this task.
 You will need to reboot the server once you have make this change, but 
 **remember to connect the ethernet cable** on the Pi to your home router first!
 
-```shell
+```console
 // List wireless devices - after making this change you will not see this
 // information:
 $ iw dev
@@ -101,7 +101,7 @@ more complex systems like desktops and laptops do.
 You can [buy an RTC for the Pi][rtc-for-pi], or you can install a package that
 fakes some of the functionality of a hardware clock:
 
-```shell
+```console
 $ sudo apt install fake-hwclock
 ...
 Setting up fake-hwclock (0.12) ...
@@ -123,7 +123,7 @@ wrong.  For example when you look at snippets of the 'last' logged in users, the
 logs about reboots are always odd, but once you have installed the fake clock
 then reboot times are in line with real world time:
 
-```shell
+```console
 // without fake-hwclock:
 $ last | less
 ...
@@ -154,7 +154,7 @@ the *quiet* argument.  On my system this one line file now ends in:\
 instead of\
   '... fixrtc quiet splash':
 
-```shell
+```console
 $ cd /boot/firmware
 $ sudo cp -p cmdline.txt cmdline.txt.orig
 $ sudo nano cmdline.txt
@@ -167,7 +167,7 @@ keyboardless, and sit in the semi-darkness.  A graphics-based console
 is therefore useless.  Though your home server might not be as lonely as a
 data centre server, you might want to try a text-based console:
 
-```shell
+```console
 $ sudo systemctl set-default multi-user
 $ sudo systemctl stop display-manager
 
@@ -206,7 +206,7 @@ packages and the snapd daemon:
 You should close firefox if it is running in a desktop setting.  Then
 disable the snapd services and socket:
 
-```shell
+```console
 $ sudo systemctl disable snapd snapd.seeded snapd.socket
 ```
 
@@ -218,7 +218,7 @@ remove packages one at a time and watch for messages warning about
 dependencies.  This is my list of Snap packages; your list might be different
 depending on what you have installed:
 
-```shell
+```console
 $ snap list
 Name                       Version           ...  Publisher      Notes
 bare                       1.0               ...  canonical     base
@@ -255,7 +255,7 @@ No snaps are installed yet. Try 'snap install hello-world'.
 
 Completely remove snapd and its cache files from the system.
 
-```shell
+```console
 $ sudo apt autoremove --purge snapd
 $ sudo rm -rf /root/snap
 $ rm -rf ~/snap
@@ -264,11 +264,11 @@ $ rm -rf ~/snap
 As well, you can clean up 'PATH' environment variables and remove 'snap' from
 them.  I also take the opportunity to fix issues that bother me.  I have never
 overly trusted binaries in /usr/local/ (having supported them in the old
-commerical UNIX world) so I either push those paths to the end, or I remove
+commercial UNIX world) so I either push those paths to the end, or I remove
 them.  I know that all directories in /usr/local/ are empty anyway, so I
 remove them:
 
-```shell
+```console
 $ cd /etc
 $ sudo cp -p environment environment.orig
 $ sudo nano environment
@@ -298,7 +298,7 @@ $ diff manpath.config.orig manpath.config
 Then add configuration files for *apt* access to firefox *dpkg-based* packages.
 Finally install firefox from the Mozilla Personal Package Archive (PPA):
 
-```shell
+```console
 // Create the necessary apt configurations for firefox:
 
 $ sudo nano /etc/apt/preferences.d/firefox-no-snap
@@ -341,7 +341,7 @@ Here we create another 1 GB file -- it can be much larger if needed; but
 if you need a lot of swap then you should investigate to see what is eating
 memory.
 
-```shell
+```console
 // check to see what the current swap usage is; in this case it is 0
 $ free -t
            total       used        free    shared  buff/cache   available
@@ -404,11 +404,11 @@ $ systemctl --type swap
 UNIX and Linux has a mechanism called *cron* allowing servers to run
 commands at specific times and days.  However personal and mobile computing is
 typically not powered on all the time.  So operating systems like Linux 
-have another mechanism called *anacron* which trys to run periodic 
+have another mechanism called *anacron* which tries to run periodic 
 cron-configured commands while the computer is still running.  Since we 
 are creating a 24x7 server we do not also need anacron -- delete it:
 
-```shell
+```console
 $ sudo apt remove anacron
 $ sudo apt purge anacron
 ```
@@ -426,7 +426,7 @@ on the next reboot.
 
 #### Disable ModemManager, hciuart, openvpn and cups
 
-```shell
+```console
 // If you want to run a series of commands as root you can sudo to the bash
 // shell, run your commands, and then exit the shell.  Be careful to
 // always exit immediately after running your commands.
@@ -452,7 +452,7 @@ Note that it is possible to enable [some form of secure boot][secure-boot]
 with OTP (One Time Programmable Memory) on a Raspberry Pi 4, but it is not
 yet for the faint of heart.
 
-```shell
+```console
 // disable System Security Services Daemon (sssd) if you don't need it
 # systemctl disable sssd
 
@@ -529,7 +529,7 @@ In this example the locale setting is generic English with a region code
 for Canada.  Because the British English locale uses a 24 hour clock then
 changing only the time locale will show datestrings with a 24 hour clock:
 
-```shell
+```console
 // Show your current locale settings
 $ locale
 LANG=en_CA.UTF-8
@@ -569,7 +569,7 @@ resulting files are rotated through a specified rotation, and the oldest
 compressed log is deleted; for example here are 4 weeks worth of rotated
 auth.log files:
 
-```shell
+```console
 $ ls -ltr /var/log/ | grep auth.log
 -rw-r-----  1 syslog     adm      3498 Apr 15 23:17 auth.log.4.gz
 -rw-r-----  1 syslog     adm      8178 Apr 22 23:17 auth.log.3.gz
@@ -582,7 +582,7 @@ A better scheme is to use the 'dateext' option in */etc/logrotate.conf*
 so that older compressed logs keep their compressed and dated names until
 they are deleted:
 
-```shell
+```console
 $ ls -ltr /var/log/ | grep auth.log
 -rw-r----- 1 syslog      adm      3287 Apr 17 07:30 auth.log-20230417.gz
 -rw-r----- 1 syslog      adm      2494 Apr 23 07:30 auth.log-20230423.gz
@@ -596,7 +596,7 @@ number of rotations to keep to 12 weeks instead of 4 weeks.  Note that
 per-service log file customization is possible; look at examples in
 */etc/logrotate.d/*
 
-```shell
+```console
 $ cd /etc
 $ sudo cp -p logrotate.conf logrotate.conf.orig
 $ sudo nano logrotate.conf
@@ -628,7 +628,7 @@ are in */etc/apt/apt.conf.d/*, and the log files are in
 In particular the log files */var/log/unattended-upgrades-dpkg.log\** contain
 the list of all upgraded packages:
 
-```shell
+```console
 // list files in time reverse order, then for each file find the date & package
 $ ls -tr unattended-upgrades-dpkg.log* | \
   while read f ; do \
@@ -669,7 +669,7 @@ If you decide to manage updates yourself then you could remove this package
 and its components.  Of course, you should not do this until you are sure
 that you will follow through with doing your own updates:
 
-```shell
+```console
 $ systemctl status unattended-upgrades
      Loaded: loaded (/lib/systemd/system/unattended-upgrades.service; enabled
 ...
@@ -696,7 +696,7 @@ One way to get rid of messages is to comment out these message properties in
 example session below I comment out dynamic *motd* (message of the day) and
 *last login* messages in 2 modules:  *sshd* and *login*
 
-```shell
+```console
 $ cd /etc/pam.d
 $ sudo cp -p sshd sshd.orig
 // comment out the dynamic motd configuration
@@ -728,7 +728,7 @@ The other kind of optional pam session type of *motd* will still be
 displayed in your terminal window whenever you create a file named */etc/motd*,
 since we did not comment it out.
 
-```shell
+```console
 $ grep -h motd /etc/pam.d/login /etc/pam.d/login | grep -v '^#'
 session    optional   pam_motd.so noupdate
 session    optional   pam_motd.so noupdate
@@ -738,7 +738,7 @@ It is unlikely that you will create a message that way
 for yourself.  However, it is an interesting idea to drop an information file
 named */etc/motd* on your server if your daily backups fail ... 
 
-```shell
+```console
 // Somewhere in your script you have:
 echo "Your backups failed at `date`" >>/etc/motd
 

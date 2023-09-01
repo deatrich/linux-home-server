@@ -9,7 +9,7 @@ and useful; you might want to:
   * test beta software
   * set up and test a new service without polluting your home server
 
-Running other hosts virtually requires sufficient memory and diskspace.
+Running other hosts virtually requires sufficient memory and disk space.
 Though my Linux server only has 4 GB of memory, I set up an example
 Rocky Linux 8 virtual host to demonstrate the process.  Recall that this
 server also runs Samba, remote desktops, NFS, Apache, Git and MySQL.  It
@@ -54,7 +54,7 @@ to build and manage running virtual hosts:
 Before installing virtualization software packages we can check to be sure
 that our kernel supports KVM:
 
-```shell
+```console
 // Install cpu-checker on the Raspberry Pi so that we can check for kvm
 // capatibilty:
 $ sudo apt install cpu-checker
@@ -129,7 +129,7 @@ make any mistakes and lose your network connection.
 
 Here are the commands which create an ethernet bridge:
 
-```shell
+```console
 // Show network connection names and become root
 $ nmcli con show --active
 NAME                UUID                                  TYPE      DEVICE 
@@ -182,7 +182,7 @@ ethernet-eth0  bc6badb3-3dde-4009-998d-2dee20831670  ethernet  eth0
 If you want to use a bridge-specific utility, you can install *bridge-utils*
 so that you have access to the *brctl* command:
 
-```shell
+```console
 $ sudo apt install bridge-utils
 ...
 $ brctl show
@@ -201,7 +201,7 @@ Now we are ready to install the required software.  First we install
 it will pick the right package to match your architecture, which is
 qemu-system-arm:
 
-```shell
+```console
 $ sudo apt install qemu-system-arm
 ...
 The following additional packages will be installed:
@@ -213,7 +213,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/qemu-kvm.service ...
 
 Then we install the needed libvirt packages:
 
-```shell
+```console
 $ sudo apt install libvirt-daemon-system libvirt-clients
 ...
 The following additional packages will be installed:
@@ -241,7 +241,7 @@ update-initramfs: Generating /boot/initrd.img-5.15.0-1033-raspi
 We also want *virt-manager*, a useful management GUI.  It will bring in 
 virt-viewer and the *virtinst* package, which provides *virt-install*.
 
-```shell
+```console
 $ sudo apt install virt-manager
 ```
 
@@ -252,7 +252,7 @@ too slow to use in any practical way.
 
 ## Disabling the default virtual network
 
-```shell
+```console
 // We will not be using the default virtual network, which operates behind
 // a NAT.  Here we show what it is, and then we disable it:
 
@@ -299,7 +299,7 @@ The default location for virtual hosts' disks and boot images in in:
 The disk space used can be very large, so I prefer to use instead a large
 data disk which is mounted as */data*, in the sub-directory */data/kvm/*.
 
-```shell
+```console
 $ df -h /data/
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/mmcblk0p3  142G   26G  115G  19% /data
@@ -350,7 +350,7 @@ $ scp -p desktop:/path/to/Rocky-8.8-aarch64-minimal.iso /data/kvm/boot-images/
 
 ```
 
-```shell
+```console
 // change the disk pool path component to /data/kvm/clients below:
 $ sudo virsh pool-edit default.xml
 
@@ -403,7 +403,7 @@ using it to install Rocky Linux.
 This Linux distribution needed more memory and disk space; I used about 1500 MB
 of RAM and a disk size of 20 GB.
 
-```shell
+```console
 // This one had an issue falling into an EFI shell at installation startup.
 // I fixed it with a ghastly set of options for the boot loader.  Trying the
 // installation with virt-manager also required an unexpected option for
@@ -427,6 +427,6 @@ of RAM and a disk size of 20 GB.
 ```
 
 <!--
-```shell
+```console
 ```
  -->

@@ -16,7 +16,7 @@ First install the needed packages.  The *nfs-common* package contains both
 client and server elements; the *nfs-kernel-server* contains the server 
 daemons *rpc.mountd* and *rpc.nfsd*.
 
-```shell
+```console
 $ sudo apt install nfs-common nfs-kernel-server
 ...
 The following NEW packages will be installed:
@@ -69,7 +69,7 @@ root      272301       2  0 10:46 ?        00:00:00 [nfsd]
 There are a few files to configure.  We remove IPv6 RPC services by commenting
 out *udp6* and *tcp6* from /etc/netconfig:
 
-```shell
+```console
 $ sudo cp -p /etc/netconfig /etc/netconfig.orig
 $ sudo nano /etc/netconfig
 $ diff /etc/netconfig.orig /etc/netconfig
@@ -83,7 +83,7 @@ $ diff /etc/netconfig.orig /etc/netconfig
 
 Before restarting the daemons we see various IPv6 processes running:
 
-```shell
+```console
 $ sudo lsof -i | grep rpc | grep IPv6
 systemd        1      root  144u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
 systemd        1      root  145u  IPv6 899100    0t0  UDP :sunrpc 
@@ -109,7 +109,7 @@ change the home directory path in the password file, or create a symbolic
 link from */home* to the new directory -- though we can do this, it is
 a bit messy.
 
-```shell
+```console
 // Edit the exports file on the NFS server:
 $ sudo cp -p /etc/exports /etc/exports.orig
 $ sudo nano /etc/exports
@@ -128,7 +128,7 @@ $ diff /etc/exports.orig /etc/exports
 
 Then export the share.  It can then be mounted on other clients.
 
-```shell
+```console
 $ sudo exportfs -a
 ```
 
@@ -144,7 +144,7 @@ Consider migrating the content of /home to the server.
 This example uses another Ubuntu host as the NFS client.  We install autofs
 on it and then edit the automount map files as needed.
 
-```shell
+```console
 // install the autofs package
 $ sudo apt install autofs
 The following additional packages will be installed:
@@ -219,7 +219,7 @@ $ cat /etc/auto.home
 
 Now, you would normally restart autofs - but do not do this immediately:
 
-```shell
+```console
 // restart autofs:
 $ sudo systemctl restart autofs
 ```
@@ -233,7 +233,7 @@ if you do not want to fiddle with changes to root access is to
 changes then when the client is back up again you should have a home directory
 that is served by your home server.
 
-```shell
+```console
 $ pwd
 /home/myname
 $ df -h .
@@ -255,7 +255,7 @@ You could give your local root user a good password, or you could create
 another local user on each device and give them administrative rights
 so that they can use sudo for root access locally:
 
-```shell
+```console
 // Suppose the other user is called 'helper'
 // We will give the helper user another home directory
 $ sudo mkdir /var/home
@@ -292,7 +292,7 @@ One solution is to let the display manager clean up for you.  If you are using
 the *lightdm* display manager then you need to make a root-owned script on your
 Linux client that will do the job:
 
-```shell
+```console
 $ cd /etc/lightdm
 $ sudo /bin/bash
 # touch lightdm.conf

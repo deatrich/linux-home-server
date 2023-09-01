@@ -13,7 +13,7 @@ to some external server -- for that you do not need sshd.
 If you will be needing sshd then first install it, since
 it is not installed by default in the LTS desktop version:
 
-```shell
+```console
 $ sudo apt install openssh-server
 ```
 
@@ -31,7 +31,7 @@ daemon's configuration file: */etc/ssh/sshd_config*.  The issues to fix are:
     root user except for 'localhost':\
       *AllowUsers    myname@192.168.1.\* @localhost*
 
-```shell
+```console
 $ cd /etc/ssh
 $ sudo cp -p sshd_config sshd_config.orig
 
@@ -84,7 +84,7 @@ characters; as the man-page on ssh-keygen says:
 I would not create a passphrase that is less than 16 characters; I would
 certainly never set an empty passphrase.
 
-```shell
+```console
 // If you do not yet have a .ssh directory in your home directory then
 // create one now; and give access to yourself only:
 
@@ -117,7 +117,7 @@ Suppose you created your keys on your desktop, and you want to use them
 to ssh to your Linux home server without using a standard password.  To
 do this you create an authorized keys file on the server:
 
-```shell
+```console
 // secure-copy your public key to the linux server (assuming the server is named 'pi')
 $ scp ~/.ssh/id_rsa.pub myname@pi:~/
 The authenticity of host 'pi (192.168.1.90)' can't be established.
@@ -181,7 +181,7 @@ to start the agent. The script saves the environment variables in a file named:
 
 > ~/.ssh-agent-info-YOUR-FULL-HOSTNAME
 
-```shell
+```console
 // Copy the shell script to your home 'bin' directory; create it if needed:
 $ cd
 $ mkdir bin
@@ -225,7 +225,7 @@ an argument.  You can use *mate-terminal*, or if you have installed the
 script invokes a shell (*/bin/sh* is a symbolic link to */bin/bash*, and
 starts with a [shebang][shebang])
 
-```shell
+```console
 // make the 'bin' directory if it does not exist:
 $ cd
 $ touch ~/bin/exec-prime-ssh-keys.sh
@@ -246,7 +246,7 @@ process that file in your *~/.bashrc* file so that any new terminal window
 you launch will always inherit the variables.  As well, other scripts which
 might need the variables can do the same.
 
-```shell
+```console
 // First create .bash_ssh_env; we 'cat' it after to show what it contains:
 $ nano ~/.bash_ssh_env
 $ cat ~/.bash_ssh_env
@@ -283,7 +283,7 @@ been 'hashed'.`
 This is also where you can assign customized per-host ssh key pair filenames
 to particular hosts.
 
-```shell
+```console
 // Create and edit your ssh config file:
 $ cd ~/.ssh/
 $ touch config

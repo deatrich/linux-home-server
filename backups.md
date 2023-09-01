@@ -14,7 +14,7 @@ reconfigure.  This is my favourite list of system directories to back up:
              secure-shell keys, user account details, and most server
              configuration changes
   * /home    -- this is where your user account resides
-  * /root    -- this is the superuser's home directory
+  * /root    -- this is the super-user's home directory
   * /var/log -- system log files are here; for forensic reasons I back them up
   * /var/spool -- in case you have personalized cron job entries
   * /var/www -- if you have a web server then it's data files are usually here
@@ -38,7 +38,7 @@ compressed tar files.  We unpack the tar files *etc.tgz* and *home.tgz*
 in the empty directory, and then move or copy any files into place in the
 file system.  Example:
 
-```shell
+```console
 // This example unpacks home.tgz and etc.tgz.  Do this with sudo so that
 // files are unpacked with the correct permissions.
 $ sudo mkdir /var/local-recovery
@@ -64,7 +64,7 @@ copy the files directly from the removable media to your target directories.
 For large directory backups we do not compress the backed up files, since
 it takes some time and may introduce an additional disk space problem.
 
-```shell
+```console
 // This example recovers a directory inside the large directory backup of
 // /home.  First mount the USB drive -- the example partition here is at
 // /dev/sda1:

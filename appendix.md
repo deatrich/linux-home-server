@@ -14,7 +14,7 @@ of inserted card in the reader as a generic 'scsi disk' type and it will
 appear with a name which starts with */dev/sd*.
 
 Here is an example of a Pi that has 3 storage disks and a USB card reader with
-4 slots.  The lsblk command also shows active mountpoints.  The 3 disks are:
+4 slots.  The lsblk command also shows active mount points.  The 3 disks are:
 
   * the Pi's system microSD card (mmcblk0) with 2 partitions mounted
       as */* and */boot/firmware*
@@ -25,7 +25,7 @@ Here is an example of a Pi that has 3 storage disks and a USB card reader with
       of 232 GB.
   * you can use *fdisk* and *parted* to look more closely at the sde device:
 
-```shell
+```console
 # lsblk -i 
 NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
 sda           8:0    1 238.5G  0 disk
@@ -66,7 +66,7 @@ Number  Start   End     Size    Type     File system  Flags
 You can pass options to the *lsblk* command so that you print out 
 columns you are interested in -- try *lsblk \-\-help* to see other options.
 
-```shell
+```console
 # lsblk -i -o 'NAME,MODEL,VENDOR,SIZE,MOUNTPOINT,FSTYPE'
 NAME        MODEL       VENDOR     SIZE MOUNTPOINT     FSTYPE
 sda         Extreme Pro SanDisk  238.5G
@@ -88,7 +88,7 @@ mmcblk0                           59.4G
 This is a generic approach to creating an installation image on removable
 media; it generally works for various Linux distributions.
 
-```shell
+```console
 // create a directory for downloaded images
 $ mkdir raspberry-pi-images
 $ cd raspberry-pi-images
@@ -118,7 +118,7 @@ device when you are done with the *eject* command.  In this example
 the device name */dev/sdX* is not real; it is a place-holder for your
 real device name:
 
-```shell
+```console
 $ img="ubuntu-mate-22.04-desktop-arm64+raspi.img"
 $ sudo dd if=$img of=/dev/sdX bs=32M conv=fsync status=progress
 $ sudo eject /dev/sdX
@@ -126,7 +126,7 @@ $ sudo eject /dev/sdX
 
 ## Modify the partitioning of the installation image {#mod-partition}
 
-If you modify the microSD's partioning *before* you start the installation
+If you modify the microSD's partitioning *before* you start the installation
 then you can reserve a portion of the disk for
 special data usage - for example as a shared Samba area or an NFS area.
 We do this by expanding the main Linux partition up to 40 GB, and then we
@@ -199,7 +199,7 @@ To be sure this partition is sound I run a check on it with *e2fsck*.
 Then I use *parted* to expand the partition, and then *resize2fs* which can
 adjusts the size of the underlying ext4 file system.
 
-```shell
+```console
 // run a file system check on the target partition:
 $ sudo e2fsck /dev/sde2
 e2fsck 1.46.5 (30-Dec-2021)
@@ -240,7 +240,7 @@ Now we want to create a third large partition.  We run into the problem
 of partition alignment because I chose 40 GB for the second partition 
 expansion without considering alignment for the next partition.
 
-```shell
+```console
 // invoke *parted* and print the partition table in sector units:
 $ sudo parted /dev/sde
 ...
@@ -274,7 +274,7 @@ disk, since 512 bytes * 2048 sectors is 1048576 bytes.  You lose a bit of
 disk space at the 'front' of the disk, but partitioning and file system 
 data structures are better aligned, and disk performance is enhanced.
 
-```shell
+```console
 // To calculate the best starting sector number for an aligned new
 //  partition simply calculate: 
 //  TRUNCATE(FIRST_POSSIBLE_SECTOR / 2048) * 2048 + 2048
@@ -308,7 +308,7 @@ Though we have now a bit of wasted space between partition 2 and 3, we can
 extend partition 2 to use that space.  We need to resize its ext4 file system
 after:
 
-```shell
+```console
 // first check the file system:
 $ sudo e2fsck /dev/sde2
 e2fsck 1.46.5 (30-Dec-2021)
@@ -350,7 +350,7 @@ The filesystem on /dev/sde2 is now 9703168 (4k) blocks long.
 Ubuntu uses the *ext4* file system, so let's create that file system on the
 new data partition:
 
-```shell
+```console
 $ sudo mkfs.ext4 /dev/sde3
 mke2fs 1.46.5 (30-Dec-2021)
 Creating filesystem with 50968064 4k blocks and 12746752 inodes
@@ -371,7 +371,7 @@ files created will belong to ordinary users this reservation is not necessary.
 5% of 200 GB is 10 GB - that is a lot of space.  So it is a good idea
 to reduce the percentage to 1%; do this with the *tune2fs* utility:
 
-```shell
+```console
 $ sudo tune2fs -l /dev/sde3 | grep -i count
 ...
 Reserved block count:     2548403
@@ -388,7 +388,7 @@ Reserved block count:     509680
 Lastly, let's add a *label* to this partition to make it easier to mount
 the file system in the future.  We will use the label *PI-DATA*:
 
-```shell
+```console
 $ sudo tune2fs -L PI-DATA /dev/sde3
 tune2fs 1.46.5 (30-Dec-2021)
 ```
@@ -408,7 +408,7 @@ to mount that data partition:
 
 Let's call the directory */data*:
 
-```shell
+```console
 $ sudo mkdir /data
 ```
 
@@ -416,7 +416,7 @@ For the case with the third (data) partition then we need
 to mount it and make the mount action permanent on reboots.  For this
 we create an entry in the file system table, the */etc/fstab* file:
 
-```shell
+```console
 // make a backup copy first
 $ sudo cp -p /etc/fstab /etc/fstab.orig
 
@@ -464,7 +464,7 @@ ls -l                Shows a detailed listing of your current directory
 
 ls /                 Shows a listing of the base of the file system
 
-ls /root             Try to show a listing of the superuser's home directory
+ls /root             Try to show a listing of the super-user's home directory
 
 sudo ls /root        Enter your password to show that listing
 
@@ -585,7 +585,7 @@ shell as well.  If you are interested look at the secure shell example
 further in the appendix.
 -->
 
-### Other changes done from the control center
+### Other changes done from the control centre
 
  1. Find the Control Center in the System Menu.
  2. Under the 'Look and Feel' section select 'Screensaver':
@@ -655,7 +655,7 @@ the example below you:
     * run the script in test mode to check configuration correctness
     * create/edit the cronjob to run the local backup at 1 in the early morning
 
-```shell
+```console
 // Create local directory with permissions limiting access to
 // backed-up files to users in the 'adm' group:
 $ sudo mkdir /var/local-backups
@@ -696,7 +696,7 @@ name and the names of the directories must match the configuration file setup.
 (example: your USB partition is /dev/sda1 and so you have set 'usbpartition'
 in the configuration file to 'sda1')
 
-```shell
+```console
 // Here we also prepare for doing large directory rsyncs as well:
 $ sudo mount /dev/sda1 /mnt
 $ cd /mnt
@@ -730,7 +730,7 @@ with the option '--rsync-large'.
 The script might issue some warnings about trying to preserve LINUX
 permissions on the USB drive, but should otherwise work.  I need to verify
 this case.  You may have to change the rsync arguments in the script from
-*-aux* to *-rltux*.   I need to test the Windows-formatted usb drive opton.
+*-aux* to *-rltux*.   I need to test the Windows-formatted usb drive option.
 
 If you ever need to restore files from your backups then you should unpack the
 *tar file* (compressed 'tar' files are sometimes called *tarballs*) on a
@@ -768,7 +768,7 @@ The list of files that I like to manage are:
      * Be sure to include your home server
 
 Your router's private network address is used when declaring your home domain;
-the private netowrk is typically something like 192.168.1.0
+the private network is typically something like 192.168.1.0
 or 10.0.0.0.  I did a quick analysis of a list of
 [the IP addresses of common routers][routers].  The network address of the
 router is usually obtained by dropping the last octet from its IP address.
@@ -788,7 +788,7 @@ within the 'localhost' network during installation; we will comment that out.
 
 Here are the examples:
 
-```shell
+```console
 // File: /etc/networks
 // You can look at your router's management web page to understand
 // what your network address is - the example used here is: 192.168.1.0
@@ -832,7 +832,7 @@ $ # diff /etc/hosts.orig /etc/hosts
 Now that we have a *.home* domain we can rename our official server's hostname.
 Suppose the server was originally named *pi* during the installation:
 
-```shell
+```console
 // look at what you set your hostname to during the installation:
 $ hostname
 pi
@@ -861,7 +861,7 @@ Of course, external DNS servers know nothing about your private local network.
 So, when you try querying a private host using one of the above utilities,
 you might see:
 
-```shell
+```console
 $ host pi.home
 pi.home has address 192.168.1.90
 Host pi.home not found: 3(NXDOMAIN)
@@ -873,7 +873,7 @@ important file named */etc/nsswitch.conf* which configures the order to try
 when looking up host and other data.  Because 'files' is first, the
 daemon consults /etc/hosts before doing any dns request:
 
-```shell
+```console
 $ grep hosts /etc/nsswitch.conf
 hosts:          files mdns4_minimal [NOTFOUND=return] dns
 ```
@@ -882,7 +882,7 @@ hosts:          files mdns4_minimal [NOTFOUND=return] dns
 There is another command-line tool -- *getent* -- for looking up local dns data,
 and does not consult nameservers:
 
-```shell
+```console
 $ getent hosts pi
 192.168.1.90   pi.home pi web
 $ getent hosts 192.168.1.90
@@ -894,7 +894,7 @@ since it acts as a local nameserver that handles local DNS lookups, especially
 local IP address lookups.  However it still whines about hostname looks, though
 it returns the correct local lookup anyway:
 
-```shell
+```console
 // Try from another ubuntu host:
 
 $ hostname
@@ -933,7 +933,7 @@ differently than in older Linux versions.  Recent Ubuntu LTS versions
 use a systemd service named *systemd-resolved* which by default manages
 the resolver file, and it runs a local DNS server:
 
-```shell
+```console
 // list open network connections and find a name match for 'resolve'
 # lsof -i -P -n +c0 | grep resolve
 systemd-resolve  568 systemd-resolve   13u  IPv4  20701      0t0  UDP 127.0.0.53:53 
@@ -970,7 +970,7 @@ at the process.
 
 Create a local copy of the resolver file - do not pollute systemd space:
 
-```shell
+```console
 // Remove the current resolver file, which is a symbolic link:
 $ sudo rm /etc/resolv.conf
 
@@ -991,7 +991,7 @@ and the local systemd-resolved for DNS service.  To make a permanent change
 to the DNS information known to systemd we configure NetworkManager using
 its management utility *nmcli*:
 
-```shell
+```console
 // Look at current network connection configurations - I have not yet deleted
 // my old wireless network configuration (it is not active).
 // You can delete it with:  nmcli con del 'MY-SSID'
@@ -1017,7 +1017,7 @@ Cloudflare (1.1.1.1), and from Google (8.8.8.8):
 
 <!-- !! I need to check if we need to restart the network.. -->
 
-```shell
+```console
 $ sudo nmcli con modify 'Wired connection 1' ipv4.dns "1.1.1.1,8.8.8.8"
 $ nmcli con show 'Wired connection 1' | grep -i dns
 connection.mdns:                        -1 (default)
@@ -1039,7 +1039,7 @@ Current DNS Server: 1.1.1.1
 If ever you want to make a temporary change, use 'resolvctl' to do that; it
 will not persist after a reboot:
 
-```shell
+```console
 // Here the Pi's ethernet device name is 'eth0'
 $ sudo resolvectl dns eth0 9.9.9.9 8.8.4.4 75.153.171.67
 
@@ -1069,7 +1069,7 @@ statically configure your network parameters.  Remember though that
 you can only configure specific IP addresses if you have reserved them
 in your home router.
 
-```shell
+```console
 // Look at the current connection information:
 $ nmcli con show --active
 NAME                UUID                                  TYPE      DEVICE 
@@ -1129,7 +1129,7 @@ disable the password afterwards.
 This is an example of setting a password for root -- as always you set
 a **strong** password:
 
-```shell
+```console
 // Normally password access is locked in /etc/shadow - we unlock it when
 // we set a password:
 $ man passwd
@@ -1156,7 +1156,7 @@ web browsers as 'root' is not smart.
 To lock the root user from using a password, use the **-l** option; you can
 unlock it in the future with the **-u** option.
 
-```shell
+```console
 
 // lock it:
 # passwd -l root
@@ -1178,7 +1178,7 @@ In */etc/ssh/sshd_config* add the remote device's IP address with *root@*
 prefixing it to the 'AllowUsers' rule.  Here access to the root account is
 allowed from 192.168.1.65:
 
-```shell
+```console
 # id
 uid=0(root) gid=0(root) groups=0(root)
 # grep AllowUsers /etc/ssh/sshd_config
@@ -1190,7 +1190,7 @@ remote device; in this case we use the *from=''* option (see the man page for
 'authorized_keys').  As well, if you also allow localhost (127.0.0.1) you would
 allow your login account to ssh locally to root:
 
-```shell
+```console
 # tail -1 ~/.ssh/authorized_keys
 from="127.0.0.1,192.168.1.65" ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
 
@@ -1220,7 +1220,7 @@ each new repository that you host on your Git server:
    * Touch the git-daemon-export-ok file to enable exporting the repository
    * Add the repository name and author to the projects list file
 
-```shell
+```console
 $ sudo -u git /bin/bash
 
 // Let's go ahead and create a git repository named 'test'.
@@ -1273,7 +1273,7 @@ $ exit
 
 One time only we set up the authorized keys file.
 
-```shell
+```console
 $ sudo -u git /bin/bash
 $ cd
 $ pwd
@@ -1287,7 +1287,7 @@ $ chmod 600 .ssh/authorized_keys
 Then for each new user whom we allow to use ssh access to git repositories
 we need to add their designated public ssh key.
 
-```shell
+```console
 // add public keys for allowed users, starting with yourself
 $ nano .ssh/authorized_keys
 $ tail -1 authorized_keys

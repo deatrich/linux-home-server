@@ -29,7 +29,7 @@ to use for guest access to Samba shares.
 
 We set the access permissions using chmod[^chmod] and chown[^chown].
 
-```shell
+```console
 $ cd /data
 $ sudo mkdir shared
 $ sudo chown nobody:nogroup shared
@@ -46,7 +46,7 @@ your other devices as well.
 I use the Test area initially for testing from various devices; that is,
 create and delete files in the test directory.
 
-```shell
+```console
 $ cd /data/shared
 $ sudo mkdir Test
 $ sudo chown nobody:nogroup Test
@@ -57,7 +57,7 @@ I like having a general 'Protected' area that others can access but
 cannot change.  I use secure-shell access to that area for dumping files
 that I manage without using Samba tools.
 
-```shell
+```console
 $ cd /data/shared
 $ sudo mkdir Protected
 $ sudo chown myname:mygroup Protected
@@ -70,7 +70,7 @@ as *nobody:nogroup*, allowing other people in your home network to help
 manage the collection, or you can change ownership so that only you manage
 them locally.  In this example my login name is 'myname' with group 'mygroup':
 
-```shell
+```console
 $ du -sh /data/shared/Music/
 7.4G    /data/shared/Music/
 $ ls -la /data/shared/Music/
@@ -100,7 +100,7 @@ drwxr-xr-x 39 myname mygroup   4096 Feb 26  2022 Rock
 
 Simply install the *samba* package; *apt* will pull in any dependencies:
 
-```shell
+```console
 $ sudo apt install samba
 ...
 0 upgraded, 21 newly installed, 0 to remove and 3 not upgraded.
@@ -136,7 +136,7 @@ Here are the specifics:
 
 The [modified smb.conf file][smb-conf] is in github.
 
-```shell
+```console
 $ cd /etc/samba
 $ sudo cp -p smb.conf smb.conf.orig
 $ sudo nano smb.conf
@@ -176,7 +176,7 @@ $ diff smb.conf.orig smb.conf
 
 ## Restart the service and check log files
 
-```shell
+```console
 $ sudo systemctl restart smbd nmbd
 $ systemctl status smbd | grep Status:
      Status: "smbd: ready to serve connections..."

@@ -31,7 +31,7 @@ Some of the log files go to */var/log/mysql/* if you configure it in the
 server configuration file.  Otherwise status logging shows up in
 */var/log/syslog*.
 
-```shell
+```console
 $ sudo apt install mariadb-server
 ...
 The following additional packages will be installed:
@@ -75,7 +75,7 @@ This utility allows you to do these things:
    * disable mysql root login from any other host
    * remove the test database, which allows anyone access to that database
 
-```shell
+```console
 $ mysql_secure_installation
 ...
 Switch to unix_socket authentication [Y/n]
@@ -90,7 +90,7 @@ Since we set a mysql superuser ('root') password, then any user logged into
 our server can connect as the mysql superuser if they know that password.
 Otherwise, users with sudo privileges can connect without needing the password:
 
-```shell
+```console
 $ mysql -u root
 ERROR 1698 (28000): Access denied for user 'root'@'localhost'
 
@@ -109,7 +109,7 @@ Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MariaDB connection id is 33
 Server version: 10.6.12-MariaDB-0ubuntu0.22.04.1 Ubuntu 22.04
 ...
-MariaDB [(none)]> show variables like '%engine%';
+MariaDB> show variables like '%engine%';
 +----------------------------+--------+
 | Variable_name              | Value  |
 +----------------------------+--------+
@@ -120,7 +120,7 @@ MariaDB [(none)]> show variables like '%engine%';
 | storage_engine             | InnoDB |
 +----------------------------+--------+
 5 rows in set (0.004 sec)
-MariaDB [(none)]> show engines;
+MariaDB> show engines;
 +--------------------+---------+---------------------------------------+--------------+-------+
 | Engine             | Support | Comment                               | Transactions | XA ...|
 +--------------------+---------+---------------------------------------+--------------+-------+
@@ -134,7 +134,7 @@ MariaDB [(none)]> show engines;
 | PERFORMANCE_SCHEMA | YES     | Performance Schema                    | NO           | NO ...|
 +--------------------+---------+---------------------------------------+--------------+-------+
 
-MariaDB [(none)]> exit
+MariaDB> exit;
 Bye
 ```
 
@@ -146,7 +146,7 @@ it is reasonable to expect users to connect to the database from another
 host.  Here we configure the Mariadb server to listen for LAN connections,
 thus allowing users to connect via our home LAN:
 
-```shell
+```console
 $ head /etc/mysql/mariadb.cnf
  # The MariaDB configuration file
  #
@@ -203,10 +203,10 @@ are created, not at database creation.
 
 There is extensive help at the database prompt:
 
-```shell
+```console
 $ sudo mysql -u root
 ...
-MariaDB [(none)]> help create database;
+MariaDB> help create database;
 Name: 'CREATE DATABASE'
 Description:
 Syntax
@@ -228,7 +228,7 @@ MariaDB [(none)]> grant select on webdb.* to 'ro'@'192.168.1.%'
 MariaDB [(none)]> flush privileges;
 Query OK, 0 rows affected (0.002 sec)
 
-MariaDB [(none)]> select concat(user, '@', host) from mysql.global_priv;
+MariaDB> select concat(user, '@', host) from mysql.global_priv;
 +-------------------------+
 | concat(user, '@', host) |
 +-------------------------+
@@ -252,11 +252,11 @@ It is annoying to try to create a table interactively.  It is better to
 create a small text file first.  So I create an sql file 'create_tab.sql',
 and I source it at the database prompt:
 
-```shell
-MariaDB [webdb]> source create_tab.sql
+```console
+MariaDB> source create_tab.sql;
 Query OK, 0 rows affected (0.02 sec)
 
-MariaDB [webdb]> show tables;
+MariaDB> show tables;
 +-----------------+
 | Tables_in_webdb |
 +-----------------+
@@ -264,7 +264,7 @@ MariaDB [webdb]> show tables;
 +-----------------+
 1 row in set (0.00 sec)
 
-MariaDB [webdb]> show create table members;
+MariaDB> show create table members;
 ...
 | members | CREATE TABLE `members` (
   `uid` int(8) unsigned NOT NULL AUTO_INCREMENT,
@@ -277,10 +277,10 @@ MariaDB [webdb]> show create table members;
 ...
 
 // And I insert a row into the table:
-MariaDB [webdb]> insert into members (email) values ('Y');
+MariaDB> insert into members (email) values ('Y');
 Query OK, 1 row affected (0.00 sec)
 
-MariaDB [webdb]> select * from members;
+MariaDB> select * from members;
 +-----+---------------------+---------------------+------+-------+
 | uid | moddate             | credate             | role | email |
 +-----+---------------------+---------------------+------+-------+
@@ -289,11 +289,11 @@ MariaDB [webdb]> select * from members;
 1 row in set (0.01 sec)
 
 // Then I reconnect as the 'read-only' user.  I can select but nothing else:
-[desktop ~]$ mysql -u ro -h pi.home -p webdb
+$ mysql -u ro -h pi.home -p webdb
 Enter password: 
 Reading table information for completion of table and column names
 ...
-MariaDB [webdb]> select * from members;
+MariaDB> select * from members;
 +-----+---------------------+---------------------+------+-------+
 | uid | moddate             | credate             | role | email |
 +-----+---------------------+---------------------+------+-------+
@@ -301,7 +301,7 @@ MariaDB [webdb]> select * from members;
 +-----+---------------------+---------------------+------+-------+
 1 row in set (0.00 sec)
 
-MariaDB [webdb]> delete from members;
+MariaDB> delete from members;
 ERROR 1142 (42000): DELETE command denied to user 'ro'@'desktop.home' for table `webdb`.`members`
 
 $ sudo ls -l /var/lib/mysql/webdb/
@@ -319,7 +319,7 @@ $ sudo ls -l /var/lib/mysql/webdb/
 (!! to be continued)
 
 <!--
-```shell
+```console
 ```
  -->
 

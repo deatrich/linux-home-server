@@ -9,7 +9,7 @@ that opportunity.
 For all remote desktop options, first create an *.Xsession* file in your 
 home directory on the server and configure it to start a MATE desktop session:
 
-```shell
+```console
 $ cd
 $ nano .Xsession
 $ cat .Xsession
@@ -28,7 +28,7 @@ home network xrdp is okay.
 
 We install xrdp, tweak the configuration a little, and restart xrdp:
 
-```shell
+```console
 $ sudo apt install xrdp
 ...
 The following additional packages will be installed:
@@ -68,7 +68,7 @@ You can test the setup from any other linux computer with
 the Linux server with X11 forwarding using the '-Y' option
 and run 'remmina' from the command-line; that is:
 
-```shell
+```console
 // Suppose that your server is named pi.home
 $ ssh -Y pi.home
 
@@ -103,7 +103,7 @@ to avoid password use.  Thus I can comfortably connect as a remote desktop
 to remote servers across the continent, and write and test code
 as if I was down the hall from the remote server.
 
-```shell
+```console
 // install both the server and the client software
 $ sudo apt install x2goserver x2goclient
 ...
@@ -122,7 +122,7 @@ service you can start it from the command-line.  This way the client
 inherits the SSH environment variables (you can also embed a small 
 shell script which provides the environment in a custom application launcher).
 
-```shell
+```console
 // Bring up the application window; redirect stderr to /dev/null to ignore
 //  various uninteresting messages.
 $ x2goclient 2>/dev/null

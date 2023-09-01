@@ -24,7 +24,7 @@ Install the Apache software. The ssl-cert package allows us to later
 create an SSL certificate for the https service, so we will install it
 as well.
 
-```shell
+```console
 // The list of enabled apache modules on an Ubuntu system is also shown
 // for your information:
 $ sudo apt install apache2 ssl-cert
@@ -67,7 +67,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/apache-htcacheclean.
 As always, systemd starts the daemon.  It is only listening on port 80 at this
 point:
 
-```shell
+```console
 $ sudo lsof -i :80
 COMMAND    PID     USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
 apache2 508647     root    4u  IPv6 1799685      0t0  TCP *:http (LISTEN)
@@ -80,7 +80,7 @@ We can open a web client (firefox for example) and look at the default web page.
 We can also install a couple of useful *text-based* web clients which are
 useful for doing quick checks:
 
-```shell
+```console
 $ firefox http://pi.home/
 
 $ sudo apt install links lynx
@@ -105,7 +105,7 @@ $ lynx --dump http://pi.home/ | head
 ```
 
 Log files for the Apache daemon are stored under */var/log/apache2/*:
-```shell
+```console
 $ head /var/log/apache2/access.log
 192.168.1.82 - -  ... "GET / HTTP/1.1" 200 3460 "-" "Mozilla/5.0 ... Firefox/113.0"
 192.168.1.82 - -  ... "GET /icons/ubuntu-logo.png HTTP/1.1" 200 3607 "... Firefox/113.0"
@@ -125,7 +125,7 @@ which will generate the needed certificate files.  You need to use
 a configuration file named [*addcert.cnf*][addcert.cnf] and edit it 
 to use your certificate details:
 
-```shell
+```console
 $ mkdir ~/certs
 $ cd ~/certs
 $ cp /path/to/addcert.cnf .
@@ -159,7 +159,7 @@ The server key file and the server key certificate need to be copied into
 the Apache configuration area, and the ssl configuration paths need to be
 updated:
 
-```shell
+```console
 $ cd /etc/apache2
 $ sudo mkdir certs
 $ cd /home/myname/certs/
@@ -176,7 +176,7 @@ enable the SSL default configuration using the utility *a2ensite*.  We
 need to edit the configuration file with our path to the certificate and
 key files.  Once we have done that we can restart apache.
 
-```shell
+```console
 // enable the module:
 $ sudo a2enmod ssl
 Considering dependency setenvif for ssl:
@@ -235,7 +235,7 @@ You only need to do this once.
 Both text mode browsers will warn about self-signed certificates, but
 also will allow you to connect:
 
-```shell
+```console
 $ firefox https://pi.home
 
 // This example is with 'links' -- we ignore self-signed certs when we use 
@@ -262,7 +262,7 @@ One way to do this is to simply change the ownership of /var/www/html/
 to yourself -- this will also change ownership for any files in the directory.
 This way you can immediately add and change content as a regular user.
 
-```shell
+```console
 $ cd /var/www/html
 $ sudo chown -R myname:myname .
 ```
@@ -272,7 +272,7 @@ assign ownership of them to yourself.  Then you add your own site configuration
 file(s) in */etc/apache2/sites-available/* with your new sub-directory path(s)
 and enable them.
 
-```shell
+```console
 // Make a couple of subdirectories and assign them to yourself.  Suppose
 // you want to use http-served pages for development under /var/www/html/test/,
 // and use https-served pages for production under /var/www/html/pi/.
@@ -351,7 +351,7 @@ $ systemctl status apache2
 
 Now test the changed configurations using *links* and the '-source' argument:
 
-```shell
+```console
 $ links -source http://pi.home/ | grep title
     <title>Apache2 Ubuntu Default Page on HTTP (no encryption): It works</title>
 
@@ -397,7 +397,7 @@ pages.  On SBC hardware that is not an issue; on complex hardware with
 multiple network interfaces on differing networks this would not necessarily
 be what you wanted - in that case a specific IP address is used instead.
 
-```shell
+```console
 $ cd /etc/apache2
 $ diff ports.conf.orig ports.conf
 5c5
@@ -440,21 +440,21 @@ $ diff sites-available/default-ssl.conf.orig sites-available/default-ssl.conf
 If you are interesting in doing some embedded PHP web development then
 you only need to install the PHP Apache module:
 
-```shell
+```console
 $ sudo apt install libapache2-mod-php
-...
+ ...
 The following additional packages will be installed:
   libapache2-mod-php8.1 php-common php8.1-cli php8.1-common php8.1-opcache
   php8.1-readline
-...
+ ...
 Unpacking libapache2-mod-php (2:8.1+92ubuntu1) ...
 Setting up php-common (2:92ubuntu1) ...
 Created symlink /etc/systemd/system/timers.target.wants/phpsessionclean.timer ...
-...
+ ...
 Setting up libapache2-mod-php8.1 (8.1.2-1ubuntu2.11) ...
 apache2_invoke: Enable module php8.1
 Setting up libapache2-mod-php (2:8.1+92ubuntu1) ...
-...
+ ...
 
 // the PHP module is already enabled:
 $ cd /etc/apache2/
@@ -468,7 +468,7 @@ $ find . -iname \*php\*
 You can quickly test that PHP works; simply create a PHP file in the root of
 your new web tree and point your browser to it:
 
-```shell
+```console
 // Here we assume that the root of your web tree is at /var/www/html/test/
 $ cd /var/www/html/test/
 $ echo "<?php phpinfo() ?>" > info.php
@@ -486,7 +486,7 @@ $ links -dump http://pi.home/info.php | head
    Build Date        Feb 22 2023 22:56:18
    Build System      Linux
    Server API        Apache 2.0 Handler
-...
+ ...
 
 // The PHP function 'phpinfo()' shows all configuration information that
 // you as a developer want to know about.  However, do not expose all this
@@ -502,7 +502,7 @@ You might want to disable PHP session cleanup until a later time
 when you are actually making use of PHP sessions.  You can re-enable this
 later when you think you need it:
 
-```shell
+```console
 $ systemctl list-unit-files | grep php
 phpsessionclean.service                    static          -
 phpsessionclean.timer                      enabled         enabled
@@ -529,7 +529,3 @@ $ sudo diff /root/php.orig /etc/cron.d/php
 ```
 
 <!-- !! need to add logging information -->
-<!--
-```shell
-```
- -->

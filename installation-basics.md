@@ -31,7 +31,7 @@ Open a terminal window by selecting:\
    Application -> System Tools -> MATE Terminal\
 and enter the following commands:
 
-```shell
+```console
 // This will update the system's knowledge about what should be updated;
 // in other works, the cache of software package names pending for update:
 $ sudo apt update
@@ -45,7 +45,7 @@ It will take a while.  Once finished there is one more update to do before
 you reboot the system -- the Raspberry Pi bootloader EEPROM update, in case
 there are pending updates to apply:
 
-```shell
+```console
 // You can check the current state of firmware updates without being root.
 // Here we see that the firmware is up-to-date, but the default bootloader
 // could be set to use the latest firmware:
@@ -71,6 +71,6 @@ To cancel a pending update run "sudo rpi-eeprom-update -r".
 ```
 
 Now reboot the server to get the newer kernel, and to complete the firmware
-update.  On the far upper right taskbar, select the powerbutton icon,
+update.  On the far upper right taskbar, select the power button icon,
 and then select  *Switch Off* -> *Restart*.
 
