@@ -32,7 +32,7 @@ looks like this.  I only show it here so that you are aware of what is going
 on under the hood.  Here is an example of a 256 GB microSD inserted into a
 USB card reader on another Linux computer where the card showed up as /dev/sde:
 
-```shell
+```console
 $ sudo fdisk -l /dev/sde
 Disk /dev/sde: 231.68 GiB, 248765218816 bytes, 485869568 sectors
 Disk model: FCR-HS3       -3
@@ -49,7 +49,7 @@ So there are 2 partitions; the first (/dev/sde1) is a small boot partition
 whose type is FAT32, and the second (/dev/sde2) is the minimal 6 GB Linux
 partition.  Though this microSD is 256 GB only the first 6 GB is currently used.
 The automatic installation process will expand the partition right to the
-maximum extend of its partition or of unallocated space.  Most Linux
+maximum extend of its partition or of un-allocated space.  Most Linux
 installation images allow you to choose your disk partitioning; the
 Raspberry Pi installation image does not.
 
@@ -58,7 +58,7 @@ However, it is possible and useful to
 directly on the microSD card as described in the appendix.
 
 In the appendix I also provide a generic Linux
-[command-line approach](#image-cmds) to downloading, uncompressing and
+[command-line approach](#image-cmds) to downloading, un-compressing and
 writing the image to the microSD card.
 If you are not yet very familiar with the command-line then leave this
 exercise for a later time in your Linux adventure.

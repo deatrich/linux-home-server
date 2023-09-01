@@ -15,7 +15,7 @@
 PROJECT		= linux-server
 FILELIST	= contents.txt
 GENDIR		= "Generated/"
-PUBDIR		= "../deatrich.github.io/linux-home-server/latest-version/"
+PUBDIR		= "../deatrich.github.io/linux-home-server/current/"
 MDFILE		= $(PROJECT).md
 MDFILES		= $(shell cat ${FILELIST})
 HTMLOBJECT	= $(MDFILE:.md=.html)

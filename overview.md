@@ -57,11 +57,12 @@ the document covers the basics, encouraging the reader to see the bigger
 picture and to avoid being smothered in the detail.
 
 In this guide command-line sessions appear in a pale-yellow box, using a 
-customized *.shell* Markdown syntax highlighting convention which I modified
-for command-line output.  Two kinds of simplified command-line prompts appear.
-As well, explanatory comments starting with two slashes are coloured blue:
+customized *.console* Markdown syntax highlighting convention which I
+created [for command-line input and output][console-project].  Two kinds
+of simplified command-line prompts appear.  As well, explanatory comments
+starting with two slashes are coloured blue:
 
-```shell
+```console
 // Usually your prompt would be more complex, something like this:
 //    myname@ubuntu:~/.vim/syntax$
 // or like this:
@@ -74,9 +75,9 @@ $ some-command
 # some-other-command
 ```
 
-In the near future I will provide a link to another Git repository
-containing examples of the Markdown documentation style and support files 
-used in this guide.
+From my experience creating this guide I added another git repository
+containing the examples of the Markdown documentation style and support files 
+[used in this guide][pandoc-markdown].
 
 Sometimes command output is long and/or uninteresting in the context
 of this guide.  I might show such segments with a ellipsis (**...**)
@@ -92,4 +93,6 @@ comments or suggestions then you can contact me on
 [md]: https://www.markdownguide.org/getting-started/
 [pandoc]: https://pandoc.org/
 [mygithub]: https://github.com/deatrich/
+[console-project]: https://github.com/deatrich/console-syntax/
+[pandoc-markdown]: https://github.com/deatrich/doc-with-pandoc-markdown/
 
