@@ -153,9 +153,9 @@
             "underline": false
         },
         "DataType": {
-            "text-color": "#902000",
+            "text-color": "#8f008f",
             "background-color": null,
-            "bold": false,
+            "bold": true,
             "italic": false,
             "underline": false
         },

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<!--
+Adapted from:
+  https://stackoverflow.com/questions/55172153/it-is-possible-to-generate-console-highlighting-for-markdown-with-pandoc
+
+Adapted by D. Deatrich to fit the context for console input/output:
+1. prompt for regular user starts in the 1st column with '$' followed by a space
+2. prompt for the root user starts in the 1st column with '#' followed by a space
+3. Both prompt styles work if a end-of-line continuation char '\' is found
+4. Comments start with '//' in the first column
+5. Other console-oriented shell commands implemented so far:
+     - mysql/mariadb:  mysql>
+     - virsh:          virsh # 
+
+Colours and styles for the above elements depend on the editor or tool
+environment.  For the pandoc markdown environment the colours come from
+the highlight theme - the associated pandoc project uses a custom theme
+named 'custom-highlight.theme'; see the associated Makefile.
+
+This file can also be used by the 'kate' editor; place this file in
+  ~/.local/share/katepart5/syntax/
+and create any file named 'some-file-name.console'
+
+-->
+<language name="Console" version="5" kateversion="5.0" section="Other" extensions="*.console" mimetype="" author="Denice Deatrich (denice.deatrich@gmail.com)" license="MIT">
+  <highlighting>
+    <contexts>
+      <context attribute="Output" name="Output" lineEndContext="#stay" >
+        <Detect2Chars char="$" char1=" " attribute="UserComm" context="UserComm 1" column="0"/>
+        <Detect2Chars char="%" char1=" " attribute="cUserComm" context="cUserComm 1" column="0"/>
+        <Detect2Chars char="#" char1=" " attribute="RootComm" context="RootComm 1" column="0"/>
+        <Detect2Chars char="/" char1="/" attribute="Comment" context="Comment" column="0"/>
+        <RegExpr attribute="mysql" context="mysql" String="^mysql> " beginRegion="mysqlreg"/>
+        <RegExpr attribute="mariadb" context="mariadb" String="^MariaDB> " beginRegion="mariareg"/>
+        <RegExpr attribute="virsh" context="virsh" String="^virsh # "/>
+      </context>
+      <context attribute="UserComm" name="UserComm 1" lineEndContext="#pop">
+        <LineContinue attribute="UserComm" context="#stay"/>
+      </context>
+      <context attribute="cUserComm" name="cUserComm 1" lineEndContext="#pop">
+        <LineContinue attribute="cUserComm" context="#stay"/>
+      </context>
+      <context attribute="RootComm" name="RootComm 1" lineEndContext="#pop">
+        <LineContinue attribute="RootComm" context="#stay"/>
+      </context>
+      <context attribute="Comment" name="Comment" lineEndContext="#pop" />
+      <context attribute="mysql" lineEndContext="#stay" name="mysql">
+        <RegExpr attribute="mysql" context="#pop" String=";$" endRegion="mysqlreg"/>
+      </context>
+      <context attribute="mariadb" lineEndContext="#stay" name="mariadb">
+        <RegExpr attribute="mariadb" context="#pop" String=";$" endRegion="mariareg"/>
+      </context>
+      <context attribute="virsh" name="virsh" lineEndContext="#pop" />
+    </contexts>
+    <itemDatas>
+      <itemData name="Output" defStyleNum="dsNormal"/>
+      <itemData name="UserComm" defStyleNum="dsKeyword" bold="true"/>
+      <itemData name="cUserComm" defStyleNum="dsKeyword" bold="true"/>
+      <itemData name="RootComm" defStyleNum="dsFunction" color="#ff0000" bold="true"/>
+      <itemData name="Comment" defStyleNum="dsComment" color="#0000ff"/>
+      <itemData name="mysql" defStyleNum="dsDataType" color="#ff00ff" bold="true"/>
+      <itemData name="mariadb" defStyleNum="dsDataType" color="#ff00ff" bold="true"/>
+      <itemData name="virsh" defStyleNum="dsDataType" color="#ff00ff" bold="true"/>
+    </itemDatas>
+  </highlighting>
+</language>
+

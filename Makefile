@@ -25,9 +25,9 @@ HTMLVIEWER	= firefox
 
 #***************************************************************************
 PRINTOPT	= 
-PANDOC_OPTS	= --toc --toc-depth=3 --syntax-definition=shell.xml \
+PANDOC_OPTS	= --toc --toc-depth=3 --syntax-definition=console.xml \
 		 --highlight-style=custom-highlight.theme
-PANDOC_HTML_OPTS = -c style.css --template template.htm \
+PANDOC_HTML_OPTS = -c https://deatrich.github.io/style.css --template template.htm \
 		 -V lastupdate="`date +'%d %B %Y'`"
 PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm \
 		 --pdf-engine=xelatex
@@ -43,9 +43,9 @@ test:
 #***************************************************************************
 ## DEPENDENCIES
 
-$(PDFOBJECT): $(MDFILES) template.latex shell.xml custom-highlight.theme
+$(PDFOBJECT): $(MDFILES) template.latex console.xml custom-highlight.theme
 
-$(HTMLOBJECT): $(MDFILES) template.htm shell.xml custom-highlight.theme \
+$(HTMLOBJECT): $(MDFILES) template.htm console.xml custom-highlight.theme \
        	style.css
 
 #***************************************************************************
