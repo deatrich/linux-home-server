@@ -27,8 +27,11 @@ HTMLVIEWER	= firefox
 PRINTOPT	= 
 PANDOC_OPTS	= --toc --toc-depth=3 --syntax-definition=console.xml \
 		 --highlight-style=custom-highlight.theme
-PANDOC_HTML_OPTS = -c https://deatrich.github.io/style.css --template template.htm \
-		 -V lastupdate="`date +'%d %B %Y'`"
+
+PANDOC_HTML_OPTS = -c https://latex.now.sh/style.css \
+		   -c https://deatrich.github.io/style.css \
+		   --template template.htm -V lastupdate="`date +'%d %B %Y'`"
+
 PANDOC_PDF_OPTS	= --template=template.latex -V geometry:margin=2cm \
 		 --pdf-engine=xelatex
 
