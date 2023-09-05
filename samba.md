@@ -1,5 +1,5 @@
 <!-- -->
-# Creating a Samba file sharing service
+# Creating a Samba file sharing service {#chapter-05}
 
 We are going to create a Samba file sharing service on our server.  Other
 devices like mobile phones, tablets, laptops and desktops running a variety

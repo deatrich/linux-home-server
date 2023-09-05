@@ -1,5 +1,5 @@
 <!-- -->
-# Enabling remote desktop services
+# Enabling remote desktop services {#chapter-09}
 
 In case you have various devices at home that you would like to use in a Linux
 desktop fashion, but you do not want to change the current environment

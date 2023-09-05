@@ -1,5 +1,5 @@
 <!-- -->
-# Server customization
+# Server customization {#chapter-07}
 
 Here is a list of tasks you can apply to your server for 24x7 service.
 Ubuntu installations are more common on laptops and desktops which

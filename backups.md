@@ -1,5 +1,5 @@
 <!-- -->
-# Backing up your server
+# Backing up your server {#chapter-06}
 
 Always, always, do some kind of backups on your server.  For
 system backups, very little actually needs to be backed up, yet it is

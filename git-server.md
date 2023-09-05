@@ -1,5 +1,5 @@
 <!-- -->
-# Starting your own Git service
+# Starting your own Git service {#chapter-13}
 
 Services like [github.com][github] are wonderful, but sometimes it is useful
 and necessary to create your own Git server.  You might have extremely
@@ -301,14 +301,14 @@ Total 3 (delta 0), reused 0 (delta 0)
 To ssh://git@pi.home/git/test
  * [new branch]      master -> master
 $ git status
-# On branch master
-nothing to commit, working directory clean
+ # On branch master
+ nothing to commit, working directory clean
 ```
 
 ## Setting up **gitweb** for web access to Git repositories
 
 Note that *gitweb* requires a functioning web service on the server; here I
-assume that the [Apache server is installed and running](#web-server).
+assume that the [Apache server is installed and running](#chapter-11).
 
 First we install and configure gitweb.  The Ubuntu *gitweb* package is just
 a wrapper for gitweb -- instead the actual gitweb files are part of the *git*

@@ -1,5 +1,5 @@
 <!-- -->
-# Enabling the Secure Shell daemon and using Secure Shell {#sshd}
+# Enabling the Secure Shell daemon and using Secure Shell {#chapter-08}
 
 The [Secure Shell][secure-shell] daemon, ***sshd***, is a very useful and
 important service for connecting between computers near or far.  If you

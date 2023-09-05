@@ -1,4 +1,4 @@
-# Appendix {#appendix}
+# Appendix {#zappendix}
 
 ## Identifying device names for storage devices {#find-device}
 
@@ -813,7 +813,7 @@ $ diff /etc/networks.orig /etc/networks
 $ man hosts
 $ sudo cp -p /etc/hosts /etc/hosts.orig
 $ sudo nano /etc/hosts
-$ # diff /etc/hosts.orig /etc/hosts
+$ diff /etc/hosts.orig /etc/hosts
 2c2
 < 127.0.1.1     pi
 ---
@@ -1170,8 +1170,8 @@ root:!$y$j9T$FFNwo6b8WAoEu...tQQhPaSIumPjNPXjWAe7h2M4:19519:0:99999:7:::
 
 Another solution is to allow another device in your home network to have
 secure-shell access to the root account on your Ubuntu server or desktop.  It
-is mentioned briefly in the [secure-shell section](#sshd) of this guide, but
-I summarize the main options here.
+is mentioned briefly in the [secure-shell section](#chapter-08) of this guide,
+but I summarize the main options here.
 
 The secure-shell daemon must be installed and running on the target device.
 In */etc/ssh/sshd_config* add the remote device's IP address with *root@* 

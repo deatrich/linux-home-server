@@ -1,5 +1,5 @@
 <!-- -->
-# Picking the OS (Operating System) and the window manager {#environment}
+# Picking the OS (Operating System) and the window manager {#chapter-02}
 
 ## Ubuntu LTS
 

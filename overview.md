@@ -1,5 +1,5 @@
 <!-- -->
-# Overview {#overview}
+# Overview {#chapter-01}
 
 Single-board computers (SBC) are both inexpensive and reliable; they
 are also very small.  As such they make excellent 24x7 home servers.
@@ -85,6 +85,9 @@ of this guide.  I might show such segments with a ellipsis (**...**)
 Sometimes a double-exclamation (**!!**) mark may appear somewhere -- this
 is only a reminder for myself to fix an issue at that point in the
 documentation.  These reminders will eventually disappear.
+
+I tend to use 'ssh' as a verb - it is not really correct to do this, but it
+really is a verb in my life.  So I apologize if it annoys you.
 
 If you discover issues with instructions in this document, or have other
 comments or suggestions then you can contact me on
