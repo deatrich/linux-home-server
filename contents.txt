@@ -16,3 +16,5 @@ virtualization-server.md
 appendix.md
 command-list.md
 commands.md
+url-list.md
+urls.md

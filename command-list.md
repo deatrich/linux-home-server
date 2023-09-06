@@ -6,6 +6,9 @@ Each command is linked back to the chapter in which it was found.  If a
 command can be found in more than one chapter then only the first chapter
 is linked.
 
+Only Linux-provided commands are shown.  Local commands used from local 
+scripts are not included.
+
 The shell scripts used to generate this list are detailed in my
 [Getting Started With Pandoc Markdown][cmdlist] project.
 
