@@ -74,3 +74,39 @@ Now reboot the server to get the newer kernel, and to complete the firmware
 update.  On the far upper right taskbar, select the power button icon,
 and then select  *Switch Off* -> *Restart*.
 
+## Getting Going with the Command-Line
+
+For people without much command-line experience it is important to get going
+at the command-line.  When logged into the MATE desktop open a terminal
+window by selecting Application -> System Tools -> MATE Terminal.
+
+Try [some command-line examples](#eg-cmds) in the appendix.  Note that
+the up/down arrow keys can be used to recall your previous commands.
+You can edit and reuse an entry in your previous commands using
+the left/right arrow keys.
+
+You will find that the 'TAB' key (shown below as *\<TAB\>*) is very useful
+for command-line completion.
+
+Suppose you are going to use the command 'timedatectl'.  You start by typing
+the word 'time' and then hit the TAB key once, then again when you do not get a
+response.  You will see 4 possible commands as shown below.  Then to complete
+the command simply type d followed by another TAB and the full command will 
+complete:
+
+```console
+$ time<TAB><TAB>
+time         timedatectl  timeout      times
+$ timed<TAB>
+$ timedatectl 
+```
+
+Look online for some tutorials; there are millions of results on Google if you
+search for:
+
+~~~~ 
+    Linux "command line" tutorial for beginners
+~~~~ 
+
+See also the [list of all commands used in this guide](#command-list).
+
