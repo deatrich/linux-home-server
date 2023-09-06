@@ -50,7 +50,7 @@ nfs-client.target                   enabled enabled
 
 // show NFS and RPC processes currently running:
 $ ps -ef |egrep 'nfs|rpc'
-\_rpc      271754       1  0 10:45 ?        00:00:00 /sbin/rpcbind -f -w
+_rpc      271754       1  0 10:45 ?        00:00:00 /sbin/rpcbind -f -w
 root      272176       2  0 10:46 ?        00:00:00 [rpciod]
 root      272280       1  0 10:46 ?        00:00:00 /usr/sbin/rpc.idmapd
 statd     272282       1  0 10:46 ?        00:00:00 /sbin/rpc.statd
@@ -87,8 +87,8 @@ Before restarting the daemons we see various IPv6 processes running:
 $ sudo lsof -i | grep rpc | grep IPv6
 systemd        1      root  144u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
 systemd        1      root  145u  IPv6 899100    0t0  UDP :sunrpc 
-rpcbind   271754      \_rpc    6u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
-rpcbind   271754      \_rpc    7u  IPv6 899100    0t0  UDP :sunrpc 
+rpcbind   271754      _rpc    6u  IPv6 899098    0t0  TCP :sunrpc (LISTEN)
+rpcbind   271754      _rpc    7u  IPv6 899100    0t0  UDP :sunrpc 
 rpc.statd 272282     statd   10u  IPv6 897604    0t0  UDP :59540 
 rpc.statd 272282     statd   11u  IPv6 897608    0t0  TCP :47971 (LISTEN)
 rpc.mount 272286      root    6u  IPv6 900420    0t0  UDP :53821 

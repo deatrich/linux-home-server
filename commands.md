@@ -119,7 +119,7 @@
 :   Shows or sets the system's host name
 
 [hostnamectl](#zappendix):
-:   Controls the system hostname through systemd
+:   Controls the system hostname via systemd
 
 [host](#zappendix):
 :   Utility for DNS lookup
@@ -261,6 +261,9 @@
 
 [tar](#chapter-06):
 :   Tape or file hierarchy archiving utility
+
+[timedatectl](#chapter-04):
+:   Controls the system time and date via systemd
 
 [touch](#chapter-08):
 :   Changes file timestamps

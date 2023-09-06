@@ -1,5 +1,5 @@
 <!-- -->
-# List of Common Linux Commands {#command-list}
+# List of Linux commands used in this guide {#command-list}
 
 This is a list of command-line tools from *console* sessions in this guide.
 Each command is linked back to the chapter in which it was found.  If a
