@@ -46,7 +46,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/mariadb.service ...
 ....
 
 // The server by default listens on port 3306; here we see that only localhost
-// is bound to that port in the lsof output:
+// is bound to that port in the lsof output.  Thus LAN nodes cannot connect:
 $ sudo lsof -i :3306
 COMMAND     PID  USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
 mariadbd 709549 mysql   18u  IPv4 2506936      0t0  TCP localhost:mysql (LISTEN)
@@ -69,11 +69,14 @@ is not the root user for the Linux operating system.
 
 This utility allows you to do these things:
 
-   * set a password for the mysql 'root' user
    * enforce 'unix_socket' authentication
+   * set a password for the mysql 'root' user
    * remove the anonymous user
    * disable mysql root login from any other host
    * remove the test database, which allows anyone access to that database
+
+The default answer is 'Y' to these questions; therefore if you hit the
+carriage return you will get the defaults below:
 
 ```console
 $ mysql_secure_installation
@@ -159,7 +162,7 @@ $ head /etc/mysql/mariadb.cnf
 ...
 $ cd /etc/mysql/mariadb.conf.d
 $ sudo cp -p 50-server.cnf 50-server.cnf.orig
-// Edit the server configuration, and change the 'bind-address'
+// Edit the server configuration, and change the 'bind-address' to 0.0.0.0
 // Also enable separate error and slow-query logging:
 $ sudo nano 50-server.cnf
 $ diff 50-server.cnf.orig 50-server.cnf
@@ -190,9 +193,10 @@ Enter password:
 ERROR 1130 (HY000): Host 'desktop.home' is not allowed to connect to this MariaDB server
 ```
 
-So let's create an empty database and two users with LAN access to it.
-One user is 'rw' (read-write) with all privileges on its database; the
-other user is 'ro' (read-only) with only select privileges on its database.
+So back on the database server let's create an empty database and two users
+with LAN access to it.  One user is 'rw' (read-write) with all privileges
+on its own database; the other user is 'ro' (read-only) with only select
+privileges on its database.
 In this example the LAN network is identified by all hosts in 192.168.1.
 
 The default [MariaDB storage engine][storage-engines] is InnoDB; for this
@@ -217,15 +221,15 @@ CREATE [OR REPLACE] {DATABASE | SCHEMA} [IF NOT EXISTS] db_name
 ...
 URL: https://mariadb.com/kb/en/create-database/
 
-MariaDB [(none)]> create database webdb;
+MariaDB> create database webdb;
 ...
-MariaDB [(none)]>  grant all privileges on webdb.* to 'rw'@'192.168.1.%'
+MariaDB>  grant all privileges on webdb.* to 'rw'@'192.168.1.%'
     -> identified by 'some_password_here';
 
-MariaDB [(none)]> grant select on webdb.* to 'ro'@'192.168.1.%'
+MariaDB> grant select on webdb.* to 'ro'@'192.168.1.%'
     -> identified by 'some_other_password_here';
 
-MariaDB [(none)]> flush privileges;
+MariaDB> flush privileges;
 Query OK, 0 rows affected (0.002 sec)
 
 MariaDB> select concat(user, '@', host) from mysql.global_priv;
@@ -240,7 +244,7 @@ MariaDB> select concat(user, '@', host) from mysql.global_priv;
 +-------------------------+
 5 rows in set (0.001 sec)
 
-// Now I connect to the database from my desktop:
+// Now I can connect to the database from my desktop:
 
 $ mysql -u rw -h pi.home -p webdb
 Enter password: 
@@ -316,10 +320,41 @@ $ sudo ls -l /var/lib/mysql/webdb/
 
 ## Backing up a MariaDB database
 
-(!! to be continued)
+Databases typically cannot be backed up reliably by backing up the filesystem
+on which they live.  Minimally you would need to shut down the database to
+get a copy of it using this method.
 
-<!--
+Instead, databases have some sort of export facility that locks and dumps
+databases on demand, while also leaving the database up and running.  Databases
+also need an import facility to re-create databases from the dump files.
+
+For [MariaDB and MySQL][db-backups] *mysqldump* is used to export data,
+while *mysqlimport* is used to re-create databases.
+
+An [example mysql backup script][mysql-backup] in my github 'tools' area can
+do local backups of the MariaDB database; it should be installed as
+*/root/bin/mysql-backup.sh*.  It needs a
+[configuration file][mysql-backup-conf] as well which must be installed as
+*/etc/mysql-backup.conf*:
+
 ```console
+// Edit the configuration file in case you want to use different directories:
+$ sudo nano /etc/mysql-backup.conf
+
+// Run the script in debug mode from the command line to make sure
+// that everything is correctly configured:
+$ sudo /root/bin/mysql-backup.sh --test
+
+// Run the script once and check the log file for any errors:
+$ sudo /root/bin/mysql-backup.sh
+
+// Finally edit the cronjob to do daily database backups (here at 03h00):
+$ EDITOR=/bin/nano sudo crontab -e
+$ sudo crontab -l | grep mysql
+0 3 * * * /root/bin/mysql-backup.sh
 ```
- -->
+
+[db-backups]: https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb
+[mysql-backup-conf]: https://github.com/deatrich/tools/blob/main/etc/mysql-backup.conf
+[mysql-backup]: https://github.com/deatrich/tools/blob/main/mysql-backup.sh
 
