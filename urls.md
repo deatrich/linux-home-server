@@ -126,6 +126,12 @@
 
 :    [https://mariadb.com/kb/en/storage-engines/](https://mariadb.com/kb/en/storage-engines/)
 
+:    [https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb](https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb)
+
+:    [https://github.com/deatrich/tools/blob/main/etc/mysql-backup.conf](https://github.com/deatrich/tools/blob/main/etc/mysql-backup.conf)
+
+:    [https://github.com/deatrich/tools/blob/main/mysql-backup.sh](https://github.com/deatrich/tools/blob/main/mysql-backup.sh)
+
 [Starting your own Git service](#chapter-13): 
 
 :    [https://github.com/](https://github.com/)
