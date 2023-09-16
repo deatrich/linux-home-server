@@ -68,12 +68,12 @@ showpdf: $(PDFOBJECT)
 	$(PDFVIEWER) $(PDFOBJECT)
 
 copies: $(PDFOBJECT) $(HTMLOBJECT)
-	cp -upv $(PDFOBJECT) $(IMAGES) $(GENDIR)$(PDFOBJECT) 
-	cp -upv $(HTMLOBJECT) $(IMAGES) $(GENDIR)$(HTMLOBJECT) 
+	cp -upv $(PDFOBJECT) $(IMAGES) $(GENDIR)/
+	cp -upv $(HTMLOBJECT) $(IMAGES) $(GENDIR)/
 
 publish: $(PDFOBJECT) $(HTMLOBJECT)
-	cp -iupv $(PDFOBJECT) $(IMAGES) $(PUBDIR)$(PDFOBJECT) 
-	cp -iupv $(HTMLOBJECT) $(IMAGES) $(PUBDIR)$(HTMLOBJECT) 
+	cp -iupv $(PDFOBJECT) $(IMAGES) $(PUBDIR)/
+	cp -iupv $(HTMLOBJECT) $(IMAGES) $(PUBDIR)/
 
 help:	
 	@echo ""
