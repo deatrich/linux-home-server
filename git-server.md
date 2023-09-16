@@ -349,6 +349,16 @@ We also want to create and maintain a 'projects_list' file - this is another
 thing that you do for each new repository, so [its description](#new-git-repo)
 is found in the appendix.
 
+Once you have a git repository hosted by your Linux server, then you can 
+access it on your Linux server's web site.  Assuming the hostname
+is *pi.home* the go to:
+
+  https://pi.home/gitweb/
+
+It should look something like this:
+
+![(Your browser looking at your *gitweb* site)](gitweb-example.png){#id .class width=100%}
+
 <!--
 ```console
 ```

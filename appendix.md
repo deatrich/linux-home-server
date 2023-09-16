@@ -945,7 +945,8 @@ nameserver 127.0.0.53
 options edns0 trust-ad
 search .
 
-// the resolver file is actually a symbolic link into territory owned by systemd
+// The resolver file might actually be a symbolic link into territory owned by
+//  systemd -- check the status of this file in your installation:
 $ ls -l /etc/resolv.conf 
 lrwxrwxrwx 1 root ... Mar 17 14:38 /etc/resolv.conf -> ../run/systemd/resolve/stub-resolv.conf
 
@@ -971,7 +972,7 @@ at the process.
 Create a local copy of the resolver file - do not pollute systemd space:
 
 ```console
-// Remove the current resolver file, which is a symbolic link:
+// Remove the current resolver file, in case it is a symbolic link:
 $ sudo rm /etc/resolv.conf
 
 // Get a copy of /usr/lib/systemd/resolv.conf for manual control of the resolver
@@ -1218,7 +1219,7 @@ each new repository that you host on your Git server:
    * Create a symbolic link to the repository's name without the '.git' extension
    * Edit the 'description' file with a one-line description
    * Touch the git-daemon-export-ok file to enable exporting the repository
-   * Add the repository name and author to the projects list file
+   * Add the repository name and author to the projects list file for gitweb
 
 ```console
 $ sudo -u git /bin/bash
@@ -1259,7 +1260,8 @@ $ touch git-daemon-export-ok
 
 // Finally we add the repository name and author to the projects list file.
 // This file is used by 'gitweb', and it's name is in '/etc/gitweb.conf'
-// You must create the file the first time you create a new repository:
+// You must create the file the first time you create a new repository.
+// Thereafter you simply add any new git projects to this file:
 $ cd /git
 $ touch projects_list_for_homegit
 $ nano projects_list_for_homegit
@@ -1295,6 +1297,4 @@ ssh-rsa AAAAB3...6oLYnLx5d myname@somewhere.com
 ```
 
 <!-- !! Note about IPv6 -->
-<!-- Yet to do: Command-line Index  -->
-<!-- Yet to do: URL Index  -->
 

@@ -293,6 +293,7 @@ the *lightdm* display manager then you need to make a root-owned script on your
 Linux client that will do the job:
 
 ```console
+// Remember, this is done on your Linux client desktop, not on the server:
 $ cd /etc/lightdm
 $ sudo /bin/bash
 # touch lightdm.conf

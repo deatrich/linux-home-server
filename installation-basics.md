@@ -3,8 +3,9 @@
 
 Once you have prepared your microSD card then insert it in your Raspberry Pi.
 Note that the card pushes in easily.  It will only go in one way.
-To eject it, gently *push in* on it once and it will pop out enough to grab it.
-There is no need to pull on it to remove it because it essentially pops out.
+On a Pi 400 you can eject it by gently *pushing on it once* and it will pop
+out enough to grab it.  There is no need to pull on it to remove it because
+it essentially pops out.  With a Pi 4b you will need to pull it out.
 
 Turn the power on with the Pi connected to a monitor, USB keyboard and mouse.
 You will shortly see the firmware rainbow splash screen.  Shortly after that

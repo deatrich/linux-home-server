@@ -23,6 +23,8 @@ PDFOBJECT	= $(MDFILE:.md=.pdf)
 PDFVIEWER	= evince
 HTMLVIEWER	= firefox
 
+IMAGES		= gitweb-example.png
+
 #***************************************************************************
 PRINTOPT	= 
 PANDOC_OPTS	= --toc --toc-depth=3 --syntax-definition=console.xml \
@@ -46,10 +48,11 @@ test:
 #***************************************************************************
 ## DEPENDENCIES
 
-$(PDFOBJECT): $(MDFILES) template.latex console.xml custom-highlight.theme
+$(PDFOBJECT): $(MDFILES) template.latex console.xml custom-highlight.theme \
+			$(IMAGES)
 
 $(HTMLOBJECT): $(MDFILES) template.htm console.xml custom-highlight.theme \
-       	style.css
+       			$(IMAGES)
 
 #***************************************************************************
 ## GENERAL RULES
@@ -65,12 +68,12 @@ showpdf: $(PDFOBJECT)
 	$(PDFVIEWER) $(PDFOBJECT)
 
 copies: $(PDFOBJECT) $(HTMLOBJECT)
-	cp -up $(PDFOBJECT) $(GENDIR)$(PDFOBJECT) 
-	cp -up $(HTMLOBJECT) $(GENDIR)$(HTMLOBJECT) 
+	cp -upv $(PDFOBJECT) $(IMAGES) $(GENDIR)$(PDFOBJECT) 
+	cp -upv $(HTMLOBJECT) $(IMAGES) $(GENDIR)$(HTMLOBJECT) 
 
 publish: $(PDFOBJECT) $(HTMLOBJECT)
-	cp -iup $(PDFOBJECT) $(PUBDIR)$(PDFOBJECT) 
-	cp -iup $(HTMLOBJECT) $(PUBDIR)$(HTMLOBJECT) 
+	cp -iupv $(PDFOBJECT) $(IMAGES) $(PUBDIR)$(PDFOBJECT) 
+	cp -iupv $(HTMLOBJECT) $(IMAGES) $(PUBDIR)$(HTMLOBJECT) 
 
 help:	
 	@echo ""
