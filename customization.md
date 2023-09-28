@@ -274,7 +274,7 @@ $ sudo cp -p environment environment.orig
 $ sudo nano environment
 $ diff environment.orig environment
 1c1
-< PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+< PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:...:/usr/local/games:/snap/bin"
 ---
 > PATH="/usr/sbin:/usr/bin:/sbin:/bin:/usr/games"
 
@@ -506,7 +506,8 @@ apparmor module is loaded.
 Removed /etc/systemd/system/sysinit.target.wants/apparmor.service.
 
 # apt autoremove --purge apparmor
-dpkg: warning: while removing apparmor, directory '/etc/apparmor.d/abstractions/ubuntu-browsers.d' not empty so not removed
+dpkg: warning:  directory '/etc/apparmor.d/abstractions/ubuntu-browsers.d'
+ not empty so not removed
 
 # cd /etc
 root@pi:/etc# mv apparmor.d apparmor.d.old

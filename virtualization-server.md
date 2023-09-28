@@ -205,8 +205,8 @@ qemu-system-arm:
 $ sudo apt install qemu-system-arm
 ...
 The following additional packages will be installed:
-  ipxe-qemu ipxe-qemu-256k-compat-efi-roms libaio1 libcacard0 libiscsi7 libpmemobj1 librbd1 libslirp0 libspice-server1 libusbredirparser1 libvirglrenderer1
-  qemu-block-extra qemu-efi-aarch64 qemu-efi-arm qemu-system-common qemu-system-data qemu-system-gui qemu-utils
+  ipxe-qemu ipxe-qemu-256k-compat-efi-roms ... qemu-efi-aarch64
+  qemu-efi-arm qemu-system-common qemu-system-data qemu-system-gui qemu-utils
 ...
 Created symlink /etc/systemd/system/multi-user.target.wants/qemu-kvm.service ...
 ```
@@ -283,7 +283,6 @@ Network default has been undefined
 # virsh net-list --all
  Name   State   Autostart   Persistent
 ----------------------------------------
-
 ```
 
 ## Setting up a disk area for clients and boot images
@@ -305,10 +304,10 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/mmcblk0p3  142G   26G  115G  19% /data
 
 $ sudo /bin/bash
-# mkdir -p /data/kvm/clients /data/kvm/boot-isos
+# mkdir -p /data/kvm/client-images /data/kvm/boot-isos
 
 // Create pool for virtual host client disk images
-# virsh pool-define-as --name clients --type dir --target /data/kvm/clients
+# virsh pool-define-as --name clients --type dir --target /data/kvm/client-images
 Pool clients defined
 
 // Create pool for boot iso installer images
@@ -331,29 +330,27 @@ Pool boot-isos marked as autostarted
 # virsh pool-autostart clients
 Pool clients marked as autostarted
 
+// Note that libvirtd always creates a 'default' pool, and sets its
+//  path to /var/lib/libvirt/images
+// The first time you create a VM the 'default' pool will magically appear.
+// Do not select that pool during installation if you have created another
+//  pool such as 'clients' here:
 # virsh pool-list --all
  Name        State    Autostart
 ---------------------------------
  boot-isos   active   yes
  clients     active   yes
 
-// Then I assign ownership to the boot images to myself:
+// Then I assign ownership of the boot images to myself:
 $ sudo chown myname:myname /data/kvm/boot-images
 $ scp -p desktop:/path/to/ubuntu-22.04.2-live-server-arm64.iso /data/kvm/boot-images/
 $ scp -p desktop:/path/to/Rocky-8.8-aarch64-minimal.iso /data/kvm/boot-images/
 
-# virsh vol-list boot-isos
+$ virsh vol-list boot-isos
  Name                                   Path
---------------------------------------------------------------------------------------------------
- Rocky-8.8-aarch64-minimal.iso          /data/kvm/boot-isos/Rocky-8.8-aarch64-minimal.iso
- ubuntu-22.04.2-live-server-arm64.iso   /data/kvm/boot-isos/ubuntu-22.04.2-live-server-arm64.iso
-
-```
-
-```console
-// change the disk pool path component to /data/kvm/clients below:
-$ sudo virsh pool-edit default.xml
-
+-----------------------------------------------------------------------------------------------
+ Rocky-8.8-aarch64-minimal.iso         /data/kvm/boot-isos/Rocky-8.8-aarch64-minimal.iso
+ ubuntu-22.04.2-live-server-arm64.iso  /data/kvm/boot-isos/ubuntu-22.04.2-live-server-arm64.iso
 ```
 
 ## Creating some virtual hosts
@@ -364,11 +361,11 @@ There are 2 ways to install virtual machines (VMs):
   * Using the *virt-install* command-line
 
 As a demonstration I installed a couple of VMs -- one was an Ubuntu
-22.04 minimal server, and the other was a Rocky 8.8 Linux minimal server.
+22.04 server, and the other was a Rocky 8.8 Linux minimal server.
 Of course, both were ARM architectures so that the KVM acceleration capability
 of the Raspberry Pi's architecture was used.
 
-Note that all disk images for installed VMs are described by XML files, and
+Note that all installed VMs are described by XML files, and
 those XML files can always be found in */etc/libvirt/qemu/*.
 
 ### virt-manager
@@ -379,10 +376,14 @@ create a new VM using virt-manager, so I do not reproduce the process here.
 Note that when you launch *virt-manager* it always takes some seconds to
 appear.
 
-Installing a minimal Ubuntu VM works with 1024 MB of RAM and a disk size
-of 15 GB.  It is important in this case to select the 'minimized' base for
-installation during the installation dialog.  You can also save time if you
-avoid doing software updates during the installation.
+Before creating a new VM, create the disk volume that will be its disk.
+You do this by chosing 'Edit' and then 'Connections Details'.  Click on the
+'Storage' tab and add a volume under the correct filesystem directory, which
+is *clients* in my example in this chapter.
+
+Installing an Ubuntu server VM works with 1024 MB (though I chose 1534 MB
+of RAM), and a disk size of 20 GB.  I chose to install 'Ubuntu Server' rather
+than the minimized server during the installation dialog.
 
 It is very useful to always select 'Customize configuration before install'
 on the last panel when creating a new VM.  Then you can look at the VM
@@ -400,16 +401,13 @@ The command-line utility *virt-install* is very useful.  It is best done
 in a script because of the large number of options, but here is an example of 
 using it to install Rocky Linux.
 
-This Linux distribution needed more memory and disk space; I used about 1500 MB
-of RAM and a disk size of 20 GB.
-
 ```console
 // This one had an issue falling into an EFI shell at installation startup.
 // I fixed it with a ghastly set of options for the boot loader.  Trying the
 // installation with virt-manager also required an unexpected option for
 // the firmware option in order to get past the EFI shell.
 
-// I set variables for the boot loader path and for the nvram path, so that
+// I set variables for the boot 'loader' path and for the 'nvram' path, so that
 // the command below is less intimidating.  The man-page for virt-install 
 // suggests trying this to see all the boot options:
 //    virt-install --boot=?
@@ -426,7 +424,3 @@ of RAM and a disk size of 20 GB.
  --disk path=/data/kvm/clients/rocky8.2.qcow2,size=20
 ```
 
-<!--
-```console
-```
- -->
