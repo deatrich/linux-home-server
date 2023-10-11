@@ -27,10 +27,11 @@ systems:
   * [MacOS][macos]
   * [Debian-based Linux][debian]
 
-Note that after installing the disk image on the microSD the disk partitioning
-looks like this.  I only show it here so that you are aware of what is going
-on under the hood.  Here is an example of a 256 GB microSD inserted into a
-USB card reader on another Linux computer where the card showed up as /dev/sde:
+After installing the disk image on the microSD the disk partitioning
+looks like this using the *fdisk* command.  I show it here so that you
+are aware of what is going on under the hood.  Here is an example of a
+256 GB microSD inserted into a USB card reader on another Linux computer
+where the card showed up as /dev/sde:
 
 ```console
 $ sudo fdisk -l /dev/sde
@@ -45,13 +46,13 @@ Device     Boot  Start      End  Sectors  Size Id Type
 /dev/sde2       499712 12969983 12470272  5.9G 83 Linux
 ```
 
-So there are 2 partitions; the first (/dev/sde1) is a small boot partition
+There are 2 partitions; the first (/dev/sde1) is a small boot partition
 whose type is FAT32, and the second (/dev/sde2) is the minimal 6 GB Linux
-partition.  Though this microSD is 256 GB only the first 6 GB is currently used.
-The automatic installation process will expand the partition right to the
-maximum extend of its partition or of un-allocated space.  Most Linux
+partition.  Though this microSD is 256 GB, only the first 6 GB is currently
+used.  The automatic installation process will expand the partition right
+to the maximum extend of its partition or of un-allocated space.  Most Linux
 installation images allow you to choose your disk partitioning; the
-Raspberry Pi installation image does not.
+Raspberry Pi Ubuntu installation image does not.
 
 However, it is possible and useful to
 [modify the pre-installation partitioning](#mod-partition)

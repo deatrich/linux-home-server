@@ -48,8 +48,8 @@ $ diff sshd_config.orig sshd_config
 122a126,131
 > 
 > # Limit access to root user; only local users can connect via ssh
-> # to root only if root's authorized_keys file allows them.
-> # note: using @localhost does not work on ubuntu unless you set UseDNS to yes
+> # to the root user, but only if root's authorized_keys file allows them.
+> # note: using @localhost does not work on ubuntu unless you set 'UseDNS' to yes
 > AllowUsers    myname@192.168.1.* *@localhost
 > 
 

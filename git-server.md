@@ -108,13 +108,13 @@ $ sudo ln -s /var/www/git /git
 #### Adding a test repository
 
 To do some testing we need an initial repository.  We need to become
-the **git user** with sudo.  For each repository that we create we go
+the **git user** with sudo.  For every repository which we create we go
 through this process.  Typically home users do not make dozens of repositories,
 so it is not an onerous task.  The [repository creation process](#new-git-repo)
-is outlined in the appendix.
+is outlined in the appendix - be sure to look at it.
 
-Here we do a one-time clean of the 'git' user's directory - we want to avoid
-unneeded login configuration files since no one is allowed to login as git
+Here we also do a one-time clean up of the 'git' user's directory - we want to
+avoid unneeded login configuration files since no one is allowed to login as git
 except yourself via sudo.
 
 ```console
@@ -135,7 +135,7 @@ $ rm .bash* .profile
 
 ### Setting up the *Git* protocol
 
-Do not bother with this service is you will not use read-only git pulls.
+Do not bother with this service if you will not use *read-only* git pulls.
 
 We install *xinetd* and configure it to listen for git requests:
 

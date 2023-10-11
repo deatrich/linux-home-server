@@ -48,6 +48,12 @@
 
 :    [https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb](https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb)
 
+[Installation and first experience](#chapter-04): 
+
+:    [https://ubuntu.com/tutorials/command-line-for-beginners](https://ubuntu.com/tutorials/command-line-for-beginners)
+
+:    [https://linuxconfig.org/ubuntu-server-tutorial-for-beginners](https://linuxconfig.org/ubuntu-server-tutorial-for-beginners)
+
 [Creating a Samba file sharing service](#chapter-05): 
 
 :    [https://en.wikipedia.org/wiki/Chmod](https://en.wikipedia.org/wiki/Chmod)
@@ -66,7 +72,9 @@
 
 :    [https://en.wikipedia.org/wiki/Real-time_clock](https://en.wikipedia.org/wiki/Real-time_clock)
 
-:    [[https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/|]([https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/|)
+:    [https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/](https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/)
+
+:    [https://www.redhat.com/sysadmin/inodes-linux-filesystem](https://www.redhat.com/sysadmin/inodes-linux-filesystem)
 
 :    [https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204](https://onlinux.systems/guides/20220524_how-to-disable-and-remove-snap-on-ubuntu-2204)
 

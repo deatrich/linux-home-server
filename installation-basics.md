@@ -16,7 +16,8 @@ there are a series of screens allowing you to customize the installation:
   * enable the Wi-Fi network access if you want to have concurrent updates
   * select your timezone by clicking on your timezone region
   * enter your preferred name and your login name with a password -- this
-    is your login account
+    is your login account.  Document this if you are poor at remembering
+    login and password details.
 
 As the installation starts it will show some informational screens to
 entertain you while it installs.  Eventually it will reboot and present you
@@ -63,7 +64,7 @@ BOOTLOADER: update available
    CURRENT: 000138a1
     LATEST: 000138a1
 
-// no we need to be root since we go ahead and apply the update:
+// now we need to be root since we want to apply the update:
 $ sudo rpi-eeprom-update -a
 *** INSTALLING EEPROM UPDATES ***
 ...
@@ -111,3 +112,11 @@ search for:
 
 See also the [list of all commands used in this guide](#command-list).
 
+There are many Ubuntu-specific tutorials.  You might want to check out these
+two:
+
+   * [The Linux command line for beginners][command-line-tutorial]
+   * [Ubuntu server tutorial for beginners][server-tutorial]
+
+[command-line-tutorial]: https://ubuntu.com/tutorials/command-line-for-beginners
+[server-tutorial]: https://linuxconfig.org/ubuntu-server-tutorial-for-beginners

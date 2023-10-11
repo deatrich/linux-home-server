@@ -21,7 +21,7 @@ reconfigure.  This is my favourite list of system directories to back up:
 
 If you are playing with database services then you need to inform yourself
 which directories and/or data exports should be added and/or used for backups.
-Note that when you have create a Samba or an NFS server you will have other
+Note that when you have created a Samba or an NFS server you will have other
 data directories to back up, and these directories might be large.
 
 A [backup process and a link to an example backup script](#backups) are

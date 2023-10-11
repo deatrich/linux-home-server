@@ -28,15 +28,15 @@ to build and manage running virtual hosts:
 
 [QEMU][qemu]
 : stands for *QuickEmulator*
-: can fully emulate another hardware system, but is much slower without hardware
-  acceleration
+: it can fully emulate another hardware system, but is much slower without
+  hardware acceleration
 
 [libvirt][libvirt]
 : is a multifaceted toolkit used for virtualization management
 
 [KVM][kvm]
 : stands for *Kernel-based Virtual Machine*
-: is either a kernel module, or is built into the kernel
+: it is either a kernel module, or it is built into the kernel
 : the processor (CPU) must have hardware virtualization capabilities
   in order to support KVM
 
@@ -127,13 +127,17 @@ this configuration even if you eventually do not use virtualization services.
 It is however important to have direct login access to your server in case you 
 make any mistakes and lose your network connection.
 
-Here are the commands which create an ethernet bridge:
+Here are the commands which create an ethernet bridge.  This example assumes
+you have manually configured your current network connection first,
+[as described in the appendix](#static-ip).  It does not make sense to me to
+depend on your home router's DHCP network configuration when creating a bridge.
 
 ```console
 // Show network connection names and become root
 $ nmcli con show --active
 NAME                UUID                                  TYPE      DEVICE 
 ethernet-eth0       bc6badb3-3dde-4009-998d-2dee20831670  ethernet  eth0
+
 $ sudo /bin/bash
 
 // Let's copy the network manager configurations to another place
@@ -153,19 +157,23 @@ Connection 'bridge-br0' (f1e8c688-5b47-4576-ad72-b0e082e34da1) successfully adde
 NAME           UUID                                  TYPE      DEVICE 
 bridge-br0     f1e8c688-5b47-4576-ad72-b0e082e34da1  bridge    br0    
 ethernet-eth0  bc6badb3-3dde-4009-998d-2dee20831670  ethernet  eth0   
+```
 
-// We want the bridge to have the same MAC address as the ethernet device,
-// especially if you decide to stay with DHCP IP address assignment:
-# nmcli con mod bridge-br0 ethernet.cloned-mac-address e4:5f:01:a7:22:55
+This example uses my IP addresses, MAC addresses, home router gateway
+and name server configuration.  Your configuration will of course be different:
+
+```console
+// We want the bridge to have the same MAC address as the ethernet device.
+// Remember that you reserved an IP address for your mac address on the
+// home router so that only your server uses the IP address:
+# nmcli con mod bridge-br0 ethernet.cloned-mac-address e4:5f:01:a7:22:54
 
 // Let's turn off the Spanning Tree Protocol; we don't need it for our
 // simple setup:
 # nmcli con modify bridge-br0 bridge.stp no
 
-// By default the bridge will ask for an IP address from your home router.
-// Because I assign the network address information myself, then I set
-// the IPv4 address, subnet mask, gateway and DNS statically to the bridge.
-// Ignore this step if you will use DHCP instead.
+// As we are manually configuring the network configuration, then we set
+// the IPv4 address, subnet mask, gateway and DNS for the bridge.
 # nmcli con modify bridge-br0 ipv4.method manual ipv4.addresses 192.168.1.90/24 gw4 192.168.1.254
 # nmcli con modify bridge-br0 ipv4.dns "1.1.1.1 8.8.8.8 192.168.1.254 75.153.171.67"
 
@@ -254,8 +262,13 @@ too slow to use in any practical way.
 
 ```console
 // We will not be using the default virtual network, which operates behind
-// a NAT.  Here we show what it is, and then we disable it:
+// a NAT.  You might decide to keep the default virtual network if you need
+// the NAT for a particular purpose - for example - you purchase a VPN and
+// configure one of your virtual hosts to use that VPN.  You would need to
+// configure that virtual host to use your NAT.
 
+
+// Here we show what it is, and then we disable it:
 $ virsh net-list
  Name      State    Autostart   Persistent
 --------------------------------------------
@@ -377,7 +390,7 @@ Note that when you launch *virt-manager* it always takes some seconds to
 appear.
 
 Before creating a new VM, create the disk volume that will be its disk.
-You do this by chosing 'Edit' and then 'Connections Details'.  Click on the
+You do this by choosing 'Edit' and then 'Connections Details'.  Click on the
 'Storage' tab and add a volume under the correct filesystem directory, which
 is *clients* in my example in this chapter.
 

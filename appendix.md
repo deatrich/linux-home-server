@@ -135,12 +135,13 @@ create a third partition.
 I show here how to do that from another Linux computer (in my case another Pi)
 with a USB card reader and an inserted 256 GB microSD card.
 
-There is a good graphical tool named *gparted* which is easy to use.
-Beginners should certainly use it, and it is great when
-managing a handful of servers (it is a different story if you are managing
-dozens or thousands of servers).
+There is a good graphical tool named ***gparted*** which is easy to use -- 
+*beginners should certainly use it*.  It is great when managing a handful
+of servers (it is a different story if you are managing dozens or thousands
+of servers).
 
 Here are a few gparted notes:
+
   * You will need to first install it with *sudo apt install gparted*
   * If you opt for this tool then it is all you need
   * It is intuitive, and there are many [tutorials][gparted] on the web
@@ -157,7 +158,7 @@ Here are a few gparted notes:
 As always, I show the command-line example in this section. As a bonus
 it shows a common problem of dealing with partition alignment when
 manually editing partitions.  Skip the rest of this section if you
-have opted for gparted.
+have opted for *gparted*.
 
 Here are some common command-line tools to help us:
 
@@ -464,9 +465,11 @@ ls -l                Shows a detailed listing of your current directory
 
 ls /                 Shows a listing of the base of the file system
 
-ls /root             Try to show a listing of the super-user's home directory
+ls /root             Try to show a listing of the super-user's protected home
+                     directory
 
-sudo ls /root        Enter your password to show that listing
+sudo ls /root        'sudo' allows you to be root temporarily.
+                     It will ask for your password
 
 man sudo             Shows the manual page for the sudo command
                      (type q to quit)
@@ -495,7 +498,8 @@ file .bash\*         Shows what kind of files whose names start with '.bash'
 
 echo $SHELL          Shows what shell you use
 
-env | sort | less    Shows your environment variables, sorted (q to quit)
+env | sort | less    Shows your environment variables, sorted by name
+                     (q to quit)
 -----------------------------------------------------------------------------
 
 The last example in the above list:
@@ -730,7 +734,7 @@ with the option '--rsync-large'.
 The script might issue some warnings about trying to preserve LINUX
 permissions on the USB drive, but should otherwise work.  I need to verify
 this case.  You may have to change the rsync arguments in the script from
-*-aux* to *-rltux*.   I need to test the Windows-formatted usb drive option.
+*-aux* to *-rltux*.   I need to test the Windows-formatted usb drive option!!.
 
 If you ever need to restore files from your backups then you should unpack the
 *tar file* (compressed 'tar' files are sometimes called *tarballs*) on a
@@ -829,17 +833,16 @@ $ diff /etc/hosts.orig /etc/hosts
 
 ### Changing the server's hostname
 
-Now that we have a *.home* domain we can rename our official server's hostname.
+Now that we have a *.home* domain we can rename our server's hostname.
 Suppose the server was originally named *pi* during the installation:
 
 ```console
-// look at what you set your hostname to during the installation:
+// Ask what your hostname currently is:
 $ hostname
 pi
 
-// Give the server a fully-qualified hostname using 'hostnamectl'
-// Note that older versions of hostnamectl required:
-//      sudo hostnamectl set-hostname pi.home
+// Use 'hostnamectl' to give the server a fully-qualified hostname by
+// adding on the domain name.
 $ sudo hostnamectl hostname pi.home
 
 $ hostname
@@ -1066,7 +1069,7 @@ Current DNS Server: 9.9.9.9
 
 Sometimes you want full control of your Linux server's network 
 setup and you decide to eliminate the DHCP network configuration and 
-statically configure your network parameters.  Remember though that
+manually configure your network parameters.  Remember though that
 you can only configure specific IP addresses if you have reserved them
 in your home router.
 

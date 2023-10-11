@@ -8,7 +8,8 @@ a lot of software configuration not usually present or needed on a server.
 
 The main objective here is to show you some options that reduce
 complexity and memory consumption, and might improve security and reliability.
-You can always circle back here in the future and try them.
+You can always circle back here in the future and try them, or just try
+any one topic which interests you.
 
 By all means, ignore all of this if you don't want to be bothered with 
 disabling extraneous software.  I have spent 3 decades managing UNIX and
@@ -19,13 +20,13 @@ Linux systems, so I can be a bit picky about what runs on my systems.
 If you won't be using it on your server then turn Bluetooth off.
 
 The Pi does not have a BIOS like personal computers do; instead configuration
-changes to enable or disable devices are managed in the configuration file
-*config.txt* in */boot/firmware/*
+changes to enable or disable devices are made in the configuration file
+*config.txt* in the directory */boot/firmware/*
 
 <!-- at some point discuss the lack of a RTC and its effect
 on logging, etc. on SBC devices -->
 
-You will need to eventually reboot the server once you have make this change.
+You will need to eventually reboot the server once you have made this change.
 If you also disable WiFi then wait until you have finished the next task, or
 any other tasks in this chapter.
 
@@ -33,7 +34,7 @@ any other tasks in this chapter.
 // List bluetooth devices:
 $ hcitool dev
 Devices:
-        hci0    E4:5F:01:A7:11:0F
+        hci0    E4:5F:01:A7:22:56
 
 // disable bluetooth services running on the Pi
 $ sudo systemctl disable blueman-mechanism bluetooth
@@ -57,7 +58,7 @@ newer technology offers gigabit speed ethernet.  In my experience, the network
 latency is usually better to wired devices.  But if you prefer to keep the
 server on wireless then skip this task.
 
-You will need to reboot the server once you have make this change, but 
+You will need to reboot the server once you have made this change, but 
 **remember to connect the ethernet cable** on the Pi to your home router first!
 
 ```console
@@ -143,7 +144,7 @@ root     pts/1        ubuntu.home      Wed Jul 26 10:15 - down   (00:23)
 myname   pts/0        desktop.home     Wed Jul 26 10:11 - 10:38  (00:27)
 ```
 [rtc]: https://en.wikipedia.org/wiki/Real-time_clock
-[rtc-for-pi]: [https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/|
+[rtc-for-pi]: https://www.pishop.ca/product/ds3231-real-time-clock-module-for-raspberry-pi/
 
 ## Enable boot-up console messages
 
@@ -194,12 +195,15 @@ My opinion is that 'Snaps' are not meant for a server environment, and
 so I remove the associated software.  I certainly find it distasteful
 to have more than a dozen mounted loop devices cluttering up
 output of block device commands for a handful of snap packages.
-I would rather free up the memory footprint and inodes for other purposes.
+I would rather free up the memory footprint and [inodes][inode] for other
+purposes.
 
 But if you like 'Snaps' then skip to the next topic.
 
 Here is a quick summary on removing Snap support, that is, all snap
 packages and the snapd daemon:
+
+[inode]: https://www.redhat.com/sysadmin/inodes-linux-filesystem
 
 #### Disable the daemon
 
@@ -749,10 +753,9 @@ Your backups failed at Fri 28 Jul 01:19:45 MDT 2023
 ```
 [pam]: https://en.wikipedia.org/wiki/Linux_PAM
 
-### Other configuration issues
-
-These topics are still to be documented: 
-
+<!--
+still to look at:
   * explore firewall issues - ufw seems lacking
   * local time configuration and ntp configuration options
+-->
 

@@ -27,7 +27,7 @@
 [brctl](#chapter-14):
 :   Utility used for ethernet bridge administration
 
-[cat](#chapter-07):
+[cat](#chapter-01):
 :   Concatenates files and print on standard output
 
 [cd](#chapter-05):
@@ -43,7 +43,7 @@
 [cp](#chapter-05):
 :   Copies file(s) and/or directories
 
-[crontab](#zappendix):
+[crontab](#chapter-12):
 :   Maintains crontab files for individual users
 
 [date](#chapter-07):
@@ -154,7 +154,7 @@
 [lsblk](#zappendix):
 :   Lists block devices
 
-[ls](#chapter-05):
+[ls](#chapter-01):
 :   lists directory contents
 
 [lsof](#chapter-10):
@@ -221,7 +221,7 @@
 :   Resizes an ext2/ext3/ext4 file system
 
 [resolvectl](#zappendix):
-:    Resolves domain names, IPV4 and IPv6 addresses, DNS records and services
+:    Resolves domain names, IPv4 and IPv6 addresses, DNS records and services
 
 [rm](#chapter-06):
 :   Removes file(s) or directories

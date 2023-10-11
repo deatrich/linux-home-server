@@ -134,7 +134,7 @@ Create and save the session parameters by starting a new session:
       *  Give the session a name
       *  Add the hostname or IP address
       *  Add your login name
-      *  Check auto login
+      *  Enable 'auto login'
       *  Change 'Session type' to *MATE*
    2. Change tabs to the Input/Output tab
       *  Select a useful custom display geometry (e.g. Width: 1152 Height: 864)
