@@ -5,27 +5,29 @@ Single-board computers (SBC) are both inexpensive and reliable; they
 are also very small.  As such they make excellent 24x7 home servers.
 This guide steps you through the process of creating such a server.
 
-This guide has been tested on a Raspberry Pi 400, which is very similar
-to a Raspberry Pi 4b.  The main difference it that the RP 400 board
+This guide was originally tested on a Raspberry Pi 400, and then later 
+on a Raspberry Pi 4b.  The main difference it that the Pi 400 board
 is embedded in a small keyboard.
 
 I also have another SBC, an [ODROID][odroid] still running Ubuntu LTS 16.04,
-and I will document it as well as I update it.  I am not sure yet whether
+and I will document it as well when I update it.  I am not sure yet whether
 I will document it here, or as another mini-document.  For now I am
 focusing on the Raspberry Pi.
 
 One of my goals is to promote using the command-line to do most of the work.
 If you are interested in expanding your horizons and understanding
-more about the command-line, then this guide is for you.  There is also a lot
-of detail in this guide; this is my personal preference.  I grow tired
-of the current trend to provide internet-searched answers in a few phrases
-to fit on the screen of a mobile phone.
+more about the power of the command-line, then this guide is for you.  There
+is also a lot of detail in this guide; this is my personal preference.  I grow
+tired of the current trend to provide internet-searched answers in a few
+phrases to fit on the screen of a mobile phone.
 
 Take a look at the table of contents at the top of the document.  Some users
 will only be interested in creating a 24x7 local file-sharing (Samba) service
 at home -- in that case you do not need to read beyond the section on 'Backups'.
-Of course, people familiar with Linux and the command-line will skip some
-sections of this guide.
+
+Subsequent chapters are more complex, so an interest in the command-line is
+really needed.  Of course, people familiar with Linux and the command-line
+will skip some sections of this guide.
 
 [odroid]: https://www.hardkernel.com/
 
@@ -40,7 +42,23 @@ MAC addresses - one for hardwired ethernet and one for wireless.
 You can reserve both interfaces until you decide which way you will connect
 your server to your router.
 
-<!-- mention in document somewhere about getting MAC addrs early -->
+```console
+// There are a few ways to find the MAC addresses of your network devices under
+// contemporary Linux distributions.  One quick command-line method is to look
+// in the '/sys/class/net/' sub-directory for the network devices:
+$ ls  /sys/class/net/*/address
+/sys/class/net/eth0/address  /sys/class/net/wlan0/address
+/sys/class/net/lo/address
+
+// On a Pi with Ubuntu installed the wired network device is 'eth0' and the
+// wireless network device is 'wlan0'
+
+$ cat /sys/class/net/eth0/address
+e4:5f:01:a7:22:54
+
+$ cat /sys/class/net/wlan0/address
+e4:5f:01:a7:22:55
+```
 
 ## About this document {#doc}
 
