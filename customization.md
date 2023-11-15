@@ -436,16 +436,18 @@ on the next reboot.
 // always exit immediately after running your commands.
 $ sudo /bin/bash
 
-// disable serial and bluetooth modems or serial devices
+// Disable serial and bluetooth modems or serial devices:
 # systemctl stop ModemManager
 # systemctl disable ModemManager
 # systemctl stop hciuart
 # systemctl disable hciuart
 
-// disable VPN and printing services - you can print without running
-// a local printer daemon (!!maybe document using one though )
+// Disable VPN service:
 # systemctl stop openvpn
 # systemctl disable openvpn
+
+// Disable printing services if you do not have a printer at home.
+// However if you do have home printers, then skip this step:
 # systemctl stop cups-browsed cups
 # systemctl disable cups-browsed cups
 ```
