@@ -33,6 +33,7 @@ fleshed out in coming days.
 - [x] Create a git service
 - [x] Configure a KVM virtualization service
 - [x] Switch all .shell fenced code blocks to .console
+- [ ] Add a print service
 - [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 
 ## Task lists for appendix ##
