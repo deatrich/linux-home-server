@@ -34,6 +34,8 @@ fleshed out in coming days.
 - [x] Configure a KVM virtualization service
 - [x] Switch all .shell fenced code blocks to .console
 - [ ] Add a print service
+- [ ] Add a Network UPS Tools (nut) service
+- [ ] Add notification scripts to your mobile phone or email
 - [ ] Add more sample config files in 'examples/' -- diff output is insufficient
 
 ## Task lists for appendix ##
